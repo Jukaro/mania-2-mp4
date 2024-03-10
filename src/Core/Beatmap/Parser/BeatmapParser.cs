@@ -8,7 +8,10 @@ namespace Rythmify.Core.Beatmap;
 public static partial class BeatmapParser {
 	static readonly Dictionary<string, Action<Beatmap, string[]>> sectionToParser = new(){
 		{"General", (beatmap, lines) => { beatmap.GeneralData = ParseKeyValueSection(lines, generalDataProperties); } },
-		{"Editor", (beatmap, lines) => { beatmap.EditorData = ParseKeyValueSection(lines, editorDataProperties); } }
+		{"Editor", (beatmap, lines) => { beatmap.EditorData = ParseKeyValueSection(lines, editorDataProperties); } },
+		{"Metadata", (beatmap, lines) => { beatmap.Metadata = ParseKeyValueSection(lines, metadataDataProperties); } },
+		{"Difficulty", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } },
+		// {"Events", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } }
 	};
 
 	private static bool IsSectionString(string line) => line.StartsWith("[") && line.EndsWith("]");
@@ -23,9 +26,10 @@ public static partial class BeatmapParser {
 		for (int currentLineIndex = 0; currentLineIndex < filteredLines.Length; currentLineIndex++) {
 			var line = filteredLines[currentLineIndex];
 
-			if (!IsSectionString(line)) {
+			if (!IsSectionString(line))
 				continue;
-			}
+
+			Logger.LogDebug($"Parsing section {line}");
 
 			var sectionName = line[1..^1];
 			if (!sectionToParser.ContainsKey(sectionName)) {
@@ -33,8 +37,8 @@ public static partial class BeatmapParser {
 				continue;
 			}
 
-			var sectionEnd = Array.IndexOf(filteredLines, (string l) => IsSectionString(l), currentLineIndex + 1);
-			var sectionLines = filteredLines[currentLineIndex..sectionEnd];
+			var sectionEnd = Array.FindIndex(filteredLines, currentLineIndex + 1, (string l) => IsSectionString(l));
+			var sectionLines = filteredLines[(currentLineIndex + 1)..sectionEnd];
 			sectionToParser[sectionName](beatmap, sectionLines);
 		}
 

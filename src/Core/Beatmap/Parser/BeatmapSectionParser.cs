@@ -5,11 +5,11 @@ namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapParser {
 	private static (string key, string[] arguments) GetKeyAndArguments(string line) {
-		var split = line.Split(':');
+		var split = Array.ConvertAll(line.Split(':'), (string s) => s.Trim());
 		if (split.Length < 2)
 			throw new ArgumentException($"Line is not in the key:arguments format | {line}");
 
-		var key = split[0].Trim();
+		var key = split[0];
 		var arguments = split[1..];
 
 		return (key, arguments);
@@ -28,8 +28,7 @@ public partial class BeatmapParser {
 			if (sectionDataProperties.TryGetValue(key, out Action<T, string> propertySetter))
 				propertySetter(sectionData, value);
 			else
-				Logger.LogWarning($"Unknown editor property {key}");
-
+				Logger.LogWarning($"Unknown section property {key}");
 		}
 
 		return sectionData;
