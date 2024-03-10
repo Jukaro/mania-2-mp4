@@ -12,14 +12,14 @@ public abstract class BeatmapEvent {
 	public int StartTime;
 	public EventType Type;
 
-	public static EventType GetEventType(string type) {
+	public static EventType? TryGetEventType(string type) {
 		return type switch {
 			"0" => EventType.Background,
 			"1" => EventType.Video,
 			"2" => EventType.Break,
 			"Video" => EventType.Video,
 			"Break" => EventType.Background,
-			_ => throw new ArgumentException($"Unknown event type {type}"),
+			_ => null,
 		};
 	}
 
@@ -149,12 +149,96 @@ public class BeatmapDifficultyData {
 	public override string ToString() => $"HPDrainRate: {HPDrainRate}\nCircleSize: {CircleSize}\nOverallDifficulty: {OverallDifficulty}\nApproachRate: {ApproachRate}\nSliderMultiplier: {SliderMultiplier}\nSliderTickRate: {SliderTickRate}";
 }
 
+public class Effects {
+	private readonly int Flags;
+
+	public Effects(int flags) {
+		Flags = flags;
+	}
+
+	public bool IsKiai => (Flags & (1 << 0)) != 0;
+	public bool IsOmitFirstBarLine => (Flags & (1 << 3)) != 0;
+
+	public override string ToString() => $"Kiai: {IsKiai}, OmitFirstBarLine: {IsOmitFirstBarLine}";
+}
+
+public class TimingPoint {
+	public int Time;
+	public double BeatLength;
+	public int Meter;
+	public int SampleSet;
+	public int SampleIndex;
+	public int Volume;
+	public bool Uninherited;
+	public Effects Effects;
+
+	public override string ToString() => $"Time: {Time}, BeatLength: {BeatLength}, Meter: {Meter}, SampleSet: {SampleSet}, SampleIndex: {SampleIndex}, Volume: {Volume}, Uninherited: {Uninherited}, Effects: {{ {Effects} }}";
+}
+
+public class BeatmapColor {
+	public string Label;
+	public byte R;
+	public byte G;
+	public byte B;
+
+	public override string ToString() => $"Label: {Label} R: {R}, G: {G}, B: {B}";
+}
+
+public class HitObjectType {
+	private readonly int Flags;
+
+	public HitObjectType(int flags) {
+		Flags = flags;
+	}
+
+	public bool IsCircle => (Flags & (1 << 0)) != 0;
+	public bool IsSlider => (Flags & (1 << 1)) != 0;
+	public bool IsNewCombo => (Flags & (1 << 2)) != 0;
+	public bool IsSpinner => (Flags & (1 << 3)) != 0;
+	public int ComboOffset => (Flags & 0b01110000) >> 4;
+	public bool IsHold => (Flags & (1 << 7)) != 0;
+}
+
+public enum HitSoundType {
+	Normal = 0b1,
+	Whistle = 0b10,
+	Finish = 0b100,
+	Clap = 0b1000,
+}
+
+public class HitSound {
+	private readonly int Flags;
+
+	public HitSound(int flags) {
+		Flags = flags;
+	}
+
+	public bool IsNormal => (Flags & (1 << 0)) != 0;
+	public bool IsWhistle => (Flags & (1 << 1)) != 0;
+	public bool IsFinish => (Flags & (1 << 2)) != 0;
+	public bool IsClap => (Flags & (1 << 3)) != 0;
+
+	public override string ToString() => $"Normal: {IsNormal}, Whistle: {IsWhistle}, Finish: {IsFinish}, Clap: {IsClap}";
+}
+
+public class HitObject {
+	public int X;
+	public int Y;
+	public int Time;
+	public HitObjectType Type;
+	public HitSoundType Sound;
+	public int[] HitSample;
+}
+
 public class Beatmap {
 	public BeatmapGeneralData GeneralData;
 	public BeatmapEditorData EditorData;
 	public BeatmapMetadata Metadata;
 	public BeatmapDifficultyData DifficultyData;
 	public BeatmapEvent[] Events;
+	public TimingPoint[] TimingPoints;
+	public BeatmapColor[] Colors;
+	public HitObject[] HitObjects;
 
 	public Beatmap() {
 		GeneralData = new BeatmapGeneralData();
@@ -162,7 +246,10 @@ public class Beatmap {
 		Metadata = new BeatmapMetadata();
 		DifficultyData = new BeatmapDifficultyData();
 		Events = Array.Empty<BeatmapEvent>();
+		TimingPoints = Array.Empty<TimingPoint>();
+		Colors = Array.Empty<BeatmapColor>();
+		HitObjects = Array.Empty<HitObject>();
 	}
 
-	public override string ToString() => $"GeneralData:\n{GeneralData}\nEditorData:\n{EditorData}\nMetadata:\n{Metadata}\nDifficultyData:\n{DifficultyData}\nEvents:\n{string.Join("\n", Array.ConvertAll(Events, (e) => e.ToString()))}";
+	public override string ToString() => $"GeneralData:\n{GeneralData}\nEditorData:\n{EditorData}\nMetadata:\n{Metadata}\nDifficultyData:\n{DifficultyData}\nEvents:\n{string.Join("\n", Array.ConvertAll(Events, (e) => e.ToString()))}\nTimingPoints:\n{string.Join("\n", Array.ConvertAll(TimingPoints, (tp) => tp.ToString()))}\nColors:\n{string.Join("\n", Array.ConvertAll(Colors, (c) => c.ToString()))}";
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rythmify.Core.Beatmap;
 
@@ -16,9 +15,14 @@ public partial class BeatmapParser {
 
 		foreach (string line in lines) {
 			var parameters = Array.ConvertAll(line.Split(','), (string s) => s.Trim());
-			var eventType = BeatmapEvent.GetEventType(parameters[0]);
+			var eventType = BeatmapEvent.TryGetEventType(parameters[0]);
 
-			if (eventToParser.TryGetValue(eventType, out Action<List<BeatmapEvent>, string[]> parser))
+			if (!eventType.HasValue) {
+				Logger.LogWarning($"Unknown event type {parameters[0]}");
+				continue;
+			}
+
+			if (eventToParser.TryGetValue(eventType.Value, out Action<List<BeatmapEvent>, string[]> parser))
 				parser(events, parameters);
 			else
 				Logger.LogWarning($"Could not find parser for event type {eventType}");
@@ -30,13 +34,13 @@ public partial class BeatmapParser {
 	private static BackgroundEvent ParseBackgroundEvent(string[] parameters) {
 		BackgroundEvent backgroundEvent = new();
 
-		if (parameters.Length != 5)
-			throw new ArgumentException($"Background event must have 5 parameters, but got {parameters.Length}");
+		if (parameters.Length < 3)
+			throw new ArgumentException($"Background event must have at least 3 parameters, but got {parameters.Length}");
 
 		backgroundEvent.StartTime = int.Parse(parameters[1]);
 		backgroundEvent.Filename = parameters[2];
-		backgroundEvent.XOffset = int.Parse(parameters[3]);
-		backgroundEvent.YOffset = int.Parse(parameters[4]);
+		backgroundEvent.XOffset = parameters.Length >= 4 ? int.Parse(parameters[3]) : 0;
+		backgroundEvent.YOffset = parameters.Length >= 5 ? int.Parse(parameters[4]) : 0;
 
 		return backgroundEvent;
 	}
