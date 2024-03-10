@@ -11,7 +11,7 @@ public static partial class BeatmapParser {
 		{"Editor", (beatmap, lines) => { beatmap.EditorData = ParseKeyValueSection(lines, editorDataProperties); } },
 		{"Metadata", (beatmap, lines) => { beatmap.Metadata = ParseKeyValueSection(lines, metadataDataProperties); } },
 		{"Difficulty", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } },
-		// {"Events", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } }
+		{"Events", (beatmap, lines) => { beatmap.Events = ParseEventsSection(lines); } }
 	};
 
 	private static bool IsSectionString(string line) => line.StartsWith("[") && line.EndsWith("]");

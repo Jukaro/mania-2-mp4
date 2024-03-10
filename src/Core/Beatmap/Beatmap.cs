@@ -9,8 +9,8 @@ public enum EventType {
 }
 
 public abstract class BeatmapEvent {
-	public EventType Type; // String or number actually
 	public int StartTime;
+	public EventType Type;
 
 	public static EventType GetEventType(string type) {
 		return type switch {
@@ -22,6 +22,8 @@ public abstract class BeatmapEvent {
 			_ => throw new ArgumentException($"Unknown event type {type}"),
 		};
 	}
+
+	public override abstract string ToString();
 }
 
 public class BackgroundEvent : BeatmapEvent {
@@ -31,10 +33,9 @@ public class BackgroundEvent : BeatmapEvent {
 
 	public BackgroundEvent() {
 		Type = EventType.Background;
-		StartTime = 0;
 	}
 
-	public override string ToString() => $"Type: {Type}\nStartTime: {StartTime}\nFilename: {Filename}\nXOffset: {XOffset}\nYOffset: {YOffset}";
+	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, Filename: {Filename}, XOffset: {XOffset}, YOffset: {YOffset}";
 }
 
 public class VideoEvent : BeatmapEvent {
@@ -46,7 +47,7 @@ public class VideoEvent : BeatmapEvent {
 		Type = EventType.Video;
 	}
 
-	public override string ToString() => $"Type: {Type}\nStartTime: {StartTime}\nFilename: {Filename}\nXOffset: {XOffset}\nYOffset: {YOffset}";
+	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, Filename: {Filename}, XOffset: {XOffset}, YOffset: {YOffset}";
 }
 
 public class BreakEvent : BeatmapEvent {
@@ -56,7 +57,7 @@ public class BreakEvent : BeatmapEvent {
 		Type = EventType.Break;
 	}
 
-	public override string ToString() => $"Type: {Type}\nStartTime: {StartTime}\nEndTime: {EndTime}";
+	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, EndTime: {EndTime}";
 }
 
 public enum GameMode {
@@ -163,5 +164,5 @@ public class Beatmap {
 		Events = Array.Empty<BeatmapEvent>();
 	}
 
-	public override string ToString() => $"GeneralData:\n{GeneralData}\nEditorData:\n{EditorData}\nMetadata:\n{Metadata}\nDifficultyData:\n{DifficultyData}";
+	public override string ToString() => $"GeneralData:\n{GeneralData}\nEditorData:\n{EditorData}\nMetadata:\n{Metadata}\nDifficultyData:\n{DifficultyData}\nEvents:\n{string.Join("\n", Array.ConvertAll(Events, (e) => e.ToString()))}";
 }
