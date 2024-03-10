@@ -4,27 +4,79 @@ using System.Collections.Generic;
 namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapParser {
+	static readonly Dictionary<HitObjectType, Func<string[], BeatmapHitObject>> objectTypeToParser = new() {
+		{HitObjectType.Circle, (parameters) => { return ParseCircle(parameters); } },
+		{HitObjectType.Hold, (parameters) => { return ParseHold(parameters); } },
+	};
 
-	private static BeatmapColor[] ParseHitObjectsSection(string[] lines) {
-		List<BeatmapColor> colors = new();
+	private static BeatmapHitObject[] ParseHitObjectsSection(string[] lines) {
+		List<BeatmapHitObject> hitObjects = new();
 
 		foreach (string line in lines) {
-			var (key, arguments) = GetKeyAndArguments(line);
+			var parameters = Array.ConvertAll(line.Split(','), (string s) => s.Trim());
 
-			if (arguments.Length != 3)
-				throw new ArgumentException($"Color must have 3 parameters, but got {arguments.Length}");
+			if (parameters.Length < 5)
+				throw new ArgumentException($"HitObject must have at least 5 parameters, but got {parameters.Length}");
 
-			BeatmapColor color = new()
-			{
-				Label = key,
-				R = byte.Parse(arguments[0]),
-				G = byte.Parse(arguments[1]),
-				B = byte.Parse(arguments[2]),
-			};
+			HitObjectTypeFlag type = new(int.Parse(parameters[3]));
 
-			colors.Add(color);
+			if (objectTypeToParser.TryGetValue(type.Type, out Func<string[], BeatmapHitObject> parser))
+				hitObjects.Add(parser(parameters));
+			else
+				Logger.LogWarning($"Could not find parser for hit object type {type.Type}");
 		}
 
-		return colors.ToArray();
+		return hitObjects.ToArray();
+	}
+
+
+	private static CircleHitObject ParseCircle(string[] parameters) {
+		if (parameters.Length < 5)
+			throw new ArgumentException($"Circle must have at least 5 parameters, but got {parameters.Length}");
+
+		CircleHitObject circle = new()
+		{
+			X = int.Parse(parameters[0]),
+			Y = int.Parse(parameters[1]),
+			Time = int.Parse(parameters[2]),
+			Type = new(int.Parse(parameters[3])),
+			HitSound = new(int.Parse(parameters[4])),
+			HitSample = ParseHitSample(parameters.Length >= 6 ? parameters[5] : "0:0:0:0:"),
+		};
+
+		return circle;
+	}
+
+	private static HoldHitObject ParseHold(string[] parameters) {
+		if (parameters.Length < 6)
+			throw new ArgumentException($"Hold must have at least 6 parameters, but got {parameters.Length}");
+
+		HoldHitObject hold = new()
+		{
+			X = int.Parse(parameters[0]),
+			Y = int.Parse(parameters[1]),
+			Time = int.Parse(parameters[2]),
+			Type = new(int.Parse(parameters[3])),
+			HitSound = new(int.Parse(parameters[4])),
+			EndTime = int.Parse(parameters[5].Split(':')[0] /* Nique ta mère osu */),
+			// HitSample = ParseHitSample(parameters.Length >= 7 ? parameters[6] : "0:0:0:0:"),
+		};
+
+		return hold;
+	}
+
+	private static HitSample ParseHitSample(string parametersString) {
+		var parameters = parametersString.Split(':', StringSplitOptions.RemoveEmptyEntries);
+		if (parameters.Length < 4)
+			throw new ArgumentException($"HitSample must have at least 4 parameters, but got {parameters.Length} in {parametersString}");
+
+		return new()
+		{
+			NormalSet = int.Parse(parameters[0]),
+			AdditionSet = int.Parse(parameters[1]),
+			Index = int.Parse(parameters[2]),
+			Volume = int.Parse(parameters[3]),
+			Filename = parameters.Length >= 5 ? parameters[4] : null,
+		};
 	}
 }

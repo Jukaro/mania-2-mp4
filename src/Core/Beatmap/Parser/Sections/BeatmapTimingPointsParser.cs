@@ -5,8 +5,8 @@ using System.Globalization;
 namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapParser {
-	private static TimingPoint[] ParseTimingPointsSection(string[] lines) {
-		List<TimingPoint> timingPoints = new();
+	private static BeatmapTimingPoint[] ParseTimingPointsSection(string[] lines) {
+		List<BeatmapTimingPoint> timingPoints = new();
 
 		foreach (string line in lines) {
 			var parameters = Array.ConvertAll(line.Split(','), (string s) => s.Trim());
@@ -14,7 +14,7 @@ public partial class BeatmapParser {
 			if (parameters.Length != 8)
 				throw new ArgumentException($"Timing point must have 8 parameters, but got {parameters.Length}");
 
-			TimingPoint timingPoint = new()
+			BeatmapTimingPoint timingPoint = new()
 			{
 				Time = int.Parse(parameters[0]),
 				BeatLength = double.Parse(parameters[1], CultureInfo.InvariantCulture),

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapParser {
-	static readonly Dictionary<EventType, Action<List<BeatmapEvent>, string[]>> eventToParser = new() {
-		{EventType.Background, (events, parameters) => { events.Add(ParseBackgroundEvent(parameters)); } },
-		{EventType.Video, (events, parameters) => { events.Add(ParseVideoEvent(parameters)); } },
-		{EventType.Break, (events, parameters) => { events.Add(ParseBreakEvent(parameters)); } },
+	static readonly Dictionary<BeatmapEventType, Action<List<BeatmapEvent>, string[]>> eventToParser = new() {
+		{BeatmapEventType.Background, (events, parameters) => { events.Add(ParseBackgroundEvent(parameters)); } },
+		{BeatmapEventType.Video, (events, parameters) => { events.Add(ParseVideoEvent(parameters)); } },
+		{BeatmapEventType.Break, (events, parameters) => { events.Add(ParseBreakEvent(parameters)); } },
 	};
 
 	private static BeatmapEvent[] ParseEventsSection(string[] lines) {
