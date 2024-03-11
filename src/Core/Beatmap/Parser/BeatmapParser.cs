@@ -11,7 +11,10 @@ public static partial class BeatmapParser {
 		{"Editor", (beatmap, lines) => { beatmap.EditorData = ParseKeyValueSection(lines, editorDataProperties); } },
 		{"Metadata", (beatmap, lines) => { beatmap.Metadata = ParseKeyValueSection(lines, metadataDataProperties); } },
 		{"Difficulty", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } },
-		// {"Events", (beatmap, lines) => { beatmap.DifficultyData = ParseKeyValueSection(lines, difficultyDataProperties); } }
+		{"Events", (beatmap, lines) => { beatmap.Events = ParseEventsSection(lines); } },
+		{"TimingPoints", (beatmap, lines) => { beatmap.TimingPoints = ParseTimingPointsSection(lines); } },
+		{"Colours", (beatmap, lines) => { beatmap.Colors = ParseColorsSection(lines); } },
+		{"HitObjects", (beatmap, lines) => { beatmap.HitObjects = ParseHitObjectsSection(lines); } },
 	};
 
 	private static bool IsSectionString(string line) => line.StartsWith("[") && line.EndsWith("]");
@@ -38,7 +41,7 @@ public static partial class BeatmapParser {
 			}
 
 			var sectionEnd = Array.FindIndex(filteredLines, currentLineIndex + 1, (string l) => IsSectionString(l));
-			var sectionLines = filteredLines[(currentLineIndex + 1)..sectionEnd];
+			var sectionLines = filteredLines[(currentLineIndex + 1)..(sectionEnd == -1 ? filteredLines.Length : sectionEnd)];
 			sectionToParser[sectionName](beatmap, sectionLines);
 		}
 
