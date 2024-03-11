@@ -51,6 +51,20 @@ public partial class BeatmapParser {
 		if (parameters.Length < 6)
 			throw new ArgumentException($"Hold must have at least 6 parameters, but got {parameters.Length}");
 
+
+		string endTime = parameters[5];
+		string hitSample = "0:0:0:0:";
+
+		// This is a trick to separate the hit sample from the end time
+		// We have to do this because the split character for every other argument is "," except specifically for the end time and hit sample
+		// of the hold object, which is ":" (ex: hitSound,endTime:hitSample)
+		var hasHitSample = parameters[5].Contains(':');
+		if (hasHitSample) {
+			var endTimeAndHitSampleStrings = parameters[5].Split(':', 2);
+			endTime = endTimeAndHitSampleStrings[0];
+			hitSample = endTimeAndHitSampleStrings[1];
+		}
+
 		HoldHitObject hold = new()
 		{
 			X = int.Parse(parameters[0]),
@@ -58,8 +72,8 @@ public partial class BeatmapParser {
 			Time = int.Parse(parameters[2]),
 			Type = new(int.Parse(parameters[3])),
 			HitSound = new(int.Parse(parameters[4])),
-			EndTime = int.Parse(parameters[5].Split(':')[0] /* Nique ta mère osu */),
-			// HitSample = ParseHitSample(parameters.Length >= 7 ? parameters[6] : "0:0:0:0:"),
+			EndTime = int.Parse(endTime),
+			HitSample = ParseHitSample(hitSample),
 		};
 
 		return hold;
