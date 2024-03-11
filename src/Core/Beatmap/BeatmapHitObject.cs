@@ -72,12 +72,15 @@ public class HitSample {
 }
 
 public class BeatmapHitObject {
+
 	public int X;
 	public int Y;
 	public int Time;
 	public HitObjectTypeFlag Type;
 	public HitSound HitSound;
 	public HitSample HitSample;
+
+	public int GetLane(int laneCount) => (int)Math.Floor(X * laneCount / 512f);
 }
 
 public class CircleHitObject : BeatmapHitObject {
