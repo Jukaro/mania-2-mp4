@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Rythmify.Core.Shared;
 
 namespace Rythmify.Core.Replay;
 
@@ -67,14 +68,14 @@ public static partial class ReplayParser {
 		return result;
 	}
 
-	public static Replay Parse(string filePath) {
+	public static Replay Parse(string filePath, int laneCount) {
 		var bytes = File.ReadAllBytes(filePath);
 		int currentByteIndex = 0;
 
 		if (!Enum.IsDefined(typeof(GameMode), (int)bytes[currentByteIndex]))
 			throw new ArgumentException($"Unexpected argument type for enum GameMode: {bytes[currentByteIndex]}");
 
-		Replay replay = new();
+		Replay replay = new(laneCount);
 
 		replay.GameMode = (GameMode)bytes[currentByteIndex];
 		currentByteIndex++;

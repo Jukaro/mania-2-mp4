@@ -44,17 +44,6 @@ public static partial class ReplayParser {
 		return to_skip;
 	}
 
-	private static int GetNbKeys(int max_input) {
-		int keys = 512;
-		int nbKeys = 10;
-
-		while (max_input < keys) {
-			nbKeys--;
-			keys >>= 1;
-		}
-		return nbKeys;
-	}
-
 	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref Replay replay) {
 		byte[] compressedReplayLZMA = new byte[length];
 		Buffer.BlockCopy(bytes, index, compressedReplayLZMA, 0, length);
@@ -107,7 +96,6 @@ public static partial class ReplayParser {
 			holdTime = 0;
 		}
 
-		replay.NbKeys = GetNbKeys(max_input);
 		replay.TotalKeyPresses = inputChangeCounter;
 		index += length;
 
