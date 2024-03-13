@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Rythmify.Core;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Game;
 
@@ -11,32 +11,23 @@ public class Game1 : Game
 {
 	private GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
-	private ReplayPlayer ReplayPlayer;
+	private ReplayPlayer _replayPlayer;
 
-	private Texture2D NoteTexture;
-	private Texture2D HitLineTexture;
+	private SkinRenderer _skinRenderer;
 
 	public Game1()
 	{
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
-
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/24313 Team Nekokan - Can't Defeat Airman/Team Nekokan - Can't Defeat Airman (Blue Dragon) [Holy Shit! It's Airman!!].osu";
-		var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/574811 odaxelagnia - The Shortest Mashcore Ever/odaxelagnia - The Shortest Mashcore Ever (Hydria) [Insane].osu";
-		var beatmap = BeatmapParser.Parse(filePath);
-		Logger.LogSuccess(beatmap.ToString());
-		ReplayPlayer = new(beatmap);
 	}
 
 	protected override void Initialize()
 	{
-		_graphics.PreferredBackBufferWidth = 1920;
-		_graphics.PreferredBackBufferHeight = 1080;
+		_graphics.PreferredBackBufferWidth = (int)(1440 * (16/9f));
+		_graphics.PreferredBackBufferHeight = 1440;
 		_graphics.ApplyChanges();
 
-		ReplayPlayer.Play();
 		base.Initialize();
 	}
 
@@ -44,15 +35,21 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		NoteTexture = new(GraphicsDevice, 150, 150);
-		var colors = new Color[150 * 150];
-		Array.Fill(colors, Color.White);
-		NoteTexture.SetData(colors);
-
-		HitLineTexture = new(GraphicsDevice, _graphics.PreferredBackBufferWidth, 5);
-		var colors1 = new Color[_graphics.PreferredBackBufferWidth * 5];
-		Array.Fill(colors1, Color.Red);
-		HitLineTexture.SetData(colors1);
+		Skin skin = new()
+		{
+			HitPosition = 384
+		};
+		_skinRenderer = new(skin, GraphicsDevice);
+		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu";
+		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/24313 Team Nekokan - Can't Defeat Airman/Team Nekokan - Can't Defeat Airman (Blue Dragon) [Holy Shit! It's Airman!!].osu";
+		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/574811 odaxelagnia - The Shortest Mashcore Ever/odaxelagnia - The Shortest Mashcore Ever (Hydria) [Insane].osu";
+		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1981845 Gram - Odin/Gram - Odin (cai_ji_ccc) [GOD].osu";
+		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1147471 toby fox - sans/toby fox - sans. (Leniane) [mimi's easy].osu";
+		var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1035988 The Koxx - A FOOL MOON NIGHT/The Koxx - A FOOL MOON NIGHT (motoroko) [A Fool].osu";
+		var beatmap = BeatmapParser.Parse(filePath);
+		Logger.LogSuccess(beatmap.ToString());
+		_replayPlayer = new(beatmap, skin);
+		_replayPlayer.Play();
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -60,7 +57,7 @@ public class Game1 : Game
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
 
-		ReplayPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
+		_replayPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);
 	}
@@ -70,13 +67,15 @@ public class Game1 : Game
 		GraphicsDevice.Clear(Color.Black);
 
 		_spriteBatch.Begin();
-		foreach (var note in ReplayPlayer.RenderedNotes)
-		{
-			_spriteBatch.Draw(NoteTexture, new Vector2(note.Lane * NoteTexture.Width + 30 * note.Lane, (int)(1080 * note.Y / 480f)), Color.White);
+
+		foreach (var note in _replayPlayer.RenderedNotes) {
+			if (note is HoldNote holdNote)
+				RenderableGameNote.RenderHoldNote(holdNote, _skinRenderer, _spriteBatch);
+			else
+				RenderableGameNote.RenderGameNote(note, _skinRenderer, _spriteBatch);
 		}
-		var hitPosition = 384;
-		var screenSpaceHitPosition = hitPosition * _graphics.PreferredBackBufferHeight / 480;
-		_spriteBatch.Draw(HitLineTexture, new Vector2(0, screenSpaceHitPosition), Color.White);
+		RenderableGameNote.RenderHitLine(_graphics, _skinRenderer, _spriteBatch);
+
 		_spriteBatch.End();
 
 		base.Draw(gameTime);

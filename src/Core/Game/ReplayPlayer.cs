@@ -6,7 +6,14 @@ namespace Rythmify.Core.Game;
 
 public class GameNote {
 	public int Lane;
-	public double Y;
+	public float Y;
+	public int DespawnYThreshold;
+	public float SpawnTime;
+}
+
+public class HoldNote : GameNote {
+	public int HoldTime;
+	public float Height;
 }
 
 public class ReplayPlayer {
@@ -16,12 +23,14 @@ public class ReplayPlayer {
 	private double CurrentPlayTime;
 
 	public List<GameNote> RenderedNotes { get; private set; }
+	public Skin Skin { get; private set; }
 
-	public ReplayPlayer(BeatmapData beatmap) {
+	public ReplayPlayer(BeatmapData beatmap, Skin skin) {
 		Beatmap = beatmap;
 		IsPlaying = false;
 		CurrentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
+		Skin = skin;
 	}
 
 	public void Play() {
@@ -35,37 +44,46 @@ public class ReplayPlayer {
 	public void Update(double deltaTime) {
 		if (!IsPlaying) return;
 
-		var HitPosition = 384;
-		var ScrollSpeed = 28;
-		var noteScrollTime = (6860 + 6860 * (HitPosition / 480f)) / ScrollSpeed;
-		var noteDespawnYThreshold = 550;
+		var previousPlayTime = CurrentPlayTime;
+		CurrentPlayTime += deltaTime;
 
-		var noteScrollSpeed = Math.Abs(noteDespawnYThreshold) / (double)noteScrollTime;
-
-		var spawnPoint = -100;
-		var timeItTakesToReach0 = Math.Abs(0 - spawnPoint) / noteScrollSpeed;
+		int scrollSpeed = 28;
+		float noteScrollTime = (6860 + 6860 * (Skin.HitPosition / 480f)) / scrollSpeed;
+		float noteScrollSpeed = Skin.HitPosition / noteScrollTime;
+		float spawnPoint = -100;
+		float timeItTakesToReach0 = Math.Abs(0 - spawnPoint) / noteScrollSpeed;
 
 		foreach (var hitNote in Beatmap.HitObjects) {
 			var noteSpawnTime = hitNote.Time - noteScrollTime - timeItTakesToReach0;
-
-			var isCrossingNoteTime = CurrentPlayTime < noteSpawnTime && CurrentPlayTime + deltaTime >= noteSpawnTime;
-
+			var isCrossingNoteTime = previousPlayTime < noteSpawnTime && CurrentPlayTime >= noteSpawnTime;
 			var timeSinceSpawnTime = CurrentPlayTime - noteSpawnTime;
+			if (!isCrossingNoteTime)
+				continue;
 
-			if (isCrossingNoteTime) {
+			if (hitNote is HoldHitObject holdHitObject) {
+				int holdTime = holdHitObject.EndTime - holdHitObject.Time;
+				var holdNoteSize = holdTime * noteScrollSpeed;
+				RenderedNotes.Add(new HoldNote {
+					Lane = holdHitObject.GetLane(Beatmap.DifficultyData.LaneCount),
+					Y = int.MinValue,
+					HoldTime = holdTime,
+					Height = holdNoteSize,
+					DespawnYThreshold = 550 + (int)holdNoteSize,
+					SpawnTime = noteSpawnTime
+				});
+			} else if (hitNote is CircleHitObject circleHitObject) {
 				RenderedNotes.Add(new GameNote {
-					Lane = hitNote.GetLane(Beatmap.DifficultyData.LaneCount),
-					Y = spawnPoint + timeSinceSpawnTime * noteScrollSpeed
+					Lane = circleHitObject.GetLane(Beatmap.DifficultyData.LaneCount),
+					Y = int.MinValue,
+					DespawnYThreshold = 550,
+					SpawnTime = noteSpawnTime
 				});
 			}
 		}
 
-		foreach (var note in RenderedNotes) {
-			note.Y += (int)(noteScrollSpeed * deltaTime);
-		}
+		foreach (var note in RenderedNotes)
+			note.Y = (float)(spawnPoint + (CurrentPlayTime - note.SpawnTime) * noteScrollSpeed);
 
-		RenderedNotes.RemoveAll(note => note.Y > noteDespawnYThreshold);
-
-		CurrentPlayTime += deltaTime;
+		RenderedNotes.RemoveAll(note => note.Y > note.DespawnYThreshold);
 	}
 }
