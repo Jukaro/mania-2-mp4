@@ -48,13 +48,13 @@ public partial class BeatmapParser {
 	private static VideoEvent ParseVideoEvent(string[] parameters) {
 		VideoEvent videoEvent = new();
 
-		if (parameters.Length != 5)
-			throw new ArgumentException($"Video event must have 5 parameters, but got {parameters.Length}");
+		if (parameters.Length < 3)
+			throw new ArgumentException($"Video event must have at least 3 parameters, but got {parameters.Length}");
 
 		videoEvent.StartTime = int.Parse(parameters[1]);
 		videoEvent.Filename = parameters[2];
-		videoEvent.XOffset = int.Parse(parameters[3]);
-		videoEvent.YOffset = int.Parse(parameters[4]);
+		videoEvent.XOffset = parameters.Length >= 4 ? int.Parse(parameters[3]) : 0;
+		videoEvent.YOffset = parameters.Length >= 5 ? int.Parse(parameters[4]) : 0;
 
 		return videoEvent;
 	}

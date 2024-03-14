@@ -16,7 +16,7 @@ public partial class BeatmapParser {
 
 			BeatmapTimingPoint timingPoint = new()
 			{
-				Time = int.Parse(parameters[0]),
+				Time = double.Parse(parameters[0]),
 				BeatLength = double.Parse(parameters[1], CultureInfo.InvariantCulture),
 				Meter = int.Parse(parameters[2]),
 				SampleSet = int.Parse(parameters[3]),

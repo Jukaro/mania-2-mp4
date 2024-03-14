@@ -14,7 +14,7 @@ public class TimingPointEffects {
 }
 
 public class BeatmapTimingPoint {
-	public int Time;
+	public double Time;
 	public double BeatLength;
 	public int Meter;
 	public int SampleSet;

@@ -5,7 +5,7 @@ namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapParser {
 	private static (string key, string[] arguments) GetKeyAndArguments(string line) {
-		var split = Array.ConvertAll(line.Split(':'), (string s) => s.Trim());
+		var split = Array.ConvertAll(line.Split(':', 2), (string s) => s.Trim());
 		if (split.Length < 2)
 			throw new ArgumentException($"Line is not in the key:arguments format | {line}");
 
