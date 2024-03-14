@@ -36,7 +36,7 @@ public class BeatmapPlayer {
 		_beatmap = beatmap;
 		_replay = replay;
 		_isPlaying = false;
-		CurrentPlayTime = -1200;
+		CurrentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
 		Skin = skin;
 		_spawnedNotes = 0;
@@ -65,7 +65,7 @@ public class BeatmapPlayer {
 			if (CurrentPlayTime < noteSpawnTime)
 				break;
 
-			var isCrossingNoteTime = previousPlayTime < noteSpawnTime && CurrentPlayTime >= noteSpawnTime;
+			var isCrossingNoteTime = (noteSpawnTime < 0 || previousPlayTime < noteSpawnTime) && CurrentPlayTime >= noteSpawnTime;
 			var timeSinceSpawnTime = CurrentPlayTime - noteSpawnTime;
 
 			if (!isCrossingNoteTime)
@@ -99,11 +99,8 @@ public class BeatmapPlayer {
 
 		RenderedNotes.RemoveAll(note => note.Y > note.DespawnYThreshold);
 
-		if (CurrentPlayTime + 1750 > _replay.Inputs[CurrentInputIndex].Timestamp)
-		{
-			Logger.LogDebug($"[{CurrentInputIndex}]: {_replay.Inputs[CurrentInputIndex].HoldTime}, {_replay.Inputs[CurrentInputIndex].Keys}");
+		if (CurrentPlayTime > _replay.Inputs[CurrentInputIndex].Timestamp)
 			CurrentInputIndex++;
-		}
 
 		RenderedInputs[0] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 0)) != 0;
 		RenderedInputs[1] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 1)) != 0;

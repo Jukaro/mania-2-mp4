@@ -4,11 +4,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using Rythmify.Core;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
+using Rythmify.Dev;
 
 namespace Rythmify.UI;
 
@@ -48,26 +48,15 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/24313 Team Nekokan - Can't Defeat Airman/Team Nekokan - Can't Defeat Airman (Blue Dragon) [Holy Shit! It's Airman!!].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/574811 odaxelagnia - The Shortest Mashcore Ever/odaxelagnia - The Shortest Mashcore Ever (Hydria) [Insane].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1981845 Gram - Odin/Gram - Odin (cai_ji_ccc) [GOD].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1147471 toby fox - sans/toby fox - sans. (Leniane) [mimi's easy].osu";
-		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1035988 The Koxx - A FOOL MOON NIGHT/The Koxx - A FOOL MOON NIGHT (motoroko) [A Fool].osu";
-		// var filePath = "E:/osu maps de giga ultra mort/1147471 toby fox - sans/toby fox - sans. (Leniane) [mimi's easy].osu";
-		var filePath = "E:/osu maps de giga ultra mort/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu";
-		var replayPath = "D:/osssu/Replays/Jukaro - Kurokotei - Galaxy Collapse [Cataclysmic Hypernova] (2024-02-27) OsuMania.osr";
-		// var filePath = "E:/osu maps de giga ultra mort/886126 Brandy - Cross Time/Brandy - Cross Time (ababab0306) [MX] - Fixed.osu";
 
-		var beatmap = BeatmapParser.Parse(filePath);
-		// Logger.LogDebug($"{beatmap}");
-		Logger.LogDebug(Path.Combine(Path.GetDirectoryName(filePath), beatmap.GeneralData.AudioFilename));
-		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(filePath), beatmap.GeneralData.AudioFilename));
+		dynamic testCase = Datasets.TestCases.ShiroW.Algorithm;
+
+		var beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
+		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
 
 		Skin skin = new() { HitPosition = 384 };
 
-		ReplayData replay = ReplayParser.Parse(replayPath, (int)beatmap.DifficultyData.CircleSize);
-		// replay.DebugPrintAllInputs();
+		ReplayData replay = ReplayParser.Parse(testCase.ReplayPath, beatmap.DifficultyData.LaneCount);
 
 		_beatmapPlayer = new(beatmap, replay, skin);
 
@@ -78,7 +67,7 @@ public class Game1 : Game
 
 		_audioThread = new Thread(() => _outputDevice.Play());
 
-		_outputDevice.Volume = 0.01f;
+		_outputDevice.Volume = 0.1f;
 		_beatmapPlayer.Play();
 		_audioThread.Start();
 	}
@@ -88,7 +77,7 @@ public class Game1 : Game
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
 
-		_beatmapPlayer.Update(/*gameTime.ElapsedGameTime.TotalMilliseconds*/0.05);
+		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);
 	}
