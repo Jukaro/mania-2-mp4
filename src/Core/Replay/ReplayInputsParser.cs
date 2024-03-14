@@ -44,7 +44,7 @@ public static partial class ReplayParser {
 		return to_skip;
 	}
 
-	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref Replay replay) {
+	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref ReplayData replay) {
 		byte[] compressedReplayLZMA = new byte[length];
 		Buffer.BlockCopy(bytes, index, compressedReplayLZMA, 0, length);
 

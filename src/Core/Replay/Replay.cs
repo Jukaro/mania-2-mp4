@@ -3,7 +3,7 @@ using Rythmify.Core.Shared;
 
 namespace Rythmify.Core.Replay;
 
-public class Replay {
+public class ReplayData {
 	public GameMode GameMode;
 	public int GameVersion;
 	public string BeatmapMD5;
@@ -27,7 +27,7 @@ public class Replay {
 	public int TotalKeyPresses;
 	public long ScoreID;
 
-	public Replay(int laneCount) {
+	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
 		LaneCount = laneCount;
 	}
