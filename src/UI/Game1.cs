@@ -1,7 +1,9 @@
-﻿using System;
+﻿using System.IO;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using NAudio.Wave;
 using Rythmify.Core;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Game;
@@ -15,22 +17,27 @@ public class Game1 : Game
 	private BeatmapPlayer _beatmapPlayer;
 	private BeatmapRenderer _beatmapRenderer;
 
+	private AudioFileReader _song;
+	private WaveOutEvent _outputDevice;
+	private Thread _audioThread;
+
 	public Game1()
 	{
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
+		_outputDevice = new WaveOutEvent();
 	}
 
 	protected override void Initialize()
 	{
 		_graphics.PreferredBackBufferWidth = (int)(1000 * (16/9f));
 		_graphics.PreferredBackBufferHeight = 1000;
+		_graphics.SynchronizeWithVerticalRetrace = false;
 		_graphics.ApplyChanges();
 
 		// Set update rate to monitor refresh rate
 		IsFixedTimeStep = false;
-		TargetElapsedTime = TimeSpan.FromSeconds(1d / 170d);
 
 		base.Initialize();
 	}
@@ -46,15 +53,23 @@ public class Game1 : Game
 		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1147471 toby fox - sans/toby fox - sans. (Leniane) [mimi's easy].osu";
 		// var filePath = "C:/Users/shiro/AppData/Local/osu!/Songs/1035988 The Koxx - A FOOL MOON NIGHT/The Koxx - A FOOL MOON NIGHT (motoroko) [A Fool].osu";
 
+		var beatmap = BeatmapParser.Parse(filePath);
+		Logger.LogDebug(Path.Combine(Path.GetDirectoryName(filePath), beatmap.GeneralData.AudioFilename));
+		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(filePath), beatmap.GeneralData.AudioFilename));
+
 		Skin skin = new() { HitPosition = 384 };
 
-		var beatmap = BeatmapParser.Parse(filePath);
 		_beatmapPlayer = new(beatmap, skin);
 
 		SkinRenderer skinRenderer = new(skin, GraphicsDevice);
 		_beatmapRenderer = new(_graphics, skinRenderer);
 
+		_outputDevice.Init(_song);
+		_audioThread = new Thread(() => _outputDevice.Play());
+
+		_outputDevice.Volume = 0.1f;
 		_beatmapPlayer.Play();
+		_audioThread.Start();
 	}
 
 	protected override void Update(GameTime gameTime)

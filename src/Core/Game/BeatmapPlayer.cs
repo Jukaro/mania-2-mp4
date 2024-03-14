@@ -51,21 +51,20 @@ public class BeatmapPlayer {
 		float spawnPoint = -100;
 		float timeItTakesToReach0 = Math.Abs(0 - spawnPoint) / noteScrollSpeed;
 
-		bool spawnedNoteThisFrame = false;
 		for (int i = _spawnedNotes; i < _beatmap.HitObjects.Length; i++) {
 			var hitNote = _beatmap.HitObjects[i];
 
 			var noteSpawnTime = hitNote.Time - noteScrollTime - timeItTakesToReach0;
+			if (CurrentPlayTime < noteSpawnTime)
+				break;
+
 			var isCrossingNoteTime = previousPlayTime < noteSpawnTime && CurrentPlayTime >= noteSpawnTime;
 			var timeSinceSpawnTime = CurrentPlayTime - noteSpawnTime;
 
-			if (spawnedNoteThisFrame && !isCrossingNoteTime)
-				break;
 			if (!isCrossingNoteTime)
 				continue;
 
 			_spawnedNotes++;
-			spawnedNoteThisFrame = true;
 
 			if (hitNote is HoldHitObject holdHitObject) {
 				int holdTime = holdHitObject.EndTime - holdHitObject.Time;
