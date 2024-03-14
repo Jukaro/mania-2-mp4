@@ -2,7 +2,7 @@ using System;
 
 namespace Rythmify.Core.Beatmap;
 
-public class Beatmap {
+public class BeatmapData {
 	public BeatmapGeneralData GeneralData;
 	public BeatmapEditorData EditorData;
 	public BeatmapMetadata Metadata;
@@ -12,7 +12,7 @@ public class Beatmap {
 	public BeatmapColor[] Colors;
 	public BeatmapHitObject[] HitObjects;
 
-	public Beatmap() {
+	public BeatmapData() {
 		GeneralData = new BeatmapGeneralData();
 		EditorData = new BeatmapEditorData();
 		Metadata = new BeatmapMetadata();

@@ -8,5 +8,7 @@ public class BeatmapDifficultyData {
 	public double SliderMultiplier;
 	public double SliderTickRate;
 
+	public int LaneCount => (int)CircleSize;
+
 	public override string ToString() => $"HPDrainRate: {HPDrainRate}\nCircleSize: {CircleSize}\nOverallDifficulty: {OverallDifficulty}\nApproachRate: {ApproachRate}\nSliderMultiplier: {SliderMultiplier}\nSliderTickRate: {SliderTickRate}";
 }
