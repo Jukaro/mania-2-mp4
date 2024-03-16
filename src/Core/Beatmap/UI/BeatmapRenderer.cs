@@ -23,27 +23,6 @@ public class BeatmapRenderer
 			}
 		}
 
-		if (beatmapPlayer.RenderedInputs[0])
-		{
-			Vector2 screenSpacePos = new(0, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[1])
-		{
-			Vector2 screenSpacePos = new(150 * 1 + 30 * 1, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[2])
-		{
-			Vector2 screenSpacePos = new(150 * 2 + 30 * 2, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[3])
-		{
-			Vector2 screenSpacePos = new(150 * 3 + 30 * 3, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-
 		RenderHitLine(spriteBatch);
 	}
 
