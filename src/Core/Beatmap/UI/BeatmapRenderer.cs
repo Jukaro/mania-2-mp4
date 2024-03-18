@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
 using Rythmify.Core.Game;
 
 namespace Rythmify.UI;
@@ -23,31 +24,10 @@ public class BeatmapRenderer
 			}
 		}
 
-		if (beatmapPlayer.RenderedInputs[0])
-		{
-			Vector2 screenSpacePos = new(0, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[1])
-		{
-			Vector2 screenSpacePos = new(150 * 1 + 30 * 1, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[2])
-		{
-			Vector2 screenSpacePos = new(150 * 2 + 30 * 2, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-		if (beatmapPlayer.RenderedInputs[3])
-		{
-			Vector2 screenSpacePos = new(150 * 3 + 30 * 3, _graphics.PreferredBackBufferHeight - 200);
-			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
-		}
-
 		RenderHitLine(spriteBatch);
 	}
 
-	private float ToScreenSpaceY(double y) => (float)(y * _graphics.PreferredBackBufferHeight / BeatmapPlayer.PlayfieldHeight);
+	private float ToScreenSpaceY(double y) => (float)(y * _graphics.PreferredBackBufferHeight / Playfield.PlayfieldHeight);
 	private static float GetXFromLane(int lane, int laneWidth) => lane * laneWidth + 30 * lane;
 
 	private static void DrawScaled(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Vector2 scale) =>

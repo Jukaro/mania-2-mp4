@@ -38,6 +38,7 @@ public static partial class ReplayParser {
 		}
 		splittedInputs = inputsArray[to_skip].Split('|');
 		while (int.Parse(splittedInputs[0]) < 0) {
+			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 			to_skip++;
 			splittedInputs = inputsArray[to_skip].Split('|');
 		}

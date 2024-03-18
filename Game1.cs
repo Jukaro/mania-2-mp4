@@ -18,6 +18,8 @@ public class Game1 : Game
 	private SpriteBatch _spriteBatch;
 	private BeatmapPlayer _beatmapPlayer;
 	private BeatmapRenderer _beatmapRenderer;
+	private InputsPlayer _inputsPlayer;
+	private InputsRenderer _inputsRenderer;
 
 	private AudioFileReader _song;
 	private WaveOutEvent _outputDevice;
@@ -48,8 +50,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-
-		dynamic testCase = Datasets.TestCases.ShiroW.Algorithm;
+		dynamic testCase = Datasets.TestCases.ShiroW.HoneyWorksLN;
 
 		var beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
@@ -57,11 +58,14 @@ public class Game1 : Game
 		Skin skin = new() { HitPosition = 384 };
 
 		ReplayData replay = ReplayParser.Parse(testCase.ReplayPath, beatmap.DifficultyData.LaneCount);
+		replay.DebugPrintAllInputs();
 
-		_beatmapPlayer = new(beatmap, replay, skin);
+		_beatmapPlayer = new(beatmap, skin);
+		_inputsPlayer = new(replay);
 
 		SkinRenderer skinRenderer = new(skin, GraphicsDevice);
 		_beatmapRenderer = new(_graphics, skinRenderer);
+		_inputsRenderer = new(_graphics, skinRenderer);
 
 		_outputDevice.Init(_song);
 
@@ -69,6 +73,7 @@ public class Game1 : Game
 
 		_outputDevice.Volume = 0.1f;
 		_beatmapPlayer.Play();
+		_inputsPlayer.Play();
 		_audioThread.Start();
 	}
 
@@ -78,6 +83,7 @@ public class Game1 : Game
 			Exit();
 
 		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
+		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);
 	}
@@ -88,6 +94,7 @@ public class Game1 : Game
 
 		_spriteBatch.Begin();
 		_beatmapRenderer.Render(_beatmapPlayer, _spriteBatch);
+		_inputsRenderer.Render(_inputsPlayer, _spriteBatch);
 		_spriteBatch.End();
 
 		base.Draw(gameTime);
