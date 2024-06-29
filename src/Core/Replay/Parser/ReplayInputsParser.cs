@@ -27,7 +27,7 @@ public static partial class ReplayParser {
 		return output;
 	}
 
-	private static int SkipNonInitializedInput(string[] inputsArray) {
+	private static int SkipNonInitializedInput(string[] inputsArray, ref ReplayData replay) {
 		int to_skip = 0;
 		string[] splittedInputs;
 
@@ -38,6 +38,8 @@ public static partial class ReplayParser {
 		}
 		splittedInputs = inputsArray[to_skip].Split('|');
 		while (int.Parse(splittedInputs[0]) < 0) {
+			if (replay.BugTimeOffset == -1)
+				replay.BugTimeOffset = int.Parse(splittedInputs[0]);
 			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 			to_skip++;
 			splittedInputs = inputsArray[to_skip].Split('|');
@@ -55,7 +57,7 @@ public static partial class ReplayParser {
 		inputs.Read(inputsBytes);
 		string str = System.Text.Encoding.UTF8.GetString(inputsBytes, 0, inputsBytes.Length);
 		string[] inputsArray = str.Split(',');
-		int to_skip = SkipNonInitializedInput(inputsArray);
+		int to_skip = SkipNonInitializedInput(inputsArray, ref replay);
 
 		string[] splittedInput;
 		splittedInput = inputsArray[to_skip].Split('|');

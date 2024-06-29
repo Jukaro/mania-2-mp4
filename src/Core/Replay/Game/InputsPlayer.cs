@@ -12,9 +12,9 @@ public class InputsPlayer {
 
 	public InputsPlayer(ReplayData replay) {
 		_replay = replay;
-		RenderedInputs = new bool[4];
+		RenderedInputs = new bool[7];
 		CurrentInputIndex = 0;
-		CurrentPlayTime = 1285;
+		CurrentPlayTime = 0;
 		IsPlaying = false;
 	}
 
@@ -33,5 +33,8 @@ public class InputsPlayer {
 		RenderedInputs[1] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 1)) != 0;
 		RenderedInputs[2] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 2)) != 0;
 		RenderedInputs[3] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 3)) != 0;
+		RenderedInputs[4] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 4)) != 0;
+		RenderedInputs[5] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 5)) != 0;
+		RenderedInputs[6] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 6)) != 0;
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Rythmify.Core.Beatmap;
+using Rythmify.Core.Replay;
 
 namespace Rythmify.Core.Game;
 
@@ -26,15 +27,17 @@ public class BeatmapPlayer {
 
 	public List<GameNote> RenderedNotes { get; private set; }
 
-	public BeatmapPlayer(BeatmapData beatmap, Skin skin) {
+	public BeatmapPlayer(BeatmapData beatmap, Skin skin, ReplayData replayData) {
 		_beatmap = beatmap;
 		_isPlaying = false;
-		_currentPlayTime = 0;
+		_currentPlayTime = replayData.BugTimeOffset == -1 ? 0 : replayData.BugTimeOffset;
 		RenderedNotes = new List<GameNote>();
 		_skin = skin;
 		_spawnedNotes = 0;
 		_scrollInfo = new(28, _skin.HitPosition, -100);
 	}
+
+	public bool AudioStarted => _currentPlayTime >= _beatmap.GeneralData.AudioLeadIn;
 
 	public void Play() => _isPlaying = true;
 	public void Pause() => _isPlaying = false;

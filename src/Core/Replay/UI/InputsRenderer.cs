@@ -34,5 +34,20 @@ public class InputsRenderer {
 			Vector2 screenSpacePos = new(150 * 3 + 30 * 3, _graphics.PreferredBackBufferHeight - 200);
 			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
 		}
+		if (inputsPlayer.RenderedInputs[4])
+		{
+			Vector2 screenSpacePos = new(150 * 4 + 30 * 4, _graphics.PreferredBackBufferHeight - 200);
+			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
+		}
+		if (inputsPlayer.RenderedInputs[5])
+		{
+			Vector2 screenSpacePos = new(150 * 5 + 30 * 5, _graphics.PreferredBackBufferHeight - 200);
+			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
+		}
+		if (inputsPlayer.RenderedInputs[6])
+		{
+			Vector2 screenSpacePos = new(150 * 6 + 30 * 6, _graphics.PreferredBackBufferHeight - 200);
+			spriteBatch.Draw(_skinRenderer.InputTexture, screenSpacePos, Color.White);
+		}
 	}
 }

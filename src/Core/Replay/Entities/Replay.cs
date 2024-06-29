@@ -27,9 +27,13 @@ public class ReplayData {
 	public int TotalKeyPresses;
 	public long ScoreID;
 
+	// Used to store the offset between the beginning of the beatmap and the beginning of the replay
+	public int BugTimeOffset;
+
 	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
 		LaneCount = laneCount;
+		BugTimeOffset = -1;
 	}
 
 	public override string ToString() {
