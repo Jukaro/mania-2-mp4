@@ -39,9 +39,10 @@ public class BeatmapData {
 				if (t.Time > lastTime)
 					return (beatLength: t.BeatLength, 0);
 
-				double nextTime = i == TimingPoints.Length - 1 ? lastTime : TimingPoints[i + 1].Time;
+				var nextTimingPoint = TimingPoints.Skip(i + 1).FirstOrDefault(tp => tp.Uninherited, null);
+
+				double nextTime = i == TimingPoints.Length - 1 ? lastTime : (nextTimingPoint?.Time ?? lastTime);
 				double currentTime = t.Time;
-				Logger.LogDebug($"t.Time: {t.Time}, nextTime: {nextTime}, t.BeatLength: {Math.Round(t.BeatLength * 1000) / 1000}");
 
 				return (beatLength: t.BeatLength, duration: nextTime - currentTime);
 			})
@@ -50,7 +51,7 @@ public class BeatmapData {
 			.OrderByDescending(i => i.duration).FirstOrDefault();
 
 		if (beatLength == 0)
-			return 60000 / 60.0;
+			return 60000 / 1000;
 
 		return 60000 / beatLength;
 	}
