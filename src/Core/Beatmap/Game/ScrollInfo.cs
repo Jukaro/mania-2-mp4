@@ -3,7 +3,6 @@ using System;
 namespace Rythmify.Core.Beatmap;
 
 public class ScrollInfo {
-
 	public float NoteScrollTime; // From 0 to HitPosition
 	public float NoteScrollSpeed; // Per ms
 	public float TimeItTakesToReach0; // From spawnPoint to 0

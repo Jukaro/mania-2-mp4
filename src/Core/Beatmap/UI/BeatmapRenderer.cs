@@ -7,8 +7,8 @@ namespace Rythmify.UI;
 
 public class BeatmapRenderer
 {
-	private GraphicsDeviceManager _graphics;
-	private SkinRenderer _skinRenderer;
+	private readonly GraphicsDeviceManager _graphics;
+	private readonly SkinRenderer _skinRenderer;
 
 	public BeatmapRenderer(GraphicsDeviceManager graphics, SkinRenderer skinRenderer) {
 		_graphics = graphics;

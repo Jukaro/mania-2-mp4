@@ -13,7 +13,7 @@ namespace Rythmify.UI;
 
 public class Game1 : Game
 {
-	private GraphicsDeviceManager _graphics;
+	private readonly GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 	private BeatmapPlayer _beatmapPlayer;
 	private BeatmapRenderer _beatmapRenderer;
@@ -21,7 +21,7 @@ public class Game1 : Game
 	private InputsRenderer _inputsRenderer;
 
 	private AudioFileReader _song;
-	private WaveOutEvent _outputDevice;
+	private readonly WaveOutEvent _outputDevice;
 
 	public Game1()
 	{

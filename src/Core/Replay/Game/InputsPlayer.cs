@@ -7,7 +7,7 @@ public class InputsPlayer {
 	public bool[] RenderedInputs;
 	public double CurrentPlayTime;
 	public int CurrentInputIndex;
-	private ReplayData _replay;
+	private readonly ReplayData _replay;
 	public bool IsPlaying { get; private set; }
 
 	public InputsPlayer(ReplayData replay) {
