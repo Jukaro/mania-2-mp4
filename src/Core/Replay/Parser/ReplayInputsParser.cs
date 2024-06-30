@@ -53,22 +53,20 @@ public static partial class ReplayParser {
 	private static int SkipNonGameplayInputs(string[] inputsArray) {
 		int to_skip = 0;
 
-		foreach (string input in inputsArray) {
-			string[] splitted = input.Split('|');
+		for (; to_skip < inputsArray.Length; to_skip++) {
+			string[] splitted = inputsArray[to_skip].Split('|');
 			if (int.Parse(splitted[1]) != 256)
 				break;
 
 			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
-			to_skip++;
 		}
 
-		foreach (string input in inputsArray) {
-			string[] splitted = input.Split('|');
+		for (; to_skip < inputsArray.Length; to_skip++) {
+			string[] splitted = inputsArray[to_skip].Split('|');
 			if (int.Parse(splitted[0]) >= 0)
 				break;
 
 			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
-			to_skip++;
 		}
 
 		return to_skip;

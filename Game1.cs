@@ -48,7 +48,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		dynamic testCase = Datasets.TestCases.ShiroW.Algorithm;
+		dynamic testCase = Datasets.TestCases.ShiroW.HoneyWorksLN;
 
 		BeatmapData beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
@@ -76,9 +76,10 @@ public class Game1 : Game
 		if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
 
-		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 		if (_beatmapPlayer.AudioStarted && _outputDevice.PlaybackState != PlaybackState.Playing)
 			_outputDevice.Play();
+
+		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);
