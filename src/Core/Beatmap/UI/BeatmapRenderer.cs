@@ -1,13 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
 using Rythmify.Core.Game;
 
 namespace Rythmify.UI;
 
 public class BeatmapRenderer
 {
-	private GraphicsDeviceManager _graphics;
-	private SkinRenderer _skinRenderer;
+	private readonly GraphicsDeviceManager _graphics;
+	private readonly SkinRenderer _skinRenderer;
 
 	public BeatmapRenderer(GraphicsDeviceManager graphics, SkinRenderer skinRenderer) {
 		_graphics = graphics;
@@ -26,7 +27,7 @@ public class BeatmapRenderer
 		RenderHitLine(spriteBatch);
 	}
 
-	private float ToScreenSpaceY(double y) => (float)(y * _graphics.PreferredBackBufferHeight / BeatmapPlayer.PlayfieldHeight);
+	private float ToScreenSpaceY(double y) => (float)(y * _graphics.PreferredBackBufferHeight / Playfield.PlayfieldHeight);
 	private static float GetXFromLane(int lane, int laneWidth) => lane * laneWidth + 30 * lane;
 
 	private static void DrawScaled(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Vector2 scale) =>

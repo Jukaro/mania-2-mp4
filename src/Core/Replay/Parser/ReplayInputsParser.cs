@@ -1,15 +1,16 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Xna.Framework.Content;
 
 namespace Rythmify.Core.Replay;
 
 public static partial class ReplayParser {
 
 	private static MemoryStream DecompressFileLZMA(byte[] buffer) {
-		SevenZip.Compression.LZMA.Decoder coder = new SevenZip.Compression.LZMA.Decoder();
-		MemoryStream input = new MemoryStream(buffer);
-		MemoryStream output = new MemoryStream();
+		SevenZip.Compression.LZMA.Decoder coder = new();
+		MemoryStream input = new(buffer);
+		MemoryStream output = new();
 
 		// Read the decoder properties
 		byte[] properties = new byte[5];
@@ -27,24 +28,51 @@ public static partial class ReplayParser {
 		return output;
 	}
 
-	private static int SkipNonInitializedInput(string[] inputsArray) {
-		int to_skip = 0;
-		string[] splittedInputs;
+	private static int GetStartDelay(string[] inputsArray) {
+		if (inputsArray.Length < 2)
+			return -1;
 
-		splittedInputs = inputsArray[to_skip].Split('|');
-		while (int.Parse(splittedInputs[1]) == 256) {
-			to_skip++;
-			splittedInputs = inputsArray[to_skip].Split('|');
+		string[] skipTimeSplittedInputs = inputsArray[1].Split('|');
+		if (skipTimeSplittedInputs.Length != 4)
+			throw new ArgumentException("Invalid input format: " + inputsArray[1]);
+
+		string[] startDelaySplittedInputs = inputsArray[2].Split('|');
+		if (startDelaySplittedInputs.Length != 4)
+			throw new ArgumentException("Invalid input format: " + inputsArray[2]);
+
+		int parsedSkipTime = int.Parse(skipTimeSplittedInputs[0]);
+		int skipTime = parsedSkipTime > 0 ? parsedSkipTime : -1;
+
+		int parsedStartDelayTime = int.Parse(startDelaySplittedInputs[0]);
+
+		bool hasStartDelay = (skipTime > 0 && parsedStartDelayTime > 0) || (skipTime <= 0 && parsedStartDelayTime < 0);
+
+		return hasStartDelay ? parsedStartDelayTime : -1;
+	}
+
+	private static int SkipNonGameplayInputs(string[] inputsArray) {
+		int to_skip = 0;
+
+		for (; to_skip < inputsArray.Length; to_skip++) {
+			string[] splitted = inputsArray[to_skip].Split('|');
+			if (int.Parse(splitted[1]) != 256)
+				break;
+
+			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 		}
-		splittedInputs = inputsArray[to_skip].Split('|');
-		while (int.Parse(splittedInputs[0]) < 0) {
-			to_skip++;
-			splittedInputs = inputsArray[to_skip].Split('|');
+
+		for (; to_skip < inputsArray.Length; to_skip++) {
+			string[] splitted = inputsArray[to_skip].Split('|');
+			if (int.Parse(splitted[0]) >= 0)
+				break;
+
+			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 		}
+
 		return to_skip;
 	}
 
-	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref Replay replay) {
+	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref ReplayData replay) {
 		byte[] compressedReplayLZMA = new byte[length];
 		Buffer.BlockCopy(bytes, index, compressedReplayLZMA, 0, length);
 
@@ -54,7 +82,10 @@ public static partial class ReplayParser {
 		inputs.Read(inputsBytes);
 		string str = System.Text.Encoding.UTF8.GetString(inputsBytes, 0, inputsBytes.Length);
 		string[] inputsArray = str.Split(',');
-		int to_skip = SkipNonInitializedInput(inputsArray);
+
+		replay.StartDelay = GetStartDelay(inputsArray);
+
+		int to_skip = SkipNonGameplayInputs(inputsArray);
 
 		string[] splittedInput;
 		splittedInput = inputsArray[to_skip].Split('|');

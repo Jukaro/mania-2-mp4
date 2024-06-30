@@ -72,7 +72,6 @@ public class HitSample {
 }
 
 public class BeatmapHitObject {
-
 	public int X;
 	public int Y;
 	public int Time;

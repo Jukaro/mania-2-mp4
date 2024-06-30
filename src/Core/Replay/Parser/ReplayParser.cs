@@ -68,14 +68,14 @@ public static partial class ReplayParser {
 		return result;
 	}
 
-	public static Replay Parse(string filePath, int laneCount) {
+	public static ReplayData Parse(string filePath, int laneCount) {
 		var bytes = File.ReadAllBytes(filePath);
 		int currentByteIndex = 0;
 
 		if (!Enum.IsDefined(typeof(GameMode), (int)bytes[currentByteIndex]))
 			throw new ArgumentException($"Unexpected argument type for enum GameMode: {bytes[currentByteIndex]}");
 
-		Replay replay = new(laneCount);
+		ReplayData replay = new(laneCount);
 
 		replay.GameMode = (GameMode)bytes[currentByteIndex];
 		currentByteIndex++;

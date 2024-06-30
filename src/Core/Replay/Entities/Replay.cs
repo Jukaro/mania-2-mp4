@@ -3,7 +3,7 @@ using Rythmify.Core.Shared;
 
 namespace Rythmify.Core.Replay;
 
-public class Replay {
+public class ReplayData {
 	public GameMode GameMode;
 	public int GameVersion;
 	public string BeatmapMD5;
@@ -27,9 +27,13 @@ public class Replay {
 	public int TotalKeyPresses;
 	public long ScoreID;
 
-	public Replay(int laneCount) {
+	// Used to store the offset between the beginning of the beatmap and the beginning of the replay
+	public int StartDelay;
+
+	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
 		LaneCount = laneCount;
+		StartDelay = -1;
 	}
 
 	public override string ToString() {
