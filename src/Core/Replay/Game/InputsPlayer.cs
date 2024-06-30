@@ -12,7 +12,7 @@ public class InputsPlayer {
 
 	public InputsPlayer(ReplayData replay) {
 		_replay = replay;
-		RenderedInputs = new bool[7];
+		RenderedInputs = new bool[replay.LaneCount];
 		CurrentInputIndex = 0;
 		CurrentPlayTime = 0;
 		IsPlaying = false;
@@ -29,12 +29,7 @@ public class InputsPlayer {
 		if (CurrentPlayTime > _replay.Inputs[CurrentInputIndex].Timestamp)
 			CurrentInputIndex++;
 
-		RenderedInputs[0] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 0)) != 0;
-		RenderedInputs[1] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 1)) != 0;
-		RenderedInputs[2] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 2)) != 0;
-		RenderedInputs[3] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 3)) != 0;
-		RenderedInputs[4] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 4)) != 0;
-		RenderedInputs[5] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 5)) != 0;
-		RenderedInputs[6] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << 6)) != 0;
+		for (int i = 0; i < RenderedInputs.Length; i++)
+			RenderedInputs[i] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << i)) != 0;;
 	}
 }

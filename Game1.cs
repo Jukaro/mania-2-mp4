@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,7 +22,6 @@ public class Game1 : Game
 
 	private AudioFileReader _song;
 	private WaveOutEvent _outputDevice;
-	private Thread _audioThread;
 
 	public Game1()
 	{
@@ -52,7 +50,7 @@ public class Game1 : Game
 
 		dynamic testCase = Datasets.TestCases.ShiroW.GalaxyCollapse;
 
-		var beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
+		BeatmapData beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
 
 		Skin skin = new() { HitPosition = 384 };
@@ -66,16 +64,11 @@ public class Game1 : Game
 		_beatmapRenderer = new(_graphics, skinRenderer);
 		_inputsRenderer = new(_graphics, skinRenderer);
 
+		_outputDevice.Init(_song);
+		_outputDevice.Volume = 0.1f;
+
 		_beatmapPlayer.Play();
 		_inputsPlayer.Play();
-	}
-
-	void PlayAudio()
-	{
-		_outputDevice.Init(_song);
-		_audioThread = new Thread(() => _outputDevice.Play());
-		_outputDevice.Volume = 0.1f;
-		_audioThread.Start();
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -84,8 +77,8 @@ public class Game1 : Game
 			Exit();
 
 		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
-		if (_audioThread == null && _beatmapPlayer.AudioStarted)
-			PlayAudio();
+		if (_beatmapPlayer.AudioStarted && _outputDevice.PlaybackState != PlaybackState.Playing)
+			_outputDevice.Play();
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);

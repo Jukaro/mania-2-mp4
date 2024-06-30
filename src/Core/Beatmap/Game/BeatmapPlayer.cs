@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Replay;
@@ -30,7 +29,7 @@ public class BeatmapPlayer {
 	public BeatmapPlayer(BeatmapData beatmap, Skin skin, ReplayData replayData) {
 		_beatmap = beatmap;
 		_isPlaying = false;
-		_currentPlayTime = replayData.BugTimeOffset == -1 ? 0 : replayData.BugTimeOffset;
+		_currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
 		RenderedNotes = new List<GameNote>();
 		_skin = skin;
 		_spawnedNotes = 0;
