@@ -19,6 +19,10 @@ public static class Datasets {
 			HoneyWorksLN = new {
 				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/669965 HoneyWorks - HoneyWorks 4K LN Pack Vol1/HoneyWorks - HoneyWorks 4K LN Pack Vol.1 (Pianissimo) [Terekakushi Shishunki By TimBergling].osu",
 				ReplayPath = "C:/Users/shiro/AppData/Local/osu!/Replays/ShiroW_ - HoneyWorks - HoneyWorks 4K LN Pack Vol.1 [Terekakushi Shishunki By TimBergling] (2024-03-16) OsuMania.osr"
+			},
+			Stronger = new {
+				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/1950211 TheFatRat, Slaydit & Anjulie - Stronger/TheFatRat, Slaydit & Anjulie - Stronger ([ deleted ]) [entanglement.  SV WARNING ].osu",
+				ReplayPath = "C:/Users/shiro/AppData/Local/osu!/Replays/ShiroW_ - TheFatRat, Slaydit & Anjulie - Stronger [Entanglement.  SV WARNING ] (2024-06-30) OsuMania.osr"
 			}
 		},
 		Jukaro = new {

@@ -23,5 +23,7 @@ public class BeatmapTimingPoint {
 	public bool Uninherited;
 	public TimingPointEffects Effects;
 
+	public double SliderVelocityMultiplier => Uninherited ? 1 : -100 / BeatLength;
+
 	public override string ToString() => $"Time: {Time}, BeatLength: {BeatLength}, Meter: {Meter}, SampleSet: {SampleSet}, SampleIndex: {SampleIndex}, Volume: {Volume}, Uninherited: {Uninherited}, Effects: {{ {Effects} }}";
 }
