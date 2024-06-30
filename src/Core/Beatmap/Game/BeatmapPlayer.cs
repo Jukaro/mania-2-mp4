@@ -33,7 +33,7 @@ public class BeatmapPlayer {
 		RenderedNotes = new List<GameNote>();
 		_skin = skin;
 		_spawnedNotes = 0;
-		_scrollInfo = new(28, _skin.HitPosition, -100);
+		_scrollInfo = new(28, _skin.HitPosition, -100, beatmap.DominantBpm);
 	}
 
 	public bool AudioStarted => _currentPlayTime >= _beatmap.GeneralData.AudioLeadIn;

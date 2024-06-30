@@ -14,16 +14,19 @@ public partial class BeatmapParser {
 			if (parameters.Length != 8)
 				throw new ArgumentException($"Timing point must have 8 parameters, but got {parameters.Length}");
 
+			var isUnherited = int.Parse(parameters[6]) == 1;
+
 			BeatmapTimingPoint timingPoint = new()
 			{
-				Time = double.Parse(parameters[0], CultureInfo.InvariantCulture),
+				Time = timingPoints.Count == 0 ? 0 : double.Parse(parameters[0], CultureInfo.InvariantCulture),
 				BeatLength = double.Parse(parameters[1], CultureInfo.InvariantCulture),
 				Meter = int.Parse(parameters[2]),
 				SampleSet = int.Parse(parameters[3]),
 				SampleIndex = int.Parse(parameters[4]),
 				Volume = int.Parse(parameters[5]),
-				Uninherited = int.Parse(parameters[6]) == 1,
-				Effects = new(int.Parse(parameters[7]))
+				Uninherited = isUnherited,
+				Effects = new(int.Parse(parameters[7])),
+				LastBPM = isUnherited ? -1 : timingPoints.Count > 0 ? timingPoints[^1].BPM : 0
 			};
 
 			timingPoints.Add(timingPoint);
