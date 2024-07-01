@@ -8,17 +8,22 @@ public partial class BeatmapParser {
 	private static BeatmapTimingPoint[] ParseTimingPointsSection(string[] lines) {
 		List<BeatmapTimingPoint> timingPoints = new();
 
+		double? firstTimingPointTime = null;
+
 		foreach (string line in lines) {
 			var parameters = Array.ConvertAll(line.Split(','), (string s) => s.Trim());
 
 			if (parameters.Length != 8)
 				throw new ArgumentException($"Timing point must have 8 parameters, but got {parameters.Length}");
 
-			var isUnherited = int.Parse(parameters[6]) == 1;
+			firstTimingPointTime ??= double.Parse(parameters[0], CultureInfo.InvariantCulture);
+
+			bool isUnherited = int.Parse(parameters[6]) == 1;
+			double time = double.Parse(parameters[0], CultureInfo.InvariantCulture);
 
 			BeatmapTimingPoint timingPoint = new()
 			{
-				Time = timingPoints.Count == 0 ? 0 : double.Parse(parameters[0], CultureInfo.InvariantCulture),
+				Time = Math.Abs(time - firstTimingPointTime.Value) < 1e-6 ? 0 : time,
 				BeatLength = double.Parse(parameters[1], CultureInfo.InvariantCulture),
 				Meter = int.Parse(parameters[2]),
 				SampleSet = int.Parse(parameters[3]),

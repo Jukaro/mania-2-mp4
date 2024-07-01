@@ -48,7 +48,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		dynamic testCase = Datasets.TestCases.ShiroW.Polyriddim;
+		dynamic testCase = Datasets.TestCases.ShiroW.GalaxyCollapse;
 
 		BeatmapData beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
