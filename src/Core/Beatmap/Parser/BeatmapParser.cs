@@ -45,7 +45,7 @@ public static partial class BeatmapParser {
 			sectionToParser[sectionName](beatmap, sectionLines);
 		}
 
-		beatmap.DominantBpm = beatmap.GetDominantBpm();
+		beatmap.DominantBpm = GetDominantBpm(beatmap);
 
 		return beatmap;
 	}

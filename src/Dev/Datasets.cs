@@ -27,7 +27,7 @@ public static class Datasets {
 				ReplayPath = "C:/Users/shiro/AppData/Local/osu!/Replays/ShiroW_ - TheFatRat, Slaydit & Anjulie - Stronger [Entanglement.  SV WARNING ] (2024-06-30) OsuMania.osr"
 			},
 			Polyriddim = new {
-				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/1182702 phonon - polyriddim/phonon - polyriddim (HowToPlayLN) [brrrrrrrrrrrrrr].osu",
+				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/1182702 phonon - polyriddim/phonon - polyriddim (HowToPlayLN) [brrrrrrrrrrrrrr vip].osu",
 				ReplayPath = "C:/Users/shiro/AppData/Local/osu!/Replays/CrewK - phonon - polyriddim [brrrrrrrrrrrrrr vip] (2022-09-24) OsuMania.osr"
 			},
 			BackBeatManiac = new {

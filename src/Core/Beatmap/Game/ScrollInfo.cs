@@ -4,17 +4,29 @@ namespace Rythmify.Core.Beatmap;
 
 public class ScrollInfo {
 	public int HitPosition;
-	public int ScrollSpeed;
 	public float SpawnPoint;
 	public double DominantBpm;
-	public double MulitplicateurAAppliquerH24SurLeScrollSpeed;
+	public double BeatmapScrollSpeed;
 
 	public ScrollInfo(int scrollSpeed, int hitPosition, float spawnPoint, double dominantBpm) {
 		Logger.LogDebug($"Creating ScrollInfo with ScrollSpeed: {scrollSpeed}, HitPosition: {hitPosition}, SpawnPoint: {spawnPoint}, DominantBpm: {dominantBpm}");
-		MulitplicateurAAppliquerH24SurLeScrollSpeed = 1 / (dominantBpm / 100.0f);
-		ScrollSpeed = scrollSpeed;
 		HitPosition = hitPosition;
 		SpawnPoint = spawnPoint;
+
+		double baseScrollSpeedMultiplier = 1 / GetBPMScrollSpeedMultiplier(dominantBpm);
+		BeatmapScrollSpeed = scrollSpeed * baseScrollSpeedMultiplier;
+	}
+
+	public static double GetBPMScrollSpeedMultiplier(double bpm) => bpm / 100.0;
+
+	public double GetNoteScrollSpeed(double bpm, double sliderVelocityMultiplier) {
+		double bpmMultiplier = GetBPMScrollSpeedMultiplier(bpm);
+
+		double scrollSpeed = BeatmapScrollSpeed * bpmMultiplier * sliderVelocityMultiplier;
+		double travelTimeToHitPosition = (6860 + 6860 * (HitPosition / Playfield.PlayfieldHeight)) / scrollSpeed;
+		double noteSpeed = HitPosition / travelTimeToHitPosition;
+
+		return noteSpeed;
 	}
 
 	public double GetScrollTime(double from, double to, double hitObjectTime, BeatmapTimingPoint[] timingPoints) {
@@ -28,25 +40,21 @@ public class ScrollInfo {
 			timingPointIndex--;
 
 		while (currentPos > to) {
-			double time = timingPointIndex >= 0 ? timingPoints[timingPointIndex].Time : int.MinValue;
 			double sliderVelocityMultiplier = timingPointIndex >= 0 ? timingPoints[timingPointIndex].SliderVelocityMultiplier : 1;
+			double currentBPM = timingPoints[Math.Clamp(timingPointIndex, 0, timingPoints.Length - 1)].BPM;
+			double currentNoteSpeed = GetNoteScrollSpeed(currentBPM, sliderVelocityMultiplier);
 
+			double time = timingPointIndex >= 0 ? timingPoints[timingPointIndex].Time : int.MinValue;
 			double timeWithThisTimingPoint = currentTime - time;
 
-			double scrollSpeedBPMMultiplier = timingPointIndex >= 0 ? timingPoints[timingPointIndex].BPM / 100.0f : timingPoints[0].BPM / 100.0f;
-
-			double noteTimeWithThisTimingPoint = (6860 + 6860 * (HitPosition / Playfield.PlayfieldHeight)) / (ScrollSpeed * scrollSpeedBPMMultiplier * MulitplicateurAAppliquerH24SurLeScrollSpeed * sliderVelocityMultiplier);
-			double noteSpeedWithThisTimingPoint = HitPosition / noteTimeWithThisTimingPoint;
-
-			double tmpCurrentPos = currentPos;
-			currentPos -= timeWithThisTimingPoint * noteSpeedWithThisTimingPoint;
-
-			if (currentPos <= to) {
-				double timeNeededToReachEnd = Math.Abs(to - tmpCurrentPos) / noteSpeedWithThisTimingPoint;
+			double newPos = currentPos - timeWithThisTimingPoint * currentNoteSpeed;
+			if (newPos <= to) {
+				double timeNeededToReachEnd = Math.Abs(to - currentPos) / currentNoteSpeed;
 				timeTook += timeNeededToReachEnd;
 				break;
 			}
 
+			currentPos = newPos;
 			currentTime -= timeWithThisTimingPoint;
 			timeTook += timeWithThisTimingPoint;
 			timingPointIndex--;
@@ -69,25 +77,15 @@ public class ScrollInfo {
 			timingPointIndex++;
 
 		while (currentTime < toTime) {
-			double endTime = timingPointIndex != timingPoints.Length ? timingPoints[timingPointIndex].Time : int.MaxValue;
 			double sliderVelocityMultiplier = timingPointIndex != timingPoints.Length && timingPointIndex != 0 ? timingPoints[timingPointIndex - 1].SliderVelocityMultiplier : 1;
+			double currentBPM = timingPoints[Math.Clamp(timingPointIndex - 1, 0, timingPoints.Length - 1)].BPM;
+			double currentNoteSpeed = GetNoteScrollSpeed(currentBPM, sliderVelocityMultiplier);
 
+			double endTime = timingPointIndex != timingPoints.Length ? timingPoints[timingPointIndex].Time : int.MaxValue;
 			double timeWithThisTimingPoint = Math.Min(endTime, toTime) - currentTime;
 
-			double scrollSpeedBPMMultiplier;
-			if (timingPointIndex == timingPoints.Length)
-				scrollSpeedBPMMultiplier = timingPoints[^1].BPM / 100.0f;
-			else if (timingPointIndex == 0)
-				scrollSpeedBPMMultiplier = timingPoints[0].BPM / 100.0f;
-			else
-				scrollSpeedBPMMultiplier = timingPoints[timingPointIndex - 1].BPM / 100.0f;
-
-			double noteTimeWithThisTimingPoint = (6860 + 6860 * (HitPosition / Playfield.PlayfieldHeight)) / (ScrollSpeed * scrollSpeedBPMMultiplier * MulitplicateurAAppliquerH24SurLeScrollSpeed * sliderVelocityMultiplier);
-			double noteSpeedWithThisTimingPoint = HitPosition / noteTimeWithThisTimingPoint;
-
 			currentTime += timeWithThisTimingPoint;
-
-			scrolledDistance += timeWithThisTimingPoint * noteSpeedWithThisTimingPoint;
+			scrolledDistance += timeWithThisTimingPoint * currentNoteSpeed;
 			timingPointIndex++;
 		}
 
