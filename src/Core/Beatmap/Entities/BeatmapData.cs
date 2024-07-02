@@ -12,6 +12,8 @@ public class BeatmapData {
 	public BeatmapColor[] Colors;
 	public BeatmapHitObject[] HitObjects;
 
+	public double DominantBpm;
+
 	public BeatmapData() {
 		GeneralData = new BeatmapGeneralData();
 		EditorData = new BeatmapEditorData();
@@ -24,4 +26,6 @@ public class BeatmapData {
 	}
 
 	public override string ToString() => $"GeneralData:\n{GeneralData}\nEditorData:\n{EditorData}\nMetadata:\n{Metadata}\nDifficultyData:\n{DifficultyData}\nEvents:\n{string.Join("\n", Array.ConvertAll(Events, (e) => e.ToString()))}\nTimingPoints:\n{string.Join("\n", Array.ConvertAll(TimingPoints, (tp) => tp.ToString()))}\nColors:\n{string.Join("\n", Array.ConvertAll(Colors, (c) => c.ToString()))}\nHitObjects:\n{string.Join("\n", Array.ConvertAll(HitObjects, (ho) => ho.ToString()))}";
+
+	public const double DefaultBPM = 60000 / 1000.0;
 }
