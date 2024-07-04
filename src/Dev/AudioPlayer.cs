@@ -1,0 +1,49 @@
+using System;
+using Microsoft.Xna.Framework.Input;
+using NAudio.Wave;
+
+namespace Rythmify.UI;
+
+public class AudioPlayer {
+	private WaveOutEvent _outputDevice;
+	private AudioFileReader _song;
+	private string _songPath;
+	private bool _needToPlayAudio;
+
+	public AudioPlayer(string songPath) {
+		_outputDevice = new WaveOutEvent();
+		_songPath = songPath;
+		_song = new AudioFileReader(_songPath);
+		_outputDevice.Init(_song);
+		_outputDevice.Volume = 0.01f;
+		_needToPlayAudio = false;
+	}
+
+	public void Pause() {
+		_outputDevice.Pause();
+		_needToPlayAudio = false;
+	}
+
+	public void Play() {
+		_needToPlayAudio = true;
+	}
+
+	public void Reset() {
+		_outputDevice.Stop();
+		_song = new AudioFileReader(_songPath);
+		_outputDevice.Init(_song);
+	}
+
+	public void Update(bool audioStarted) {
+		if (audioStarted && _needToPlayAudio && _outputDevice.PlaybackState != PlaybackState.Playing)
+			_outputDevice.Play();
+	}
+
+	public void VolumeUp() {
+		_outputDevice.Volume = Math.Clamp(_outputDevice.Volume + 0.01f, 0, 1);
+	}
+
+	public void VolumeDown() {
+		_outputDevice.Volume = Math.Clamp(_outputDevice.Volume - 0.01f, 0, 1);
+	}
+}

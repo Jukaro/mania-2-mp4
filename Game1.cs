@@ -9,7 +9,6 @@ public class Game1 : Game
 {
 	private readonly GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
-	private readonly WaveOutEvent _outputDevice;
 
 	private OsuReplay _osuReplay;
 
@@ -18,7 +17,6 @@ public class Game1 : Game
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
-		_outputDevice = new WaveOutEvent();
 		_osuReplay = new OsuReplay();
 	}
 
@@ -39,7 +37,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		_osuReplay.LoadContent(_graphics, GraphicsDevice, _outputDevice);
+		_osuReplay.Init(_graphics, GraphicsDevice);
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -47,7 +45,7 @@ public class Game1 : Game
 		if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
 
-		_osuReplay.Update(gameTime, _outputDevice);
+		_osuReplay.Update(gameTime);
 
 		base.Update(gameTime);
 	}

@@ -2,7 +2,6 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using NAudio.Wave;
 using Rythmify.Core;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Game;
@@ -17,46 +16,52 @@ public class OsuReplay
 	private BeatmapRenderer _beatmapRenderer;
 	private InputsPlayer _inputsPlayer;
 	private InputsRenderer _inputsRenderer;
+	private AudioPlayer _audioPlayer;
+	private Menu _menu;
 
-	private AudioFileReader _song;
+	private BeatmapData _beatmap;
+	private Skin _skin;
+	private ReplayData _replay;
 
-	public void LoadContent(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice, WaveOutEvent outputDevice)
+	private dynamic testCase;
+
+	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
 	{
 		// dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
-		dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
+		// dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
+		testCase = Datasets.TestCases.Jukaro.Polyriddim;
 
-		BeatmapData beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
-		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
+		_beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 
-		Skin skin = new() { HitPosition = 384 };
+		_skin = new() { HitPosition = 384 };
 
-		ReplayData replay = ReplayParser.Parse(testCase.ReplayPath, beatmap.DifficultyData.LaneCount);
+		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount);
 
-		_beatmapPlayer = new(beatmap, skin, replay);
-		_inputsPlayer = new(replay);
+		_beatmapPlayer = new(_beatmap, _skin, _replay);
+		_inputsPlayer = new(_replay);
 
-		SkinRenderer skinRenderer = new(skin, graphicsDevice);
+		SkinRenderer skinRenderer = new(_skin, graphicsDevice);
 		_beatmapRenderer = new(graphics, skinRenderer);
 		_inputsRenderer = new(graphics, skinRenderer);
 
-		outputDevice.Init(_song);
-		outputDevice.Volume = 0.01f;
+		string songPath = Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), _beatmap.GeneralData.AudioFilename);
+		_audioPlayer = new(songPath);
 
-		_beatmapPlayer.Play();
-		_inputsPlayer.Play();
+		_menu = new(graphicsDevice);
 	}
 
-	public void Update(GameTime gameTime, WaveOutEvent outputDevice)
+	public void Update(GameTime gameTime)
 	{
-		if (_beatmapPlayer.AudioStarted && outputDevice.PlaybackState != PlaybackState.Playing)
-			outputDevice.Play();
+		_menu.Update(_beatmapPlayer, _inputsPlayer, _audioPlayer, _replay);
 
 		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
+		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
 	}
 
 	public void Render(SpriteBatch spriteBatch)
 	{
+		_menu.レンダー(spriteBatch);
 		_beatmapRenderer.Render(_beatmapPlayer, spriteBatch);
 		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
 	}
