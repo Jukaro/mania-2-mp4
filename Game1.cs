@@ -48,7 +48,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		dynamic testCase = Datasets.TestCases.ShiroW.GalaxyCollapse;
+		dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
 
 		BeatmapData beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 		_song = new AudioFileReader(Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), beatmap.GeneralData.AudioFilename));
@@ -57,7 +57,7 @@ public class Game1 : Game
 
 		ReplayData replay = ReplayParser.Parse(testCase.ReplayPath, beatmap.DifficultyData.LaneCount);
 
-		_beatmapPlayer = new(beatmap, skin, replay);
+		_beatmapPlayer = new(beatmap, skin);
 		_inputsPlayer = new(replay);
 
 		SkinRenderer skinRenderer = new(skin, GraphicsDevice);
