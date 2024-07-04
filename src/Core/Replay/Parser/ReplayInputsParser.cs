@@ -45,9 +45,8 @@ public static partial class ReplayParser {
 
 		int parsedStartDelayTime = int.Parse(startDelaySplittedInputs[0]);
 
-		bool hasStartDelay = (skipTime > 0 && parsedStartDelayTime > 0) || (skipTime <= 0 && parsedStartDelayTime < 0);
-
-		return hasStartDelay ? parsedStartDelayTime : -1;
+		if (skipTime == -1) return -parsedStartDelayTime;
+		return -(skipTime + parsedStartDelayTime);
 	}
 
 	private static int SkipNonGameplayInputs(string[] inputsArray) {
