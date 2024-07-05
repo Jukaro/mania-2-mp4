@@ -17,33 +17,46 @@ public class IniSection {
 	public void SetValue(string key, string value) => _values[key] = value;
 	public string GetValue(string key) => _values[key];
 
+	private static bool AssignField<T>(FieldInfo field, T instance, string value) {
+		Type type = typeof(T);
+		ConstructorInfo stringConstructor = type.GetConstructor(new Type[]{typeof(string)});
+
+		if (field.FieldType == typeof(string))
+			field.SetValue(instance, value);
+		else if (field.FieldType == typeof(int))
+			field.SetValue(instance, int.Parse(value));
+		else if (field.FieldType == typeof(bool))
+			field.SetValue(instance, int.Parse(value) != 0);
+		else if (field.FieldType == typeof(float))
+			field.SetValue(instance, float.Parse(value, CultureInfo.InvariantCulture));
+		else if (field.FieldType == typeof(double))
+			field.SetValue(instance, double.Parse(value, CultureInfo.InvariantCulture));
+		else if (stringConstructor != null)
+			field.SetValue(instance, stringConstructor.Invoke(new object[]{ value }));
+		else
+			return false;
+
+		return true;
+	}
+
 	public T Bind<T>() where T : new() {
-		var type = typeof(T);
-		var instance = Activator.CreateInstance(type);
+		Type destinationType = typeof(T);
+		T instance = Activator.CreateInstance<T>();
 
 		foreach (var (key, value) in _values) {
-			FieldInfo field = type.GetField(key);
+			FieldInfo field = destinationType.GetField(key);
 
 			if (field == null) {
-				Logger.LogWarning($"[INIParser] Field {key} not found in {type.Name}");
+				Logger.LogWarning($"[INIParser] Field {key} not found in {destinationType.Name}");
 				continue;
 			}
 
-			if (field.FieldType == typeof(string))
-				field.SetValue(instance, value);
-			else if (field.FieldType == typeof(int))
-				field.SetValue(instance, int.Parse(value));
-			else if (field.FieldType == typeof(bool))
-				field.SetValue(instance, int.Parse(value) != 0);
-			else if (field.FieldType == typeof(float))
-				field.SetValue(instance, float.Parse(value, CultureInfo.InvariantCulture));
-			else if (field.FieldType == typeof(double))
-				field.SetValue(instance, double.Parse(value, CultureInfo.InvariantCulture));
-			else
-				Logger.LogWarning($"[INIParser] Field {key} has an unsupported type {field.FieldType}");
+			bool success = AssignField(field, instance, value);
+			if (!success)
+				Logger.LogWarning($"[INIParser] Failed to assign value {value} to field {key} of type {field.FieldType.Name} in {destinationType.Name}");
 		}
 
-		return (T)instance;
+		return instance;
 	}
 
 	public override string ToString() {

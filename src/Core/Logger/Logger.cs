@@ -1,5 +1,7 @@
 using System;
 
+namespace Rythmify.Core;
+
 public static class Logger {
 
 	public static void LogError(string message) {

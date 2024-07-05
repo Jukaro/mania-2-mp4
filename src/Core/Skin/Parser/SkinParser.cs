@@ -9,10 +9,14 @@ public static class SkinParser {
 
 		SkinData skin = new()
 		{
-			General = skinIniParser.GetSection("General").Bind<SkinGeneralSection>(),
-			Colors = skinIniParser.GetSection("Colours").Bind<SkinColorsSection>(),
-			Fonts = skinIniParser.GetSection("Fonts").Bind<SkinFontsSection>(),
-			Mania = skinIniParser.GetSections("Mania").ConvertAll(section => section.Bind<SkinManiaSection>()).ToDictionary(section => section.Keys)
+			General = skinIniParser.GetSection("General")?.Bind<SkinGeneralSection>() ?? new(),
+			Colors = skinIniParser.GetSection("Colours")?.Bind<SkinColorsSection>() ?? new(),
+			Fonts = skinIniParser.GetSection("Fonts")?.Bind<SkinFontsSection>() ?? new(),
+			CatchTheBeat = skinIniParser.GetSection("CatchTheBeat")?.Bind<SkinCatchTheBeatSection>() ?? new(),
+			Mania = skinIniParser.GetSections("Mania")?.ConvertAll(section => section.Bind<SkinManiaSection>()).ToDictionary(section => section.Keys) ?? new()
 		};
+
+		Logger.LogInfo(skin.General.ToString());
+		Logger.LogInfo(skin.Colors.ToString());
 	}
 }

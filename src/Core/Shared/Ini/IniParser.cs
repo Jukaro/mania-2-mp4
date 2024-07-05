@@ -10,7 +10,7 @@ public class IniParser {
 	private static readonly Regex AssignmentRegex = new(@"^([\dA-Za-z_]+):(.+)$");
 	private static readonly Regex SectionRegex = new(@"^\[(.+)\]$");
 
-	// We use an array of sections because we can have multiple sections with the same name
+	// We use a List of IniSection because we can have multiple sections with the same name
 	private readonly Dictionary<string, List<IniSection>> _sections = new();
 
 	public IniParser(string fileName) {
@@ -26,21 +26,19 @@ public class IniParser {
 			.Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
 
 		foreach (string line in lines) {
-			Match assignmentMatch = AssignmentRegex.Match(line);
 			Match sectionMatch = SectionRegex.Match(line);
-			if (!assignmentMatch.Success && !sectionMatch.Success) continue;
-
-			if (sectionMatch.Success) {
-				string newSectionName = sectionMatch.Groups[1].Value.Trim();
-				Logger.LogInfo($"[INIParser] Parsing Section [{newSectionName}]");
-				AddSection(newSectionName);
-				currentSectionName = newSectionName;
+			bool isSection = sectionMatch.Success;
+			if (isSection) {
+				currentSectionName = sectionMatch.Groups[1].Value.Trim();
+				AddSection(currentSectionName);
+				Logger.LogInfo($"[INIParser] Parsing Section [{currentSectionName}]");
 				continue;
 			}
 
-			if (assignmentMatch.Success && currentSectionName != null) {
-				string key = assignmentMatch.Groups[1].Value.Trim();
-				string value = assignmentMatch.Groups[2].Value.Trim();
+			Match assignmentMatch = AssignmentRegex.Match(line);
+			bool isAssignment = assignmentMatch.Success;
+			if (isAssignment && currentSectionName != null) {
+				var (key, value) = (assignmentMatch.Groups[1].Value.Trim(), assignmentMatch.Groups[2].Value.Trim());
 				_sections[currentSectionName].Last().SetValue(key, value);
 			}
 		}
@@ -53,6 +51,16 @@ public class IniParser {
 	}
 
 	public List<IniSection> GetSections(string name) => _sections[name];
-	public IniSection GetSection(string name, int index = 0) => _sections[name][index];
-	public IniSection FindSection(string name, Predicate<IniSection> predicate) => _sections[name].Find(predicate);
+
+	public IniSection GetSection(string name, int index = 0) {
+		if (!_sections.ContainsKey(name) || index >= _sections[name].Count || index < 0)
+			return null;
+		return _sections[name][index];
+	}
+
+	public IniSection FindSection(string name, Predicate<IniSection> predicate) {
+		if (!_sections.ContainsKey(name))
+			return null;
+		return _sections[name].Find(predicate);
+	}
 }
