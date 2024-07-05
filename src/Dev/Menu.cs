@@ -20,6 +20,10 @@ public class Menu {
 	private KeyboardKey _F3;
 	private KeyboardKey _F4;
 
+	private ButtonContainer _buttonContainer;
+
+	private int _mouseWheelState;
+
 	public Menu(GraphicsDevice graphics) {
 		_graphics = graphics;
 		_volumeUp = new(Keys.NumPad1);
@@ -29,6 +33,35 @@ public class Menu {
 		_numPad8 = new(Keys.NumPad8);
 		_F3 = new(Keys.F3);
 		_F4 = new(Keys.F4);
+	}
+
+	public void Init() {
+		_buttonContainer = new(_graphics, 500, 1000, new(1000, 0), "firstButtonContainer", Color.Bisque);
+		for (int i = 0; i < 20; i++)
+			_buttonContainer.Add(new(_graphics, 100, 50, new(0, 0), "michel" + i, new(Math.Min(255, i * 20), 0, 0)));
+
+		_buttonContainer[2].SetColor(Color.AliceBlue);
+		_buttonContainer["michel3"].SetColor(Color.Crimson);
+
+		_buttonContainer["michel578"] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
+
+		// ajouter un bouton avec add
+		// _buttonContainer.Add(new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255)));
+
+		// remplacer un bouton avec son index
+		// _buttonContainer[5] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
+
+		// remplacer un bouton avec son nom
+		// int index = _buttonContainer.GetIndexOfButton(_buttonContainer["michel5"]);
+		// if (index != -1)
+			// _buttonContainer[index] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
+
+		// pas possible pour l'instant
+		// _buttonContainer["michel5"] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
+
+		// if (_buttonContainer["jsp"] is ButtonContainer buttonContainer)
+		// 	for (int i = 0; i < 5; i++)
+		// 		buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "michel" + i, new(0, 255, 0)));
 	}
 
 	public void Update(BeatmapPlayer beatmapPlayer, InputsPlayer inputsPlayer, AudioPlayer audioPlayer, ReplayData replay) {
@@ -66,7 +99,7 @@ public class Menu {
 	}
 
 	public void レンダー(SpriteBatch spriteBatch) {
-
+		_buttonContainer.Render(spriteBatch);
 	}
 
 }

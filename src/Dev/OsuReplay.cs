@@ -48,6 +48,7 @@ public class OsuReplay
 		_audioPlayer = new(songPath);
 
 		_menu = new(graphicsDevice);
+		_menu.Init();
 	}
 
 	public void Update(GameTime gameTime)
