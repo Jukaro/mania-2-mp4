@@ -39,7 +39,7 @@ public class IniSection {
 		return true;
 	}
 
-	public T Bind<T>() where T : new() {
+	public T As<T>() where T : new() {
 		Type destinationType = typeof(T);
 		T instance = Activator.CreateInstance<T>();
 

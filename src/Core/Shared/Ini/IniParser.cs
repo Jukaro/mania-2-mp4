@@ -6,9 +6,21 @@ using System.Text.RegularExpressions;
 
 namespace Rythmify.Core;
 
+
 public class IniParser {
+	private enum IniLineType {
+		Assignment,
+		Section,
+		None
+	}
+
 	private static readonly Regex AssignmentRegex = new(@"^([\dA-Za-z_]+):(.+)$");
 	private static readonly Regex SectionRegex = new(@"^\[(.+)\]$");
+
+	private static readonly List<Tuple<Regex, IniLineType>> RegexToLineType = new() {
+		new(AssignmentRegex, IniLineType.Assignment),
+		new(SectionRegex, IniLineType.Section)
+	};
 
 	// We use a List of IniSection because we can have multiple sections with the same name
 	private readonly Dictionary<string, List<IniSection>> _sections = new();
@@ -17,37 +29,48 @@ public class IniParser {
 		Parse(fileName);
 	}
 
+	private static IniLineType GetLineType(string line) {
+		IniLineType? type = RegexToLineType.FirstOrDefault(tuple => tuple.Item1.IsMatch(line), null)?.Item2;
+		return type ?? IniLineType.None;
+	}
+
+	private IniSection HandleSection(string line) {
+		Match sectionMatch = SectionRegex.Match(line);
+		string newSectionName = sectionMatch.Groups[1].Value.Trim();
+		Logger.LogInfo($"[INIParser] Parsing Section [{newSectionName}]");
+		return AddSection(newSectionName);
+	}
+
+	private static void HandleAssignment(IniSection section, string line) {
+		Match assignmentMatch = AssignmentRegex.Match(line);
+		var (key, value) = (assignmentMatch.Groups[1].Value.Trim(), assignmentMatch.Groups[2].Value.Trim());
+		section.SetValue(key, value);
+	}
+
 	public void Parse(string iniPath) {
 		string content = File.ReadAllText(iniPath);
-		string currentSectionName = null;
+		IniSection currentSection = null;
 
 		string[] lines = content.Split('\n')
 			.Select(line => line.Trim())
-			.Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
+			.Where(line => !string.IsNullOrWhiteSpace(line))
+			.ToArray();
 
 		foreach (string line in lines) {
-			Match sectionMatch = SectionRegex.Match(line);
-			bool isSection = sectionMatch.Success;
-			if (isSection) {
-				currentSectionName = sectionMatch.Groups[1].Value.Trim();
-				AddSection(currentSectionName);
-				Logger.LogInfo($"[INIParser] Parsing Section [{currentSectionName}]");
-				continue;
-			}
+			IniLineType lineType = GetLineType(line);
 
-			Match assignmentMatch = AssignmentRegex.Match(line);
-			bool isAssignment = assignmentMatch.Success;
-			if (isAssignment && currentSectionName != null) {
-				var (key, value) = (assignmentMatch.Groups[1].Value.Trim(), assignmentMatch.Groups[2].Value.Trim());
-				_sections[currentSectionName].Last().SetValue(key, value);
-			}
+			if (lineType == IniLineType.Section)
+				currentSection = HandleSection(line);
+			else if (lineType == IniLineType.Assignment && currentSection != null)
+				HandleAssignment(currentSection, line);
 		}
 	}
 
-	public void AddSection(string name) {
+	private IniSection AddSection(string name) {
 		if (!_sections.ContainsKey(name))
 			_sections[name] = new List<IniSection>();
 		_sections[name].Add(new IniSection(name));
+		return _sections[name].Last();
 	}
 
 	public List<IniSection> GetSections(string name) => _sections[name];
