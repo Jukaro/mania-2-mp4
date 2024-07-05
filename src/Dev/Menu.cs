@@ -201,7 +201,7 @@ public class Menu {
 		_sideMenu["Play"].SetColor(new Color(255, 0, 0));
 	}
 
-	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
+	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, SkinData skin) {
 		MouseManager.Update();
 
 		if (_replaySelector.NeedToUpdatePlayers) {

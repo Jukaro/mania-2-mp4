@@ -18,7 +18,7 @@ public class HoldNote : GameNote {
 
 public class BeatmapPlayer {
 	private BeatmapData _beatmap;
-	private Skin _skin;
+	private SkinData _skin;
 	private ScrollInfo _scrollInfo;
 	private bool _isPlaying;
 	private double _currentPlayTime;
@@ -26,7 +26,7 @@ public class BeatmapPlayer {
 
 	public List<GameNote> RenderedNotes { get; private set; }
 
-	public BeatmapPlayer(BeatmapData beatmap, Skin skin) {
+	public BeatmapPlayer(BeatmapData beatmap, SkinData skin) {
 		_beatmap = beatmap;
 		_isPlaying = false;
 		_currentPlayTime = 0;

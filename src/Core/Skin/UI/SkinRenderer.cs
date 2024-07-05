@@ -10,9 +10,9 @@ public class SkinRenderer {
 	public Texture2D HitLineTexture;
 	public Texture2D HoldNoteBodyTexture;
 	public Texture2D InputTexture;
-	public readonly Skin Skin;
+	public readonly SkinData Skin;
 
-	public SkinRenderer(Skin skin, GraphicsDevice graphicsDevice) {
+	public SkinRenderer(SkinData skin, GraphicsDevice graphicsDevice) {
 		Skin = skin;
 
 		NoteTexture = new(graphicsDevice, 150, 50);
