@@ -17,9 +17,6 @@ public class HoldNote : GameNote {
 }
 
 public class BeatmapPlayer {
-	// private readonly BeatmapData _beatmap;
-	// private readonly Skin _skin;
-	// private readonly ScrollInfo _scrollInfo;
 	private BeatmapData _beatmap;
 	private Skin _skin;
 	private ScrollInfo _scrollInfo;

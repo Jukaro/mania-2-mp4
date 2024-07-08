@@ -53,7 +53,7 @@ public class OsuReplay
 
 	public void Update(GameTime gameTime)
 	{
-		_menu.Update(_beatmapPlayer, _inputsPlayer, _audioPlayer, _replay);
+		_menu.アップデート(_beatmapPlayer, _inputsPlayer, _audioPlayer, _replay);
 
 		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
@@ -63,6 +63,7 @@ public class OsuReplay
 	public void Render(SpriteBatch spriteBatch)
 	{
 		_menu.レンダー(spriteBatch);
+
 		_beatmapRenderer.Render(_beatmapPlayer, spriteBatch);
 		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
 	}
