@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
 using System;
+using System.Net.Mime;
 
 namespace Rythmify.UI;
 
@@ -81,10 +83,11 @@ public class Menu {
 
 		// pas possible pour l'instant
 		// _buttonContainer["michel5"] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "secondButtonContainer", new(0, 0, 255));
+		// ContentManager content = new ContentManager();
 
 		if (_buttonContainer["secondButtonContainer"] is ButtonContainer buttonContainer) {
 			for (int i = 0; i < 5; i++)
-				buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "michel" + i, new(0, 255, 0)));
+				buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "pierre" + i, new(0, 255, 0)));
 			buttonContainer[1] = new ButtonContainer(_graphics, 150, 100, new(0, 0), "thirdButtonContainer", new(255, 0, 255));
 		}
 

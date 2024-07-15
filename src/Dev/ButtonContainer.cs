@@ -14,15 +14,17 @@ public class ButtonContainer : Button {
 
 	public ButtonContainer(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) : base(graphics, width, height, pos, name, color) {
 		ButtonList = new();
-		lastButtonHeight = (int)BasePos.Y;
+		lastButtonHeight = (int)RelativePos.Y;
 		_margin = 10;
 	}
+
+/* -------------------------------- Accessors ------------------------------- */
 
 	public Button this[int index] {
 		get => ButtonList[index];
 		set {
 			ButtonList[index] = value;
-			SetBasePos(BasePos);
+			SetRelativePos(RelativePos);
 		}
 	}
 
@@ -32,31 +34,23 @@ public class ButtonContainer : Button {
 			Button button = ButtonList.FirstOrDefault(o => o.Name == key);
 			if (button != null) {
 				button = value;
-				SetBasePos(BasePos);
+				SetRelativePos(RelativePos);
 			}
 			else
 				Logger.LogDebug($"Didn't find the button \"{key}\"");
 		}
 	}
 
-	public int GetIndexOfButton(Button button) {
-		return ButtonList.IndexOf(button);
-	}
+/* ---------------------------- Getters / Setters --------------------------- */
 
-	public override void SetBasePos(Vector2 pos) {
-		base.SetBasePos(pos);
-		lastButtonHeight = (int)BasePos.Y;
+	public override void SetRelativePos(Vector2 pos) {
+		base.SetRelativePos(pos);
+		lastButtonHeight = (int)RelativePos.Y;
 
 		foreach (var button in ButtonList) {
-			button.SetBasePos(new (BasePos.X, lastButtonHeight + _margin));
+			button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
 			lastButtonHeight += button.Texture.Height + _margin * 2;
 		}
-	}
-
-	public void Add(Button button) {
-		button.SetBasePos(new (BasePos.X, lastButtonHeight + _margin));
-		ButtonList.Add(button);
-		lastButtonHeight += button.Texture.Height + _margin * 2;
 	}
 
 	public override void SetScrollY(int scrollAmount) {
@@ -67,9 +61,23 @@ public class ButtonContainer : Button {
 		}
 	}
 
+/* --------------------------------- Methods -------------------------------- */
+
+	public void Add(Button button) {
+		button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
+		ButtonList.Add(button);
+		lastButtonHeight += button.Texture.Height + _margin * 2;
+	}
+
+	public int GetIndexOfButton(Button button) {
+		return ButtonList.IndexOf(button);
+	}
+
+/* --------------------------------- Update --------------------------------- */
+
 	public override void Update() {
 		foreach (var button in ButtonList) {
-			if (button.BasePos.Y < BasePos.Y + Texture.Height) {
+			if (button.AbsolutePos.Y <= AbsolutePos.Y + Texture.Height) {
 				button.Update();
 			}
 		}
@@ -80,12 +88,10 @@ public class ButtonContainer : Button {
 
 	public override void UpdateScroll() {
 		if (MouseStates.State == MouseStates.SCROLL_UP) {
-			Logger.LogDebug($"{Name}: scrollUp");
 			foreach (var button in ButtonList)
 				button.SetScrollY(10);
 		}
 		else {
-			Logger.LogDebug($"{Name}: scrollDown");
 			foreach (var button in ButtonList)
 				button.SetScrollY(-10);
 		}
@@ -93,17 +99,37 @@ public class ButtonContainer : Button {
 		// Logger.LogDebug($"{Name}: nbRenderedButtons: {nbRenderedButtons}");
 	}
 
-	public override void Render(SpriteBatch spriteBatch) {
-		spriteBatch.Draw(Texture, RealPos, Color);
+/* --------------------------------- Render --------------------------------- */
 
+	public override void Render(SpriteBatch spriteBatch) {
+		base.Render(spriteBatch);
+		RenderButtons(spriteBatch);
+	}
+
+	public override void RenderPartial(SpriteBatch spriteBatch, float limitY, int mode) {
+		base.RenderPartial(spriteBatch, limitY, mode);
+		RenderButtons(spriteBatch);
+	}
+
+	// render tjrs les boutons quand ils sont en dehors de la fenetre, modif la condition avec
+	private void RenderButtons(SpriteBatch spriteBatch) {
 		int i = 0;
 		foreach (var button in ButtonList) {
-			if (button.RealPos.Y > RealPos.Y && button.RealPos.Y < RealPos.Y + Texture.Height) { // if (button.RealPos.Y + button.Texture.Height) puis else if (button.RealPos.Y): PartialRender
+			if (button.AbsolutePos.Y + button.Texture.Height < 0 || button.AbsolutePos.Y > 1000)
+				continue;
+			if (button.AbsolutePos.Y >= AbsolutePos.Y && button.AbsolutePos.Y + button.Texture.Height <= AbsolutePos.Y + Texture.Height) { // if (button.AbsolutePos.Y + button.Texture.Height) puis else if (button.AbsolutePos.Y): PartialRender
 				button.Render(spriteBatch);
+				i++;
+			}
+			else if (button.AbsolutePos.Y <= AbsolutePos.Y + Texture.Height && button.AbsolutePos.Y + button.Texture.Height >= AbsolutePos.Y + Texture.Height) {
+				button.RenderPartial(spriteBatch, AbsolutePos.Y + Texture.Height, 1);
+				i++;
+			}
+			else if (button.AbsolutePos.Y <= AbsolutePos.Y && button.AbsolutePos.Y + button.Texture.Height > AbsolutePos.Y) {
+				button.RenderPartial(spriteBatch, AbsolutePos.Y, 0);
 				i++;
 			}
 		}
 		nbRenderedButtons = i;
-		// Logger.LogDebug($"Rendered buttons: {i}");
 	}
 }

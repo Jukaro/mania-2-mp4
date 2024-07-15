@@ -7,30 +7,30 @@ namespace Rythmify.UI;
 
 public class Button {
 	public Texture2D Texture;
-	public Vector2 BasePos; // position without ScrollY
-	public Vector2 RealPos; // position with ScrollY
+	public Vector2 RelativePos; // position without ScrollY
+	public Vector2 AbsolutePos; // position with ScrollY
 	public int ScrollY;
 	public Color Color;
 	public string Name;
 
 	public Button(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) {
 		ScrollY = 0;
-		BasePos = pos;
-		RealPos = pos;
+		RelativePos = pos;
+		AbsolutePos = pos;
 		Name = name;
 		Color = color;
 		Texture = new(graphics, width, height);
 		SetColor(Color);
 	}
 
-	public virtual void SetBasePos(Vector2 pos) {
-		BasePos = pos;
-		RealPos = new(BasePos.X, BasePos.Y + ScrollY);
+	public virtual void SetRelativePos(Vector2 pos) {
+		RelativePos = pos;
+		AbsolutePos = new(RelativePos.X, RelativePos.Y + ScrollY);
 	}
 
 	public virtual void SetScrollY(int scrollAmount) {
 		ScrollY += scrollAmount;
-		RealPos = new(BasePos.X, BasePos.Y + ScrollY);
+		AbsolutePos = new(RelativePos.X, RelativePos.Y + ScrollY);
 	}
 
 	public void SetColor(Color color) {
@@ -49,17 +49,20 @@ public class Button {
 	}
 
 	public virtual void Render(SpriteBatch spriteBatch) {
-		spriteBatch.Draw(Texture, RealPos, Color);
+		spriteBatch.Draw(Texture, AbsolutePos, Color);
+	}
+
+	public virtual void RenderPartial(SpriteBatch spriteBatch, float limitY, int mode) {
+		if (mode == 1)
+			spriteBatch.Draw(Texture, AbsolutePos, new Rectangle(0, 0, Texture.Width, (int)(limitY - AbsolutePos.Y)), Color);
+		else
+			spriteBatch.Draw(Texture, new Vector2(AbsolutePos.X, limitY), new Rectangle(0, (int)(limitY - AbsolutePos.Y), Texture.Width, (int)(Texture.Height - (limitY - AbsolutePos.Y))), Color);
 	}
 
 	public bool isMouseOver() {
-		if (Mouse.GetState().X > RealPos.X && Mouse.GetState().X < RealPos.X + Texture.Width
-			&& Mouse.GetState().Y > RealPos.Y && Mouse.GetState().Y < RealPos.Y + Texture.Height)
+		if (Mouse.GetState().X > AbsolutePos.X && Mouse.GetState().X < AbsolutePos.X + Texture.Width
+			&& Mouse.GetState().Y > AbsolutePos.Y && Mouse.GetState().Y < AbsolutePos.Y + Texture.Height)
 			return true;
 		return false;
 	}
-
-	// public virtual void Render(SpriteBatch spriteBatch, Vector2 pos) {
-	// 	spriteBatch.Draw(Texture, pos, Color);
-	// }
 }
