@@ -62,6 +62,16 @@ public class Menu {
 
 	public void Init() {
 		_buttonContainer = new(_graphics, 500, 1000, new(1000, 0), "firstButtonContainer", Color.Bisque);
+
+		GradientList gdList = new();
+		gdList.Add(new(new(255, 0, 0), new(255, 255, 0)));
+		gdList.Add(new(new(255, 255, 0), new(0, 255, 0)));
+		gdList.Add(new(new(0, 255, 0), new(0, 255, 255)));
+		gdList.Add(new(new(0, 255, 255), new(0, 0, 255)));
+		gdList.Add(new(new(0, 0, 255), new(255, 0, 255)));
+		gdList.Add(new(new(255, 0, 255), new(255, 0, 0)));
+		_buttonContainer.SetGradientAsColor(gdList);
+
 		for (int i = 0; i < 20; i++)
 			_buttonContainer.Add(new(_graphics, 100, 50, new(0, 0), "michel" + i, new(Math.Min(255, i * 20), 0, 0)));
 
@@ -89,6 +99,10 @@ public class Menu {
 			for (int i = 0; i < 5; i++)
 				buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "pierre" + i, new(0, 255, 0)));
 			buttonContainer[1] = new ButtonContainer(_graphics, 150, 100, new(0, 0), "thirdButtonContainer", new(255, 0, 255));
+			GradientList gdList2 = new();
+			gdList2.Add(new(Color.Black, Color.Red));
+			gdList2.Add(new(Color.Red, Color.Black));
+			buttonContainer[1].SetGradientAsColor(gdList2);
 		}
 
 	}

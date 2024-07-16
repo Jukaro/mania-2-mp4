@@ -40,6 +40,18 @@ public class Button {
 		Texture.SetData(colors);
 	}
 
+	public void SetGradientAsColor(GradientList gdList) {
+		var colors = new Color[Texture.Height * Texture.Width];
+		for (int y = 0; y < Texture.Height; y++) {
+			for (int x = 0; x < Texture.Width; x++) {
+				double index = x + y;
+				int step = 255;
+				colors[y * Texture.Width + x] = gdList.GetColor(index, step);
+			}
+		}
+		Texture.SetData(colors);
+	}
+
 	public virtual void Update() {
 
 	}
