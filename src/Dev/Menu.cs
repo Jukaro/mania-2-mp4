@@ -1,34 +1,11 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
 using System;
-using System.Net.Mime;
 
 namespace Rythmify.UI;
-
-public static class MouseStates {
-	public const int NO_SCROLL = 0;
-	public const int SCROLL_UP = 1;
-	public const int SCROLL_DOWN = 2;
-
-	public static int MouseWheelState = 0;
-	public static int State = NO_SCROLL;
-
-	public static void UpdateState() {
-		if (Mouse.GetState().ScrollWheelValue != MouseWheelState) {
-			if (Mouse.GetState().ScrollWheelValue > MouseWheelState)
-				State = SCROLL_UP;
-			else
-				State = SCROLL_DOWN;
-			MouseWheelState = Mouse.GetState().ScrollWheelValue;
-		}
-		else
-			State = NO_SCROLL;
-	}
-}
 
 public class Menu {
 	private readonly GraphicsDevice _graphics;
@@ -45,8 +22,6 @@ public class Menu {
 
 	private ButtonContainer _buttonContainer;
 
-	private int _mouseWheelState;
-
 	public Menu(GraphicsDevice graphics) {
 		_graphics = graphics;
 		_volumeUp = new(Keys.NumPad1);
@@ -56,8 +31,6 @@ public class Menu {
 		_numPad8 = new(Keys.NumPad8);
 		_F3 = new(Keys.F3);
 		_F4 = new(Keys.F4);
-
-		_mouseWheelState = Mouse.GetState().ScrollWheelValue;
 	}
 
 	public void Init() {
@@ -72,11 +45,21 @@ public class Menu {
 		gdList.Add(new(new(255, 0, 255), new(255, 0, 0)));
 		_buttonContainer.SetGradientAsColor(gdList);
 
+		ButtonVisuals buttonVisuals = new(_graphics, 100, 50, Color.Black) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+
 		for (int i = 0; i < 20; i++)
-			_buttonContainer.Add(new(_graphics, 100, 50, new(0, 0), "michel" + i, new(Math.Min(255, i * 20), 0, 0)));
+			_buttonContainer.Add(new(_graphics, new(0, 0), "michel" + i, new ButtonVisuals(_graphics, 100, 50, new Color(Math.Min(255, i * 20), 0, 0)) {
+				BlinkOnMouseClick = true,
+				BlinkOnMouseOver = true
+			}));
 
 		_buttonContainer[2].SetColor(Color.AliceBlue);
-		_buttonContainer["michel3"].SetColor(Color.Crimson);
+		_buttonContainer["michel3"].SetColor(Color.Blue);
+		_buttonContainer["michel3"].SetOnClick(() => Logger.LogDebug("coucou"));
+		_buttonContainer["michel3"].ButtonVisuals.BlinkOnMouseOver = false;
 
 		_buttonContainer["michel578"] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
 
@@ -97,7 +80,7 @@ public class Menu {
 
 		if (_buttonContainer["secondButtonContainer"] is ButtonContainer buttonContainer) {
 			for (int i = 0; i < 5; i++)
-				buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "pierre" + i, new(0, 255, 0)));
+				buttonContainer.Add(new(_graphics, 100, 10, new(0, 0), "pierre" + i, new Color(0, 255, 0)));
 			buttonContainer[1] = new ButtonContainer(_graphics, 150, 100, new(0, 0), "thirdButtonContainer", new(255, 0, 255));
 			GradientList gdList2 = new();
 			gdList2.Add(new(Color.Black, Color.Red));
@@ -108,7 +91,7 @@ public class Menu {
 	}
 
 	public void アップデート(BeatmapPlayer beatmapPlayer, InputsPlayer inputsPlayer, AudioPlayer audioPlayer, ReplayData replay) {
-		MouseStates.UpdateState();
+		MouseManager.UpdateMouseState();
 
 		if (_numPad4.IsPressed()) {
 			beatmapPlayer.Play();

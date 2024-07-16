@@ -16,6 +16,7 @@ public class ButtonContainer : Button {
 		ButtonList = new();
 		lastButtonHeight = (int)RelativePos.Y;
 		_margin = 10;
+		SetOnScroll(UpdateScroll);
 	}
 
 /* -------------------------------- Accessors ------------------------------- */
@@ -49,7 +50,7 @@ public class ButtonContainer : Button {
 
 		foreach (var button in ButtonList) {
 			button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
-			lastButtonHeight += button.Texture.Height + _margin * 2;
+			lastButtonHeight += button.ButtonVisuals.Texture.Height + _margin * 2;
 		}
 	}
 
@@ -66,7 +67,7 @@ public class ButtonContainer : Button {
 	public void Add(Button button) {
 		button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
 		ButtonList.Add(button);
-		lastButtonHeight += button.Texture.Height + _margin * 2;
+		lastButtonHeight += button.ButtonVisuals.Texture.Height + _margin * 2;
 	}
 
 	public int GetIndexOfButton(Button button) {
@@ -77,17 +78,16 @@ public class ButtonContainer : Button {
 
 	public override void Update() {
 		foreach (var button in ButtonList) {
-			if (button.AbsolutePos.Y <= AbsolutePos.Y + Texture.Height) {
+			if (button.AbsolutePos.Y <= AbsolutePos.Y + ButtonVisuals.Texture.Height) {
 				button.Update();
 			}
 		}
 
-		if (MouseStates.State != MouseStates.NO_SCROLL && isMouseOver() == true)
-			UpdateScroll();
+		base.Update();
 	}
 
-	public override void UpdateScroll() {
-		if (MouseStates.State == MouseStates.SCROLL_UP) {
+	public void UpdateScroll() {
+		if (MouseManager.MouseWheelState == MouseManager.SCROLL_UP) {
 			foreach (var button in ButtonList)
 				button.SetScrollY(10);
 		}
@@ -95,8 +95,6 @@ public class ButtonContainer : Button {
 			foreach (var button in ButtonList)
 				button.SetScrollY(-10);
 		}
-		MouseStates.State = MouseStates.NO_SCROLL;
-		// Logger.LogDebug($"{Name}: nbRenderedButtons: {nbRenderedButtons}");
 	}
 
 /* --------------------------------- Render --------------------------------- */
@@ -111,21 +109,20 @@ public class ButtonContainer : Button {
 		RenderButtons(spriteBatch);
 	}
 
-	// render tjrs les boutons quand ils sont en dehors de la fenetre, modif la condition avec
 	private void RenderButtons(SpriteBatch spriteBatch) {
 		int i = 0;
 		foreach (var button in ButtonList) {
-			if (button.AbsolutePos.Y + button.Texture.Height < 0 || button.AbsolutePos.Y > 1000)
+			if (button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height < 0 || button.AbsolutePos.Y > 1000)
 				continue;
-			if (button.AbsolutePos.Y >= AbsolutePos.Y && button.AbsolutePos.Y + button.Texture.Height <= AbsolutePos.Y + Texture.Height) { // if (button.AbsolutePos.Y + button.Texture.Height) puis else if (button.AbsolutePos.Y): PartialRender
+			if (button.AbsolutePos.Y >= AbsolutePos.Y && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height <= AbsolutePos.Y + ButtonVisuals.Texture.Height) { // if (button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height) puis else if (button.AbsolutePos.Y): PartialRender
 				button.Render(spriteBatch);
 				i++;
 			}
-			else if (button.AbsolutePos.Y <= AbsolutePos.Y + Texture.Height && button.AbsolutePos.Y + button.Texture.Height >= AbsolutePos.Y + Texture.Height) {
-				button.RenderPartial(spriteBatch, AbsolutePos.Y + Texture.Height, 1);
+			else if (button.AbsolutePos.Y <= AbsolutePos.Y + ButtonVisuals.Texture.Height && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height >= AbsolutePos.Y + ButtonVisuals.Texture.Height) {
+				button.RenderPartial(spriteBatch, AbsolutePos.Y + ButtonVisuals.Texture.Height, 1);
 				i++;
 			}
-			else if (button.AbsolutePos.Y <= AbsolutePos.Y && button.AbsolutePos.Y + button.Texture.Height > AbsolutePos.Y) {
+			else if (button.AbsolutePos.Y <= AbsolutePos.Y && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height > AbsolutePos.Y) {
 				button.RenderPartial(spriteBatch, AbsolutePos.Y, 0);
 				i++;
 			}
