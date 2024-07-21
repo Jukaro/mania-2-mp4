@@ -40,10 +40,11 @@ public static class MouseManager {
 	public static bool IsLeftButtonPressedOnce() {
 		if (_state.LeftButton == ButtonState.Pressed && !_isLeftButtonDown) {
 			_isLeftButtonDown = true;
+		}
+		else if (_isLeftButtonDown && _state.LeftButton == ButtonState.Released) {
+			_isLeftButtonDown = false;
 			return true;
 		}
-		else if (_state.LeftButton == ButtonState.Released)
-			_isLeftButtonDown = false;
 		return false;
 	}
 

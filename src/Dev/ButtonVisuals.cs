@@ -33,6 +33,9 @@ public class ButtonVisuals {
 	public ButtonVisuals(GraphicsDevice graphics, ButtonVisuals buttonVisuals) {
 		Texture = new(graphics, buttonVisuals.Texture.Width, buttonVisuals.Texture.Height);
 		Init(buttonVisuals.Color);
+		Color[] colors = new Color[Texture.Width * Texture.Height];
+		buttonVisuals.Texture.GetData(colors);
+		SetTextureRelatedData(colors);
 		BlinkOnMouseOver = buttonVisuals.BlinkOnMouseOver;
 		BlinkOnMouseClick = buttonVisuals.BlinkOnMouseClick;
 	}
@@ -47,7 +50,7 @@ public class ButtonVisuals {
 		SetColor(color);
 	}
 
-	private void SetTextureRelatedData(Color[] colors) {
+	public void SetTextureRelatedData(Color[] colors) {
 		Texture.SetData(colors);
 		Texture.GetData(BaseTextureData);
 		SetMouseOverTexture();
@@ -62,12 +65,12 @@ public class ButtonVisuals {
 		SetTextureRelatedData(colors);
 	}
 
-	public void SetGradientAsColor(GradientList gradientList) {
+	public void SetGradientAsColor(GradientList gradientList, int step) {
+		_baseColor = Color.White;
 		var colors = new Color[Texture.Height * Texture.Width];
 		for (int y = 0; y < Texture.Height; y++) {
 			for (int x = 0; x < Texture.Width; x++) {
 				double index = x + y;
-				int step = 255;
 				colors[y * Texture.Width + x] = gradientList.GetColor(index, step);
 			}
 		}
@@ -82,7 +85,7 @@ public class ButtonVisuals {
 			int g = Math.Clamp(pixel.G + value, 0, 255);
 			int b = Math.Clamp(pixel.B + value, 0, 255);
 
-			textureData[i] = new Color(r, g, b);
+			textureData[i] = new Color(r, g, b, pixel.A);
 		}
 	}
 

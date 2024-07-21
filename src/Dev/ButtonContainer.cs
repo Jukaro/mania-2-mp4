@@ -88,10 +88,14 @@ public class ButtonContainer : Button {
 
 	public void UpdateScroll() {
 		if (MouseManager.MouseWheelState == MouseManager.SCROLL_UP) {
+			if (ButtonList[0].ScrollY == 0)
+				return;
 			foreach (var button in ButtonList)
 				button.SetScrollY(10);
 		}
 		else {
+			if (ButtonList.Last().AbsolutePos.Y + ButtonList.Last().ButtonVisuals.Texture.Height <= AbsolutePos.Y + ButtonVisuals.Texture.Height - _margin)
+				return;
 			foreach (var button in ButtonList)
 				button.SetScrollY(-10);
 		}

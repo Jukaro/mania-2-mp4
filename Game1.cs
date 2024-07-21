@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using NAudio.Wave;
 
 namespace Rythmify.UI;
+
+public static class Fonts {
+	public static SpriteFont Arial;
+}
 
 public class Game1 : Game
 {
@@ -37,6 +40,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
+		Fonts.Arial = Content.Load<SpriteFont>("Fonts/Arial");
 		_osuReplay.Init(_graphics, GraphicsDevice);
 	}
 

@@ -11,6 +11,7 @@ public class Button {
 	public int ScrollY;
 	public string Name;
 	private Action _onClick = null;
+	private Action _onClickHold = null;
 	private Action _onScroll = null;
 
 	public Button(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) {
@@ -43,10 +44,15 @@ public class Button {
 	}
 
 	public void SetColor(Color color) => ButtonVisuals.SetColor(color);
-	public void SetGradientAsColor(GradientList gradientList) => ButtonVisuals.SetGradientAsColor(gradientList);
+	public void SetColor(Color[] colors) => ButtonVisuals.SetTextureRelatedData(colors);
+	public void SetGradientAsColor(GradientList gradientList, int step) => ButtonVisuals.SetGradientAsColor(gradientList, step);
 
 	public void SetOnClick(Action onClick) {
 		_onClick = onClick;
+	}
+
+	public void SetOnClickHold(Action onClickHold) {
+		_onClickHold = onClickHold;
 	}
 
 	public void SetOnScroll(Action onScroll) {
@@ -58,6 +64,10 @@ public class Button {
 	public virtual void Update() {
 		if (_onClick != null && IsMouseOver() && MouseManager.IsLeftButtonPressedOnce()) {
 			_onClick();
+		}
+
+		if (_onClickHold != null && IsMouseOver() && MouseManager.IsLeftButtonPressed()) {
+			_onClickHold();
 		}
 
 		if (_onScroll != null && IsMouseOver() && MouseManager.MouseWheelState != MouseManager.NO_SCROLL) {

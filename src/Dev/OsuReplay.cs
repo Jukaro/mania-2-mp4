@@ -25,6 +25,10 @@ public class OsuReplay
 
 	private dynamic testCase;
 
+	private Button _test;
+
+	private double _speedMultiplier = 1.0f;
+
 	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
 	{
 		// dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
@@ -49,15 +53,23 @@ public class OsuReplay
 
 		_menu = new(graphicsDevice);
 		_menu.Init();
+
+		ButtonVisuals buttonVisuals = new(graphicsDevice, 300, 50, Color.Red) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+
+		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 2, 10, UpdateSpeedMultiplier, buttonVisuals);
 	}
 
 	public void Update(GameTime gameTime)
 	{
-		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
-		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
+		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
+		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
 		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
 
 		_menu.アップデート(_beatmapPlayer, _inputsPlayer, _audioPlayer, _replay);
+		_test.Update();
 	}
 
 	public void Render(SpriteBatch spriteBatch)
@@ -66,5 +78,10 @@ public class OsuReplay
 		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
 
 		_menu.レンダー(spriteBatch);
+		_test.Render(spriteBatch);
+	}
+
+	private void UpdateSpeedMultiplier(double value) {
+		_speedMultiplier = value;
 	}
 }

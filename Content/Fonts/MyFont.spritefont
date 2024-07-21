@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file contains an XML description of a font. By default, it references
+a system font. You can change this to use a custom font by adding the .ttf
+file to your project.
+-->
+<XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
+  <Asset Type="Graphics:FontDescription">
+    <!--
+    Modify this string to change the font that will be imported.
+    -->
+    <FontName>Arial</FontName>
+    <Size>20</Size>
+    <Spacing>2</Spacing>
+    <UseKerning>true</UseKerning>
+    <Style>Regular</Style>
+    <CharacterRegions>
+      <CharacterRegion>
+        <Start>&#32;</Start>
+        <End>&#126;</End>
+      </CharacterRegion>
+    </CharacterRegions>
+  </Asset>
+</XnaContent>
