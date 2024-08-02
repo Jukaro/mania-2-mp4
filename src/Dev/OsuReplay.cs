@@ -59,7 +59,7 @@ public class OsuReplay
 			BlinkOnMouseOver = true
 		};
 
-		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 2, 10, UpdateSpeedMultiplier, buttonVisuals);
+		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 10, 10, UpdateSpeedMultiplier, buttonVisuals);
 	}
 
 	public void Update(GameTime gameTime)

@@ -6,36 +6,50 @@ using System.Linq;
 namespace Rythmify.UI;
 
 public class ButtonContainer : Button {
-	public List<Button> ButtonList;
-	private int lastButtonHeight;
-	private int _margin;
+	public List<Button> ButtonsList;
+	private Button _firstButton;
+	private Button _lastButton;
+	private Scrollbar _scrollbar;
 
 	public int nbRenderedButtons = 0;
 
 	public ButtonContainer(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) : base(graphics, width, height, pos, name, color) {
-		ButtonList = new();
-		lastButtonHeight = (int)RelativePos.Y;
-		_margin = 10;
+		ButtonsList = new();
+		_firstButton = null;
+		_lastButton = null;
 		SetOnScroll(UpdateScroll);
+		int scrollBarWidth = 20;
+		_scrollbar = new Scrollbar(graphics, scrollBarWidth, Height, Height, 0, ScrollButtons, new Vector2(AbsolutePos.X + Width - scrollBarWidth, AbsolutePos.Y));
+	}
+
+	public ButtonContainer(GraphicsDevice graphics, Vector2 pos, string name, ButtonVisuals buttonVisuals)  : base(graphics, pos, name, buttonVisuals) {
+		ButtonsList = new();
+		_firstButton = null;
+		_lastButton = null;
+		SetOnScroll(UpdateScroll);
+		int scrollBarWidth = 20;
+		_scrollbar = new Scrollbar(graphics, scrollBarWidth, Height, Height, 0, ScrollButtons, new Vector2(AbsolutePos.X + Width - scrollBarWidth, AbsolutePos.Y));
 	}
 
 /* -------------------------------- Accessors ------------------------------- */
 
 	public Button this[int index] {
-		get => ButtonList[index];
+		get => ButtonsList[index];
 		set {
-			ButtonList[index] = value;
-			SetRelativePos(RelativePos);
+			value.SetAbsolutePos(new (AbsolutePos.X + value.RelativePos.X, AbsolutePos.Y + value.RelativePos.Y));
+			UpdateFirstAndLastButtons(value);
+			ButtonsList[index] = value;
 		}
 	}
 
 	public Button this[string key] {
-		get => ButtonList.FirstOrDefault(o => o.Name == key);
+		get => ButtonsList.FirstOrDefault(o => o.Name == key);
 		set {
-			Button button = ButtonList.FirstOrDefault(o => o.Name == key);
+			Button button = ButtonsList.FirstOrDefault(o => o.Name == key);
 			if (button != null) {
 				button = value;
-				SetRelativePos(RelativePos);
+				button.SetAbsolutePos(new (AbsolutePos.X + button.RelativePos.X, AbsolutePos.Y + button.RelativePos.Y));
+				UpdateFirstAndLastButtons(button);
 			}
 			else
 				Logger.LogDebug($"Didn't find the button \"{key}\"");
@@ -44,61 +58,79 @@ public class ButtonContainer : Button {
 
 /* ---------------------------- Getters / Setters --------------------------- */
 
-	public override void SetRelativePos(Vector2 pos) {
-		base.SetRelativePos(pos);
-		lastButtonHeight = (int)RelativePos.Y;
+	public override void SetAbsolutePos(Vector2 pos) {
+		base.SetAbsolutePos(pos);
 
-		foreach (var button in ButtonList) {
-			button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
-			lastButtonHeight += button.ButtonVisuals.Texture.Height + _margin * 2;
+		foreach (var button in ButtonsList) {
+			button.SetAbsolutePos(new (AbsolutePos.X + button.RelativePos.X, AbsolutePos.Y + button.RelativePos.Y));
+		}
+		_scrollbar.SetAbsolutePos(new Vector2(AbsolutePos.X + Width - _scrollbar.Width, AbsolutePos.Y));
+	}
+
+	public override void Scroll(float scrollAmount) {
+		base.Scroll(scrollAmount);
+		_scrollbar.Scroll(scrollAmount);
+
+		foreach (var button in ButtonsList) {
+			button.Scroll(scrollAmount);
 		}
 	}
 
-	public override void SetScrollY(int scrollAmount) {
-		base.SetScrollY(scrollAmount);
-
-		foreach (var button in ButtonList) {
-			button.SetScrollY(scrollAmount);
+	protected void UpdateFirstAndLastButtons(Button button) {
+		if (button.IsScrollable && (_firstButton == null || button.AbsolutePos.Y < _firstButton.AbsolutePos.Y)) {
+			_firstButton = button;
+		}
+		if (button.IsScrollable && (_lastButton == null || button.AbsolutePos.Y > _lastButton.AbsolutePos.Y)) {
+			_lastButton = button;
+			if (_lastButton.AbsolutePos.Y + _lastButton.Height > AbsolutePos.Y + Height) {
+				_scrollbar.UpdateSliderSize((int)_lastButton.AbsolutePos.Y + _lastButton.Height - (int)AbsolutePos.Y);
+				_scrollbar.UpdateMax(_lastButton.AbsolutePos.Y + _lastButton.Height - Height);
+			}
 		}
 	}
 
 /* --------------------------------- Methods -------------------------------- */
 
-	public void Add(Button button) {
-		button.SetRelativePos(new (RelativePos.X, lastButtonHeight + _margin));
-		ButtonList.Add(button);
-		lastButtonHeight += button.ButtonVisuals.Texture.Height + _margin * 2;
+	public virtual void Add(Button button) {
+		button.SetAbsolutePos(new (AbsolutePos.X + button.RelativePos.X, AbsolutePos.Y + button.RelativePos.Y));
+		UpdateFirstAndLastButtons(button);
+		ButtonsList.Add(button);
 	}
 
 	public int GetIndexOfButton(Button button) {
-		return ButtonList.IndexOf(button);
+		return ButtonsList.IndexOf(button);
 	}
 
 /* --------------------------------- Update --------------------------------- */
 
 	public override void Update() {
-		foreach (var button in ButtonList) {
-			if (button.AbsolutePos.Y <= AbsolutePos.Y + ButtonVisuals.Texture.Height) {
+		foreach (var button in ButtonsList) {
+			if (button.AbsolutePos.Y <= AbsolutePos.Y + ButtonVisuals.Texture.Height) { // mdr non faut ameliorer
 				button.Update();
 			}
 		}
+		_scrollbar.Update();
 
 		base.Update();
 	}
 
+	private void ScrollButtons(float scrollAmount) {
+		if (scrollAmount >= 0 && (_firstButton == null || _firstButton.AbsolutePos.Y >= AbsolutePos.Y) )
+			return;
+		if (scrollAmount < 0 && (_lastButton == null || _lastButton.AbsolutePos.Y + _lastButton.Height <= AbsolutePos.Y + Height))
+			return;
+		foreach (var button in ButtonsList) {
+			if (button.IsScrollable) {
+				button.Scroll(scrollAmount);
+			}
+		}
+	}
+
 	public void UpdateScroll() {
-		if (MouseManager.MouseWheelState == MouseManager.SCROLL_UP) {
-			if (ButtonList[0].ScrollY == 0)
-				return;
-			foreach (var button in ButtonList)
-				button.SetScrollY(10);
-		}
-		else {
-			if (ButtonList.Last().AbsolutePos.Y + ButtonList.Last().ButtonVisuals.Texture.Height <= AbsolutePos.Y + ButtonVisuals.Texture.Height - _margin)
-				return;
-			foreach (var button in ButtonList)
-				button.SetScrollY(-10);
-		}
+		if (MouseManager.MouseWheelState == MouseManager.SCROLL_UP)
+			_scrollbar.UpdateSliderFromScroll(-10);
+		else
+			_scrollbar.UpdateSliderFromScroll(10);
 	}
 
 /* --------------------------------- Render --------------------------------- */
@@ -114,23 +146,23 @@ public class ButtonContainer : Button {
 	}
 
 	private void RenderButtons(SpriteBatch spriteBatch) {
-		int i = 0;
-		foreach (var button in ButtonList) {
-			if (button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height < 0 || button.AbsolutePos.Y > 1000)
+		foreach (var button in ButtonsList) {
+			if (button.AbsolutePos.Y + button.Height < 0 || button.AbsolutePos.Y > 1000)
 				continue;
-			if (button.AbsolutePos.Y >= AbsolutePos.Y && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height <= AbsolutePos.Y + ButtonVisuals.Texture.Height) { // if (button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height) puis else if (button.AbsolutePos.Y): PartialRender
-				button.Render(spriteBatch);
-				i++;
-			}
-			else if (button.AbsolutePos.Y <= AbsolutePos.Y + ButtonVisuals.Texture.Height && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height >= AbsolutePos.Y + ButtonVisuals.Texture.Height) {
-				button.RenderPartial(spriteBatch, AbsolutePos.Y + ButtonVisuals.Texture.Height, 1);
-				i++;
-			}
-			else if (button.AbsolutePos.Y <= AbsolutePos.Y && button.AbsolutePos.Y + button.ButtonVisuals.Texture.Height > AbsolutePos.Y) {
-				button.RenderPartial(spriteBatch, AbsolutePos.Y, 0);
-				i++;
-			}
+			RenderButton(button, spriteBatch);
 		}
-		nbRenderedButtons = i;
+		RenderButton(_scrollbar, spriteBatch);
+	}
+
+	private void RenderButton(Button button, SpriteBatch spriteBatch) {
+		if (button.AbsolutePos.Y >= AbsolutePos.Y && button.AbsolutePos.Y + button.Height <= AbsolutePos.Y + Height) { // if (button.AbsolutePos.Y + button.Height) puis else if (button.AbsolutePos.Y): PartialRender
+			button.Render(spriteBatch);
+		}
+		else if (button.AbsolutePos.Y <= AbsolutePos.Y + Height && button.AbsolutePos.Y + button.Height >= AbsolutePos.Y + Height) {
+			button.RenderPartial(spriteBatch, AbsolutePos.Y + Height, 1);
+		}
+		else if (button.AbsolutePos.Y <= AbsolutePos.Y && button.AbsolutePos.Y + button.Height > AbsolutePos.Y) {
+			button.RenderPartial(spriteBatch, AbsolutePos.Y, 0);
+		}
 	}
 }

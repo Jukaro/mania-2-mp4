@@ -6,16 +6,16 @@ namespace Rythmify.UI;
 
 public class Button {
 	public ButtonVisuals ButtonVisuals;
-	public Vector2 RelativePos; // position without ScrollY
-	public Vector2 AbsolutePos; // position with ScrollY
-	public int ScrollY;
+	public Vector2 RelativePos; // position relative to a container
+	public Vector2 AbsolutePos; // position relative to the window
 	public string Name;
+	public bool IsScrollable = true;
 	private Action _onClick = null;
 	private Action _onClickHold = null;
+	private bool _isHeld = false;
 	private Action _onScroll = null;
 
 	public Button(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) {
-		ScrollY = 0;
 		RelativePos = pos;
 		AbsolutePos = pos;
 		Name = name;
@@ -24,7 +24,6 @@ public class Button {
 	}
 
 	public Button(GraphicsDevice graphics, Vector2 pos, string name, ButtonVisuals buttonVisuals) {
-		ScrollY = 0;
 		RelativePos = pos;
 		AbsolutePos = pos;
 		Name = name;
@@ -33,14 +32,15 @@ public class Button {
 
 /* ---------------------------- Getters / Setters --------------------------- */
 
-	public virtual void SetRelativePos(Vector2 pos) {
-		RelativePos = pos;
-		AbsolutePos = new(RelativePos.X, RelativePos.Y + ScrollY);
+	public int Height => ButtonVisuals.Texture.Height;
+	public int Width => ButtonVisuals.Texture.Width;
+
+	public virtual void SetAbsolutePos(Vector2 pos) {
+		AbsolutePos = pos;
 	}
 
-	public virtual void SetScrollY(int scrollAmount) {
-		ScrollY += scrollAmount;
-		AbsolutePos = new(RelativePos.X, RelativePos.Y + ScrollY);
+	public virtual void Scroll(float scrollAmount) {
+		AbsolutePos.Y += scrollAmount;
 	}
 
 	public void SetColor(Color color) => ButtonVisuals.SetColor(color);
@@ -66,9 +66,12 @@ public class Button {
 			_onClick();
 		}
 
-		if (_onClickHold != null && IsMouseOver() && MouseManager.IsLeftButtonPressed()) {
+		if (_onClickHold != null && (IsMouseOver() || _isHeld) && MouseManager.IsLeftButtonPressed()) {
 			_onClickHold();
+			_isHeld = true;
 		}
+		else
+			_isHeld = false;
 
 		if (_onScroll != null && IsMouseOver() && MouseManager.MouseWheelState != MouseManager.NO_SCROLL) {
 			_onScroll();
@@ -86,16 +89,16 @@ public class Button {
 
 	public virtual void RenderPartial(SpriteBatch spriteBatch, float limitY, int mode) {
 		if (mode == 1)
-			spriteBatch.Draw(ButtonVisuals.Texture, AbsolutePos, new Rectangle(0, 0, ButtonVisuals.Texture.Width, (int)(limitY - AbsolutePos.Y)), ButtonVisuals.Color);
+			spriteBatch.Draw(ButtonVisuals.Texture, AbsolutePos, new Rectangle(0, 0, Width, (int)(limitY - AbsolutePos.Y)), ButtonVisuals.Color);
 		else
-			spriteBatch.Draw(ButtonVisuals.Texture, new Vector2(AbsolutePos.X, limitY), new Rectangle(0, (int)(limitY - AbsolutePos.Y), ButtonVisuals.Texture.Width, (int)(ButtonVisuals.Texture.Height - (limitY - AbsolutePos.Y))), ButtonVisuals.Color);
+			spriteBatch.Draw(ButtonVisuals.Texture, new Vector2(AbsolutePos.X, limitY), new Rectangle(0, (int)(limitY - AbsolutePos.Y), Width, (int)(Height - (limitY - AbsolutePos.Y))), ButtonVisuals.Color);
 	}
 
 /* ---------------------------------- Utils --------------------------------- */
 
 	public bool IsMouseOver() {
-		if (MouseManager.MouseX > AbsolutePos.X && MouseManager.MouseX < AbsolutePos.X + ButtonVisuals.Texture.Width
-			&& MouseManager.MouseY > AbsolutePos.Y && MouseManager.MouseY < AbsolutePos.Y + ButtonVisuals.Texture.Height)
+		if (MouseManager.MouseX > AbsolutePos.X && MouseManager.MouseX < AbsolutePos.X + Width
+			&& MouseManager.MouseY > AbsolutePos.Y && MouseManager.MouseY < AbsolutePos.Y + Height)
 			return true;
 		return false;
 	}
