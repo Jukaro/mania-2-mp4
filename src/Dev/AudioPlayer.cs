@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Xna.Framework.Input;
 using NAudio.Wave;
 
 namespace Rythmify.UI;

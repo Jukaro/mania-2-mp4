@@ -39,7 +39,7 @@ public class OsuReplay
 
 		_skin = new() { HitPosition = 384 };
 
-		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount);
+		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount, false);
 
 		_beatmapPlayer = new(_beatmap, _skin, _replay);
 		_inputsPlayer = new(_replay);
@@ -54,12 +54,12 @@ public class OsuReplay
 		_menu = new(graphicsDevice);
 		_menu.Init();
 
-		ButtonVisuals buttonVisuals = new(graphicsDevice, 300, 50, Color.Red) {
+		Visuals visuals = new(graphicsDevice, 300, 50, Color.Red) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
 
-		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 10, 10, UpdateSpeedMultiplier, buttonVisuals);
+		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 10, 10, UpdateSpeedMultiplier, visuals);
 	}
 
 	public void Update(GameTime gameTime)
@@ -68,7 +68,7 @@ public class OsuReplay
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
 		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
 
-		_menu.アップデート(_beatmapPlayer, _inputsPlayer, _audioPlayer, _replay);
+		_menu.アップデート(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _skin);
 		_test.Update();
 	}
 

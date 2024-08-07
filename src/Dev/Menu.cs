@@ -1,10 +1,15 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Rythmify.Core;
+using Rythmify.Core.Beatmap;
+using Rythmify.Core.BeatmapDB;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
-using System;
+using Rythmify.Core.Shared;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Rythmify.UI;
 
@@ -18,10 +23,21 @@ public class Menu {
 	private KeyboardKey _F3;
 	private KeyboardKey _F4;
 
-	private ButtonContainer _buttonContainer;
+	private UIElementContainer _mainContainer;
+	private UIElementContainer _sideMenu;
+	private ReplaySelector _replaySelector;
+	private BeatmapSelector _beatmapSelector;
 
 	private bool _play;
 	private bool _isPlaying;
+
+	private Texture2D _testBG;
+	private Texture2D _testBG2;
+
+	private int _beatmapsPageIndex = 0;
+	private Dictionary<string, BeatmapWithScores> _beatmaps = new();
+
+	private List<Visuals> _visualsList = new();
 
 	public Menu(GraphicsDevice graphics) {
 		_graphics = graphics;
@@ -51,109 +67,176 @@ public class Menu {
 		gradientListsList.Add(BlackRedGradient);
 	}
 
-	public void InitButtonVisualsList(List<ButtonVisuals> buttonVisualsList, List<GradientList> gradientListsList) {
-		ButtonVisuals basicBlackButton = new(_graphics, 100, 50, Color.Black) {
+	public void InitVisualsList(List<Visuals> _visualsList, List<GradientList> gradientListsList) {
+		// 0
+		Visuals basicBlackButton = new(_graphics, 100, 50, Color.Black) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
-		buttonVisualsList.Add(basicBlackButton);
+		_visualsList.Add(basicBlackButton);
 
-		ButtonVisuals basicRGBButton = new(_graphics, 300, 50, Color.White) {
+		// 1
+		Visuals basicRGBButton = new(_graphics, 300, 50, Color.White) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
 		basicRGBButton.SetGradientAsColor(gradientListsList[0], 10);
-		buttonVisualsList.Add(basicRGBButton);
+		_visualsList.Add(basicRGBButton);
 
-		ButtonVisuals basicBlackRedButton = new(_graphics, 100, 50, Color.White) {
+		// 2
+		Visuals basicBlackRedButton = new(_graphics, 100, 50, Color.White) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
 		basicBlackRedButton.SetGradientAsColor(gradientListsList[1], 100);
-		buttonVisualsList.Add(basicBlackRedButton);
+		_visualsList.Add(basicBlackRedButton);
 
-		ButtonVisuals basicThinBlackRedButton = new(_graphics, 100, 10, Color.White) {
+		// 3
+		Visuals basicThinBlackRedButton = new(_graphics, 100, 10, Color.White) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
 		basicThinBlackRedButton.SetGradientAsColor(gradientListsList[1], 100);
-		buttonVisualsList.Add(basicThinBlackRedButton);
+		_visualsList.Add(basicThinBlackRedButton);
 
-		ButtonVisuals basicThickBlackRedButton = new(_graphics, 200, 200, Color.White) {
+		// 4
+		Visuals beatmapDropdown = new(_graphics, 600, 800, Color.White) {
 			BlinkOnMouseClick = false,
 			BlinkOnMouseOver = false
 		};
-		basicThickBlackRedButton.SetGradientAsColor(gradientListsList[0], 10);
-		buttonVisualsList.Add(basicThickBlackRedButton);
+		beatmapDropdown.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(beatmapDropdown);
+
+		// 5
+		Visuals beatmapDisplay = new(_graphics, 600, 100, Color.DarkGray) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		_visualsList.Add(beatmapDisplay);
+
+		// 6
+		Visuals scoreDropdown = new(_graphics, 600, 800, Color.White) {
+			BlinkOnMouseClick = false,
+			BlinkOnMouseOver = false
+		};
+		scoreDropdown.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(scoreDropdown);
+
+		// 7
+		Visuals scoreDisplay = new(_graphics, 600, 100, Color.DarkGray) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		_visualsList.Add(scoreDisplay);
 	}
 
 	public void Init() {
 		List<GradientList> gradientListsList = new();
-		List<ButtonVisuals> buttonVisualsList = new();
+
 		InitGradientListsList(gradientListsList);
-		InitButtonVisualsList(buttonVisualsList, gradientListsList);
+		InitVisualsList(_visualsList, gradientListsList);
 
-		_buttonContainer = new(_graphics, 500, 1000, new(1000, 0), "firstButtonContainer", Color.Bisque);
-		_buttonContainer.SetGradientAsColor(gradientListsList[0], 255);
+		_mainContainer = new UIElementContainer(_graphics, _graphics.Viewport.Bounds.Width, _graphics.Viewport.Bounds.Height, new Vector2(0, 0), "mainContainer", Color.Transparent);
 
-		for (int i = 0; i < 10; i++) {
-			_buttonContainer.Add(new(_graphics, new(0, 50 * i + 10 * i), "michel" + i, buttonVisualsList[0]));
-			_buttonContainer[i].SetColor(new Color(Math.Min(255, i * 20), 0, 0));
+		_sideMenu = new UIElementContainer(_graphics, _graphics.Viewport.Bounds.Width - 1000, 1000, new(1000, 0), "sideMenu", new Color(100, 100, 100));
+		_mainContainer.Add(_sideMenu);
+
+		_sideMenu.Add(new ToggleButton(_graphics, new(0, 50 * 2 + 10 * 2), "Play", Play, Pause, _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(200, 50 * 2 + 10 * 2), "NextPage", _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(400, 50 * 2 + 10 * 2), "PreviousPage", _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(600, 50 * 2 + 10 * 2), "DisplayScores", _visualsList[0]));
+		if (_sideMenu["DisplayScores"] is Button displayScores)
+			displayScores.SetOnClick(() => _replaySelector.Hide = !_replaySelector.Hide);
+
+		if (_sideMenu["NextPage"] is Button button)
+			button.SetOnClick(NextPage);
+		if (_sideMenu["PreviousPage"] is Button button2)
+			button2.SetOnClick(PreviousPage);
+
+		BeatmapDB beatmapDB = BeatmapDBParser.Parse("D:/osssu/osu!.db");
+
+		// Logger.LogDebug($"{beatmapDB}");
+
+		List<ReplayData> replays = new();
+		List<string> replayPaths = new();
+
+		// string[] fileArray = Directory.GetFiles(@"D:\osssu\Data\r", "*.osr");
+		string[] fileArray = Directory.GetFiles(@"D:\osssu\Replays", "*.osr");
+		Logger.LogDebug($"Nb of files: {fileArray.Count()}");
+		for (int i = 0; i < fileArray.Count(); i++)
+			// if (fileArray[i].EndsWith("OsuMania.osr"))
+				replayPaths.Add(fileArray[i]);
+
+		var watch = new System.Diagnostics.Stopwatch();
+		watch.Start();
+
+		int count = 0;
+		foreach (string path in replayPaths) {
+			if (count % 1000 == 0)
+				Logger.LogDebug($"File number: {count}");
+			ReplayData replay = ReplayParser.Parse(path, 4, true);
+			if (!beatmapDB.Beatmaps.ContainsKey(replay.BeatmapMD5) || replay.GameMode != GameMode.Mania)
+				continue;
+			if (!_beatmaps.ContainsKey(replay.BeatmapMD5))
+				_beatmaps[replay.BeatmapMD5] = new BeatmapWithScores(beatmapDB.Beatmaps[replay.BeatmapMD5]);
+			_beatmaps[replay.BeatmapMD5].AddReplay(replay);
+			count++;
 		}
 
-		_buttonContainer[2] = new Button(_graphics, new(0, 50 * 2 + 10 * 2), "michel2", buttonVisualsList[1]);
-		_buttonContainer[3] = new SliderButton(_graphics, new(0, 50 * 3 + 10 * 3), "Slider", 1, 255, 10, (double d) => _buttonContainer.SetGradientAsColor(gradientListsList[0], (int)d), buttonVisualsList[1]);
-		_buttonContainer[3].ButtonVisuals.BlinkOnMouseClick = false;
-		_buttonContainer[3].ButtonVisuals.BlinkOnMouseOver = false;
+		watch.Stop();
+		Logger.LogDebug($"Time elapsed: {watch.ElapsedMilliseconds}ms");
 
-		_buttonContainer.Add(new(_graphics, new(300, 50 + 10), "fixed1", buttonVisualsList[0]) {
-			IsScrollable = false
-		});
+		Logger.LogDebug($"Number of maps: {_beatmaps.Count()}, number of replays: {count}");
 
-		_buttonContainer[4] = new ToggleButton(_graphics, new(0, 50 * 4 + 10 * 4), "Play", Play, Pause, buttonVisualsList[0]);
+		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, _visualsList[6], _visualsList[7]);
+		_replaySelector.SetColor(Color.Transparent);
+		_replaySelector.Hide = true;
+		_mainContainer.Add(_replaySelector);
 
-		// _buttonContainer["michel578"] = new ButtonContainer(_graphics, 200, 200, new(0, 0), "jsp", new(0, 0, 255));
+		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, _visualsList[4], _visualsList[5]);
+		_beatmapSelector.SetColor(Color.Transparent);
+		_sideMenu.Add(_beatmapSelector);
+		_beatmapSelector.Init(_beatmaps, 0, _replaySelector);
 
-		int pos1 = 1000;
+		// string texturePath2 = "E:/osu maps de giga ultra mort/2112649 Camellia - Kisaragi/61163969_p0.jpg";
+		// _testBG = Texture2D.FromFile(_graphics, texturePath2);
+	}
 
-		_buttonContainer[5] = new ButtonContainer(_graphics, 200, 200, new(0, pos1), "secondButtonContainer", new(0, 0, 255));
-		// _buttonContainer[5].SetAbsolutePos(new Vector2(_buttonContainer.AbsolutePos.X, 2000)); // jsp quoi faire pour ça en relative
-		// _buttonContainer[5] = new Button(_graphics, new(0, 2000), "secondButtonContainer", buttonVisualsList[0]);
+	private void NextPage() {
+		_beatmapsPageIndex++;
+		_beatmapSelector.UpdateBeatmapsDropdown(_beatmaps, _beatmapsPageIndex * 20, _replaySelector);
+	}
 
-		if (_buttonContainer["secondButtonContainer"] is ButtonContainer buttonContainer) {
-			for (int i = 0; i < 5; i++)
-				buttonContainer.Add(new(_graphics, 100, 10, new(0, 50 * i + 10 * i), "pierre" + i, new Color(0, 255, 0)));
-			// buttonContainer[1] = new ButtonContainer(_graphics, 150, 100, new(0, 50 * 1 + 10 * 1), "thirdButtonContainer", new(255, 0, 255));
-			// buttonContainer[1].SetGradientAsColor(gradientListsList[1], 255);
-			// buttonContainer.Add(new SliderButton(_graphics, new(0, 0), "pierre4", -2, 2, 10, (double d) => Logger.LogDebug($"value: {d}"), buttonVisualsList[2]));
-		}
-
-		_buttonContainer[7] = new Dropdown(_graphics, new(0, 700), 1, "firstDropdown", buttonVisualsList[4]);
-		if (_buttonContainer["firstDropdown"] is Dropdown dropdown) {
-			for (int i = 0; i < 100; i++) {
-				dropdown.Add(new(_graphics, new(15, 0), "drop" + i, buttonVisualsList[3]));
-				dropdown[i].SetColor(new Color(0, 25 * (i % 10), 0));
-			}
-		}
-
-		// Scrollbar test = new Scrollbar(_graphics, 50, 500, )
-
-		// ContentManager contentManager = new(serviceProvider);
-
+	private void PreviousPage() {
+		if (_beatmapsPageIndex == 0)
+			return;
+		_beatmapsPageIndex--;
+		_beatmapSelector.UpdateBeatmapsDropdown(_beatmaps, _beatmapsPageIndex * 20, _replaySelector);
 	}
 
 	private void Play() {
 		_play = true;
-		_buttonContainer["Play"].SetColor(new Color(0, 255, 0));
+		_sideMenu["Play"].SetColor(new Color(0, 255, 0));
 	}
 
 	private void Pause() {
 		_play = false;
-		_buttonContainer["Play"].SetColor(new Color(255, 0, 0));
+		_sideMenu["Play"].SetColor(new Color(255, 0, 0));
 	}
 
-	public void アップデート(BeatmapPlayer beatmapPlayer, InputsPlayer inputsPlayer, AudioPlayer audioPlayer, ReplayData replay) {
+	public void アップデート(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
 		MouseManager.UpdateMouseState();
+
+		if (_replaySelector.NeedToUpdatePlayers) {
+
+			if (_beatmapSelector.SelectedBeatmap != null && _replaySelector.SelectedReplay != null) {
+				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin, _replaySelector.SelectedReplay);
+				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay);
+				Logger.LogDebug($"AudioPath: {_beatmapSelector.SelectedBeatmap.AudioPath}");
+				audioPlayer = new AudioPlayer(_beatmapSelector.SelectedBeatmap.AudioPath);
+			}
+			_replaySelector.NeedToUpdatePlayers = false;
+		}
 
 		if (_play && !_isPlaying) {
 			beatmapPlayer.Play();
@@ -172,10 +255,11 @@ public class Menu {
 			beatmapPlayer.Reset(replay);
 			inputsPlayer.Init(replay);
 			audioPlayer.Reset();
+			_isPlaying = false;
 
-			beatmapPlayer.Play();
-			inputsPlayer.Play();
-			audioPlayer.Play();
+			// beatmapPlayer.Play();
+			// inputsPlayer.Play();
+			// audioPlayer.Play();
 		}
 
 		if (_volumeUp.IsPressed())
@@ -189,11 +273,10 @@ public class Menu {
 		if (_F4.IsPressed())
 			beatmapPlayer.ScrollSpeedUp();
 
-		_buttonContainer.Update();
+		_mainContainer.Update();
 	}
 
 	public void レンダー(SpriteBatch spriteBatch) {
-		_buttonContainer.Render(spriteBatch);
+		_mainContainer.Render(spriteBatch);
 	}
-
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Rythmify.Core.Shared;
 
 namespace Rythmify.Core.Replay;
@@ -68,9 +69,10 @@ public static partial class ReplayParser {
 		return result;
 	}
 
-	public static ReplayData Parse(string filePath, int laneCount) {
+	public static ReplayData Parse(string filePath, int laneCount, bool skipInputsParsing) {
 		var bytes = File.ReadAllBytes(filePath);
 		int currentByteIndex = 0;
+
 
 		if (!Enum.IsDefined(typeof(GameMode), (int)bytes[currentByteIndex]))
 			throw new ArgumentException($"Unexpected argument type for enum GameMode: {bytes[currentByteIndex]}");
@@ -97,8 +99,15 @@ public static partial class ReplayParser {
 		replay.LifeBar = ParseStringFromOSR(bytes, ref currentByteIndex);
 		replay.TimeStamp = ParseLongFromOSR(bytes, ref currentByteIndex);
 		replay.CompressedReplayLength = ParseIntFromOSR(bytes, ref currentByteIndex);
-		parseInputs(bytes, replay.CompressedReplayLength, ref currentByteIndex, ref replay);
+		if (skipInputsParsing) {
+			currentByteIndex += replay.CompressedReplayLength;
+			replay.Inputs = null;
+		}
+		else
+			parseInputs(bytes, replay.CompressedReplayLength, ref currentByteIndex, ref replay);
 		replay.ScoreID = ParseLongFromOSR(bytes, ref currentByteIndex);
+
+		replay.FilePath = filePath;
 
 		return replay;
 	}

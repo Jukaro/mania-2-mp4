@@ -30,6 +30,8 @@ public class ReplayData {
 	// Used to store the offset between the beginning of the beatmap and the beginning of the replay
 	public int StartDelay;
 
+	public string FilePath;
+
 	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
 		LaneCount = laneCount;
