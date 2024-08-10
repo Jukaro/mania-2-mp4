@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Rythmify.Core;
 
 namespace Rythmify.UI;
 
@@ -49,6 +50,7 @@ public class Game1 : Game
 		if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
 
+		TaskManager.Update();
 		_osuReplay.Update(gameTime);
 
 		base.Update(gameTime);

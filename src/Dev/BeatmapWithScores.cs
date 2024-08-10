@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Rythmify.Core.Beatmap;
-using Rythmify.Core.BeatmapDB;
+using Rythmify.Core.Databases;
 using Rythmify.Core.Replay;
 using System.IO;
 using System.Linq;
@@ -8,42 +8,39 @@ using System;
 
 public class BeatmapWithScores {
 	public BeatmapData Beatmap = null;
-	public BeatmapDataFromDatabase BeatmapDBInfo;
-	public List<ReplayData> Replays;
-	public string TexturePath;
+	public BeatmapDataFromDatabase BeatmapDBInfo = null;
+	public List<ReplayData> Replays = new();
+	public string TexturePath = null;
 	public string AudioPath;
+	public string FolderPath;
+	public string FilePath;
 
 	public BeatmapWithScores(BeatmapDataFromDatabase beatmapDBInfo) {
 		BeatmapDBInfo = beatmapDBInfo;
-		Replays = new();
-		GetTexturePath();
+		FolderPath = "E:/osu maps de giga ultra mort/" + BeatmapDBInfo.FolderName.Trim() + "/";
+		FilePath = FolderPath + BeatmapDBInfo.Filename;
+		AudioPath = FolderPath + BeatmapDBInfo.AudioFilename;
 	}
 
-	private void GetTexturePath() {
-		string folderPath = "E:/osu maps de giga ultra mort/" + BeatmapDBInfo.FolderName.Trim() + "/";
-		string filePath = folderPath + BeatmapDBInfo.Filename;
-		AudioPath = folderPath + BeatmapDBInfo.AudioFilename;
-		// try {
-		// 	Beatmap = BeatmapParser.Parse(filePath);
-		// } catch (Exception e) {
-		// 	Logger.LogDebug($"Couldn't load the map at: {filePath}");
-		// }
-		string[] lines = File.ReadAllLines(filePath);
-		// Logger.LogDebug($"filePath: {filePath}");
-		for (int j = 0; j < lines.Count(); j++) {
-			if (lines[j] == "//Background and Video events") {
-				j++;
-				string[] splitted_line = lines[j].Split(',');
-				if (splitted_line.Length == 1) {
-					TexturePath = "";
+	public void SetTexturePath() {
+		using (StreamReader sr = new StreamReader(FilePath)) {
+			string line;
+
+			while ((line = sr.ReadLine()) != null) {
+				if (line == "//Background and Video events") {
+					line = sr.ReadLine();
+					if (!line.Contains(',')) {
+						TexturePath = "";
+						break;
+					}
+					string[] splitted_line = line.Split(',');
+					while (splitted_line[0] != "0") {
+						line = sr.ReadLine();
+						splitted_line = line.Split(',');
+					}
+					TexturePath = FolderPath + splitted_line[2].Trim('\"');
 					break;
 				}
-				while (splitted_line[0]!= "0" && splitted_line[1] != "0") {
-					j++;
-					splitted_line = lines[j].Split(',');
-				}
-				TexturePath = folderPath + splitted_line[2].Trim('\"');
-				break;
 			}
 		}
 	}

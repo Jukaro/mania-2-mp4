@@ -18,7 +18,7 @@ public class InputsPlayer {
 		_replay = replay;
 		RenderedInputs = new bool[replay.LaneCount];
 		CurrentInputIndex = 0;
-		CurrentPlayTime = 0;
+		CurrentPlayTime = replay.StartDelay;
 		IsPlaying = false;
 	}
 

@@ -39,15 +39,32 @@ public class ScrollInfo {
 		return noteSpeed;
 	}
 
+	private static int FindTimingPointAtTime(BeatmapTimingPoint[] timingPoints, double time) {
+		int left = 0;
+		int right = timingPoints.Length - 1;
+		int result = -1;
+
+		while (left <= right) {
+			int mid = left + (right - left) / 2;
+
+			if (timingPoints[mid].Time <= time) {
+				result = mid;
+				left = mid + 1;
+			} else {
+				right = mid - 1;
+			}
+		}
+
+		return result;
+	}
+
 	public double GetScrollTime(double from, double to, double hitObjectTime, BeatmapTimingPoint[] timingPoints) {
 		double timeTook = 0;
 
 		double currentPos = from;
 		double currentTime = hitObjectTime;
 
-		int timingPointIndex = timingPoints.Length - 1;
-		while (timingPointIndex != -1 && timingPoints[timingPointIndex].Time > currentTime)
-			timingPointIndex--;
+		int timingPointIndex = FindTimingPointAtTime(timingPoints, hitObjectTime);
 
 		while (currentPos > to) {
 			double sliderVelocityMultiplier = timingPointIndex >= 0 ? timingPoints[timingPointIndex].SliderVelocityMultiplier : 1;
@@ -82,9 +99,7 @@ public class ScrollInfo {
 		double currentTime = fromTime;
 		double scrolledDistance = 0;
 
-		int timingPointIndex = 0;
-		while (timingPointIndex != timingPoints.Length && timingPoints[timingPointIndex].Time <= fromTime)
-			timingPointIndex++;
+		int timingPointIndex = FindTimingPointAtTime(timingPoints, fromTime) + 1;
 
 		while (currentTime < toTime) {
 			double sliderVelocityMultiplier = timingPointIndex != timingPoints.Length && timingPointIndex != 0 ? timingPoints[timingPointIndex - 1].SliderVelocityMultiplier : 1;

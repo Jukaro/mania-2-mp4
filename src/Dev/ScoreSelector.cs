@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core.Replay;
@@ -17,6 +18,7 @@ public class ReplaySelector : Dropdown {
 	public void UpdateScoresDropdown(BeatmapWithScores beatmap) {
 		Logger.LogDebug($"Updating scores with beatmap: {beatmap.BeatmapDBInfo.SongTitle}");
 		RemoveAll();
+		Texture2D texture = Texture2D.FromFile(_graphics, beatmap.TexturePath);
 		for (int i = 0; i < beatmap.Replays.Count; i++) {
 			Add(new Button(_graphics, new Vector2(0, 0), "replay" + i, _scoreVisuals));
 
@@ -32,7 +34,7 @@ public class ReplaySelector : Dropdown {
 			UIElementsList[i].Visuals.Texts.Add(new Text(player, new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text(score, new Vector2(0, 15)));
 			UIElementsList[i].Visuals.Texts.Add(new Text(judgements, new Vector2(0, 30)));
-			UIElementsList[i].Visuals.SetTextureFromFile(beatmap.TexturePath);
+			UIElementsList[i].Visuals.SetTexture(texture);
 
 			if (UIElementsList[i] is Button button) {
 				int index = i;

@@ -26,10 +26,10 @@ public class BeatmapPlayer {
 
 	public List<GameNote> RenderedNotes { get; private set; }
 
-	public BeatmapPlayer(BeatmapData beatmap, Skin skin, ReplayData replayData) {
+	public BeatmapPlayer(BeatmapData beatmap, Skin skin) {
 		_beatmap = beatmap;
 		_isPlaying = false;
-		_currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
+		_currentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
 		_skin = skin;
 		_spawnedNotes = 0;

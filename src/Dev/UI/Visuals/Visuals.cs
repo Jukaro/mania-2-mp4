@@ -1,7 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
+using StbImageSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Rythmify.UI;
 
@@ -38,6 +41,7 @@ public class Visuals {
 
 	public int Width;
 	public int Height;
+	private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
 
 	public Visuals(GraphicsDevice graphics, int width, int height, Color color) {
 		_graphics = graphics;
@@ -76,31 +80,74 @@ public class Visuals {
 		SetColor(color);
 	}
 
-	public void SetTextureFromFile(string path) {
+	public void SetTextureFromFileAsync(string path) {
+		if (path == null || path == "")
+			return;
+
 		try {
-			_baseColor = Color.DarkGray;
-			Color = _baseColor;
-			Texture = Texture2D.FromFile(_graphics, path);
-			if (Texture.Width > Width || Texture.Height > Height) {
-				RealTexture = Texture;
-				Texture = ResizeTexture(RealTexture, Width, Height);
-			}
-			BaseTextureData = new Color[Texture.Width * Texture.Height];
-			MouseOverTextureData = new Color[Texture.Width * Texture.Height];
-			OnClickTextureData = new Color[Texture.Width * Texture.Height];
-			Texture.GetData(BaseTextureData);
-			SetMouseOverTexture();
-			SetOnClickTexture();
+			TaskEnBien<ImageResult> task = new() {
+				Callback = UpdateTexture
+			};
+			task.Start(() => {
+				ImageResult res = GetImageResultFromFile(path);
+				return res;
+			});
 		} catch (Exception e) {
 			Logger.LogDebug($"Can't set texture: {e}");
 		}
-		// Init(Color.White);
+	}
+
+	public void SetTextureFromFile(string path) {
+		if (path == null || path == "")
+			return;
+		UpdateTexture(GetImageResultFromFile(path));
+	}
+
+	private void UpdateTexture(ImageResult img) {
+		Texture2D texture = new Texture2D(_graphics, img.Width, img.Height);
+		texture.SetData(img.Data);
+		SetTexture(texture);
+	}
+
+	private ImageResult GetImageResultFromFile(string path) {
+		using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+		if (stream.CanSeek && stream.Length == stream.Position)
+		{
+			stream.Seek(0L, SeekOrigin.Begin);
+		}
+
+		ImageResult imageResult;
+		if (stream.CanSeek)
+		{
+			imageResult = ImageResult.FromStream(stream, StbImageSharp.ColorComponents.RedGreenBlueAlpha);
+		}
+		else
+		{
+			using MemoryStream memoryStream = new MemoryStream();
+			stream.CopyTo(memoryStream);
+			memoryStream.Seek(0L, SeekOrigin.Begin);
+			imageResult = ImageResult.FromStream(memoryStream, StbImageSharp.ColorComponents.RedGreenBlueAlpha);
+		}
+
+		return imageResult;
 	}
 
 	public void SetTexture(Texture2D texture) {
-		Color[] data = new Color[texture.Width * texture.Height];
-		texture.GetData(data);
-		Texture.SetData(data);
+		_baseColor = Color.DarkGray;
+		Color = _baseColor;
+		Texture = texture;
+
+		if (Texture.Width > Width || Texture.Height > Height) {
+			RealTexture = Texture;
+			Texture = ResizeTexture(RealTexture, Width, Height);
+		}
+
+		BaseTextureData = new Color[Texture.Width * Texture.Height];
+		MouseOverTextureData = new Color[Texture.Width * Texture.Height];
+		OnClickTextureData = new Color[Texture.Width * Texture.Height];
+		Texture.GetData(BaseTextureData);
+
 		SetMouseOverTexture();
 		SetOnClickTexture();
 	}

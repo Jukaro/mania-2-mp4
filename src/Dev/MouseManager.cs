@@ -17,7 +17,7 @@ public static class MouseManager {
 	public static int MouseX = 0;
 	public static int MouseY = 0;
 
-	public static void UpdateMouseState() {
+	public static void Update() {
 		_state = Mouse.GetState();
 
 		if (_state.ScrollWheelValue != _lastMouseWheelState) {

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Rythmify.Core.Beatmap;
 using Rythmify.Core.Shared;
 
-namespace Rythmify.Core.BeatmapDB;
+namespace Rythmify.Core.Databases;
 
 public class BeatmapDB {
 	public int GameVersion;

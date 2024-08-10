@@ -2,14 +2,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core;
-using Rythmify.Core.Beatmap;
-using Rythmify.Core.BeatmapDB;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
-using Rythmify.Core.Shared;
+using Rythmify.Core.Databases;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Threading;
 
 namespace Rythmify.UI;
 
@@ -35,7 +32,8 @@ public class Menu {
 	private Texture2D _testBG2;
 
 	private int _beatmapsPageIndex = 0;
-	private Dictionary<string, BeatmapWithScores> _beatmaps = new();
+	private BeatmapDB _beatmapsDB;
+	private ScoreDB _scoresDB;
 
 	private List<Visuals> _visualsList = new();
 
@@ -133,6 +131,9 @@ public class Menu {
 	public void Init() {
 		List<GradientList> gradientListsList = new();
 
+		SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+		// Logger.LogDebug($"Sync context: {SynchronizationContext.Current}");
+
 		InitGradientListsList(gradientListsList);
 		InitVisualsList(_visualsList, gradientListsList);
 
@@ -153,40 +154,8 @@ public class Menu {
 		if (_sideMenu["PreviousPage"] is Button button2)
 			button2.SetOnClick(PreviousPage);
 
-		BeatmapDB beatmapDB = BeatmapDBParser.Parse("D:/osssu/osu!.db");
-
-		// Logger.LogDebug($"{beatmapDB}");
-
-		List<ReplayData> replays = new();
-		List<string> replayPaths = new();
-
-		// string[] fileArray = Directory.GetFiles(@"D:\osssu\Data\r", "*.osr");
-		string[] fileArray = Directory.GetFiles(@"D:\osssu\Replays", "*.osr");
-		Logger.LogDebug($"Nb of files: {fileArray.Count()}");
-		for (int i = 0; i < fileArray.Count(); i++)
-			// if (fileArray[i].EndsWith("OsuMania.osr"))
-				replayPaths.Add(fileArray[i]);
-
-		var watch = new System.Diagnostics.Stopwatch();
-		watch.Start();
-
-		int count = 0;
-		foreach (string path in replayPaths) {
-			if (count % 1000 == 0)
-				Logger.LogDebug($"File number: {count}");
-			ReplayData replay = ReplayParser.Parse(path, 4, true);
-			if (!beatmapDB.Beatmaps.ContainsKey(replay.BeatmapMD5) || replay.GameMode != GameMode.Mania)
-				continue;
-			if (!_beatmaps.ContainsKey(replay.BeatmapMD5))
-				_beatmaps[replay.BeatmapMD5] = new BeatmapWithScores(beatmapDB.Beatmaps[replay.BeatmapMD5]);
-			_beatmaps[replay.BeatmapMD5].AddReplay(replay);
-			count++;
-		}
-
-		watch.Stop();
-		Logger.LogDebug($"Time elapsed: {watch.ElapsedMilliseconds}ms");
-
-		Logger.LogDebug($"Number of maps: {_beatmaps.Count()}, number of replays: {count}");
+		_beatmapsDB = BeatmapDBParser.Parse("D:/osssu/osu!.db");
+		_scoresDB = ScoreDBParser.Parse("D:/osssu/scores.db", _beatmapsDB);
 
 		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, _visualsList[6], _visualsList[7]);
 		_replaySelector.SetColor(Color.Transparent);
@@ -196,7 +165,7 @@ public class Menu {
 		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, _visualsList[4], _visualsList[5]);
 		_beatmapSelector.SetColor(Color.Transparent);
 		_sideMenu.Add(_beatmapSelector);
-		_beatmapSelector.Init(_beatmaps, 0, _replaySelector);
+		_beatmapSelector.Init(_scoresDB.Beatmaps, 0, _replaySelector);
 
 		// string texturePath2 = "E:/osu maps de giga ultra mort/2112649 Camellia - Kisaragi/61163969_p0.jpg";
 		// _testBG = Texture2D.FromFile(_graphics, texturePath2);
@@ -204,14 +173,14 @@ public class Menu {
 
 	private void NextPage() {
 		_beatmapsPageIndex++;
-		_beatmapSelector.UpdateBeatmapsDropdown(_beatmaps, _beatmapsPageIndex * 20, _replaySelector);
+		_beatmapSelector.UpdateBeatmapsDropdown(_scoresDB.Beatmaps, _beatmapsPageIndex * 20, _replaySelector);
 	}
 
 	private void PreviousPage() {
 		if (_beatmapsPageIndex == 0)
 			return;
 		_beatmapsPageIndex--;
-		_beatmapSelector.UpdateBeatmapsDropdown(_beatmaps, _beatmapsPageIndex * 20, _replaySelector);
+		_beatmapSelector.UpdateBeatmapsDropdown(_scoresDB.Beatmaps, _beatmapsPageIndex * 20, _replaySelector);
 	}
 
 	private void Play() {
@@ -225,12 +194,13 @@ public class Menu {
 	}
 
 	public void アップデート(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
-		MouseManager.UpdateMouseState();
+		MouseManager.Update();
+		KeyboardManager.Update();
 
 		if (_replaySelector.NeedToUpdatePlayers) {
 
 			if (_beatmapSelector.SelectedBeatmap != null && _replaySelector.SelectedReplay != null) {
-				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin, _replaySelector.SelectedReplay);
+				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin);
 				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay);
 				Logger.LogDebug($"AudioPath: {_beatmapSelector.SelectedBeatmap.AudioPath}");
 				audioPlayer = new AudioPlayer(_beatmapSelector.SelectedBeatmap.AudioPath);
