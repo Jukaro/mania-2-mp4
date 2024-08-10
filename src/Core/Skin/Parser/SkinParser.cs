@@ -18,5 +18,8 @@ public static class SkinParser {
 
 		Logger.LogInfo(skin.General.ToString());
 		Logger.LogInfo(skin.Colors.ToString());
+		Logger.LogInfo(skin.Fonts.ToString());
+		Logger.LogInfo(skin.CatchTheBeat.ToString());
+		skin.Mania.Values.Select(section => section.ToString()).ToList().ForEach(Logger.LogInfo);
 	}
 }
