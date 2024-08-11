@@ -40,7 +40,10 @@ public class UIElement {
 	}
 
 	public void SetColor(Color color) => Visuals.SetColor(color);
-	public void SetColor(Color[] colors) => Visuals.SetTextureRelatedData(colors);
+	public void SetColor(Color[] colors) {
+		Visuals.Texture.SetData(colors);
+		Visuals.SetTextureRelatedData();
+	}
 	public void SetGradientAsColor(GradientList gradientList, int step) => Visuals.SetGradientAsColor(gradientList, step);
 
 /* --------------------------------- Update --------------------------------- */

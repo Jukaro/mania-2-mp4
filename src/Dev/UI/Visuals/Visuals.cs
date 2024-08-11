@@ -64,7 +64,8 @@ public class Visuals {
 		Init(visuals.Color);
 		Color[] colors = new Color[Texture.Width * Texture.Height];
 		visuals.Texture.GetData(colors);
-		SetTextureRelatedData(colors);
+		Texture.SetData(colors);
+		SetTextureRelatedData();
 		BlinkOnMouseOver = visuals.BlinkOnMouseOver;
 		BlinkOnMouseClick = visuals.BlinkOnMouseClick;
 	}
@@ -143,13 +144,14 @@ public class Visuals {
 			Texture = ResizeTexture(RealTexture, Width, Height);
 		}
 
-		BaseTextureData = new Color[Texture.Width * Texture.Height];
-		MouseOverTextureData = new Color[Texture.Width * Texture.Height];
-		OnClickTextureData = new Color[Texture.Width * Texture.Height];
-		Texture.GetData(BaseTextureData);
+		SetTextureRelatedData();
+	}
 
-		SetMouseOverTexture();
-		SetOnClickTexture();
+	public void Resize(int width, int height) {
+		Width = width;
+		Height = height;
+		Texture = ResizeTexture(Texture, Width, Height);
+		SetTextureRelatedData();
 	}
 
 	private Texture2D ResizeTexture(Texture2D texture, int width, int height)
@@ -177,8 +179,10 @@ public class Visuals {
 		return result;
 	}
 
-	public void SetTextureRelatedData(Color[] colors) {
-		Texture.SetData(colors);
+	public void SetTextureRelatedData() {
+		BaseTextureData = new Color[Texture.Width * Texture.Height];
+		MouseOverTextureData = new Color[Texture.Width * Texture.Height];
+		OnClickTextureData = new Color[Texture.Width * Texture.Height];
 		Texture.GetData(BaseTextureData);
 		SetMouseOverTexture();
 		SetOnClickTexture();
@@ -189,7 +193,8 @@ public class Visuals {
 		_baseColor = Color;
 		var colors = new Color[Texture.Height * Texture.Width];
 		Array.Fill(colors, Color);
-		SetTextureRelatedData(colors);
+		Texture.SetData(colors);
+		SetTextureRelatedData();
 	}
 
 	public void SetGradientAsColor(GradientList gradientList, int step) {
@@ -201,7 +206,8 @@ public class Visuals {
 				colors[y * Texture.Width + x] = gradientList.GetColor(index, step);
 			}
 		}
-		SetTextureRelatedData(colors);
+		Texture.SetData(colors);
+		SetTextureRelatedData();
 	}
 
 	private void AddValueToTextureData(Color[] textureData, int value) {

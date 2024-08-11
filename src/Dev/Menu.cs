@@ -167,6 +167,10 @@ public class Menu {
 		_sideMenu.Add(_beatmapSelector);
 		_beatmapSelector.Init(_scoresDB.Beatmaps, 0, _replaySelector);
 
+		InputBox test = new InputBox(_graphics, new (0, 0), "inputBox", _visualsList[0]);
+		test.Visuals.Resize(600, _visualsList[0].Height);
+		_sideMenu.Add(test);
+
 		// string texturePath2 = "E:/osu maps de giga ultra mort/2112649 Camellia - Kisaragi/61163969_p0.jpg";
 		// _testBG = Texture2D.FromFile(_graphics, texturePath2);
 	}
