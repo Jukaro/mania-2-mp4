@@ -25,12 +25,15 @@ public class InputBox : Button {
 
 	private void ManageInput(object sender, KeyPressedEventArgs e) {
 		if (e.KeyChar >= 32 && e.KeyChar <= 126) {
-			// Logger.LogDebug($"key: {e.KeyChar}");
-			Visuals.Texts[0].Str += e.KeyChar.ToString();
+			Logger.LogDebug($"key: {(int)e.KeyChar}");
+			Input += e.KeyChar.ToString();
+			Visuals.Texts[0].Str = Input;
 		}
 		if (e.KeyChar == 8) {
-			if (Visuals.Texts[0].Str.Length > 0)
-				Visuals.Texts[0].Str = Visuals.Texts[0].Str.Remove(Visuals.Texts[0].Str.Length - 1);
+			if (Input.Length > 0) {
+				Input = Input.Remove(Input.Length - 1);
+				Visuals.Texts[0].Str = Input;
+			}
 		}
 	}
 }

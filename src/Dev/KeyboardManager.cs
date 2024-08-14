@@ -46,8 +46,8 @@ public static class KeyboardManager {
 					break;
 				}
 			}
-			// if (state.CapsLock == false)
-			// 	_currentKey -= 32;
+			if ((char)_currentKey >= 'A' && (char)_currentKey <= 'Z' && state.CapsLock == false)
+				_currentKey += 32;
 			OnKeyPressed((char)_currentKey);
 			_previousState = state;
 			RestartWatch();
