@@ -26,6 +26,8 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="SevenZip" Version="19.0.0" />
+    <PackageReference Include="SharpHook" Version="5.3.7" />
+    <PackageReference Include="SharpHook.Reactive" Version="5.3.7" />
     <PackageReference Include="StbImageSharp" Version="2.27.14" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

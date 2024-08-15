@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core;
@@ -65,5 +66,11 @@ public class Game1 : Game
 		_spriteBatch.End();
 
 		base.Draw(gameTime);
+	}
+
+	protected override void OnExiting(object sender, EventArgs args)
+	{
+		ManagedGlobalHook.Instance.Hook.Dispose();
+		base.OnExiting(sender, args);
 	}
 }

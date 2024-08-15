@@ -1,39 +1,52 @@
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.UI;
+using SharpHook;
+using SharpHook.Native;
+
+namespace Rythmify.Dev;
 
 public class InputBox : Button {
-	public string Input;
 	private bool _isListening = false;
+	private readonly List<char> _currentChars = new();
+
+	public string Input => Visuals.Texts[0].Str;
 
 	public InputBox(GraphicsDevice graphics, Vector2 pos, string name, Visuals visuals) : base(graphics, pos, name, visuals) {
-		SetOnClick(OnClick);
+		SetOnClick(Focus);
 		Visuals.Texts.Add(new Text("", new (0, 0)));
 	}
 
-	private void OnClick() {
-		if (!_isListening) {
-			KeyboardManager.KeyPressed += ManageInput;
-			_isListening = true;
-		} else {
-			KeyboardManager.KeyPressed -= ManageInput;
-			_isListening = false;
-		}
+	public void Focus() {
+		if (_isListening) return;
+
+		ManagedGlobalHook.Instance.Hook.KeyTyped += ManageInput;
+		_isListening = true;
 	}
 
-	private void ManageInput(object sender, KeyPressedEventArgs e) {
-		if (e.KeyChar >= 32 && e.KeyChar <= 126) {
-			Logger.LogDebug($"key: {(int)e.KeyChar}");
-			Input += e.KeyChar.ToString();
-			Visuals.Texts[0].Str = Input;
-		}
-		if (e.KeyChar == 8) {
-			if (Input.Length > 0) {
-				Input = Input.Remove(Input.Length - 1);
-				Visuals.Texts[0].Str = Input;
-			}
-		}
+	public void Unfocus() {
+		if (!_isListening) return;
+
+		ManagedGlobalHook.Instance.Hook.KeyTyped -= ManageInput;
+		_isListening = false;
+	}
+
+	private void ManageInput(object sender, KeyboardHookEventArgs e) {
+		if ((int)e.Data.KeyCode >= 32)
+			_currentChars.Add(e.Data.KeyChar);
+
+		if (e.Data.KeyCode == KeyCode.VcBackspace && _currentChars.Count > 0)
+			_currentChars.RemoveAt(_currentChars.Count - 1);
+
+		Visuals.Texts[0].Str = string.Join("", _currentChars);
+	}
+
+	public override void Update() {
+		base.Update();
+
+		if (MouseManager.IsLeftButtonPressed() && !IsMouseOver() && _isListening)
+			Unfocus();
 	}
 }

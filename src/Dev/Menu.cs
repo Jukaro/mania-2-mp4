@@ -8,6 +8,7 @@ using Rythmify.Core.Databases;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using Rythmify.Dev;
 
 namespace Rythmify.UI;
 
@@ -159,8 +160,8 @@ public class Menu {
 		if (_sideMenu["PreviousPage"] is Button button2)
 			button2.SetOnClick(PreviousPage);
 
-		_beatmapsDB = BeatmapDBParser.Parse("D:/osssu/osu!.db");
-		_scoresDB = ScoreDBParser.Parse("D:/osssu/scores.db", _beatmapsDB);
+		_beatmapsDB = BeatmapDBParser.Parse("C:/Users/shiro/AppData/Local/osu!/osu!.db");
+		_scoresDB = ScoreDBParser.Parse("C:/Users/shiro/AppData/Local/osu!/scores.db", _beatmapsDB);
 
 		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, _visualsList[6], _visualsList[7]);
 		_replaySelector.SetColor(Color.Transparent);
@@ -171,22 +172,17 @@ public class Menu {
 		_searchBar.Visuals.Resize(600, _visualsList[0].Height);
 		_sideMenu.Add(_searchBar);
 
-		_query = "BLAST";
+		_query = "";
 		_beatmapsList = _scoresDB.Beatmaps.Values.ToList();
 
-		_sortedBeatmapsList = _beatmapsList
-			.OrderByDescending(beatmap => beatmap.BeatmapDBInfo.SongTitle.Contains(_query, System.StringComparison.OrdinalIgnoreCase))
-			// // .OrderByDescending(beatmap => StringSearch.LevenshteinDistance(search, beatmap.BeatmapDBInfo.SongTitle))
-			// // .ThenBy(beatmap => beatmap.BeatmapDBInfo.SongTitle.Length)
-			.ThenBy(beatmap => beatmap.BeatmapDBInfo.SongTitle)
-			.ToList();
+		_sortedBeatmapsList = FilterSongs(_query);
 
 		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, _visualsList[4], _visualsList[5]);
 		_beatmapSelector.SetColor(Color.Transparent);
 		_sideMenu.Add(_beatmapSelector);
 		_beatmapSelector.Init(_sortedBeatmapsList, 0, _replaySelector);
 
-		// string texturePath2 = "E:/osu maps de giga ultra mort/2112649 Camellia - Kisaragi/61163969_p0.jpg";
+		// string texturePath2 = "C:/Users/shiro/AppData/Local/osu!/Songs/2112649 Camellia - Kisaragi/61163969_p0.jpg";
 		// _testBG = Texture2D.FromFile(_graphics, texturePath2);
 	}
 
@@ -214,7 +210,6 @@ public class Menu {
 
 	public void アップデート(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
 		MouseManager.Update();
-		KeyboardManager.Update();
 
 		if (_replaySelector.NeedToUpdatePlayers) {
 
@@ -230,12 +225,7 @@ public class Menu {
 		if (_searchBar.Input != null && _searchBar.Input != _query) {
 			_query = _searchBar.Input;
 
-			_sortedBeatmapsList = _beatmapsList
-				.OrderByDescending(beatmap => beatmap.BeatmapDBInfo.SongTitle.Contains(_query, System.StringComparison.OrdinalIgnoreCase))
-				// // .OrderByDescending(beatmap => StringSearch.LevenshteinDistance(search, beatmap.BeatmapDBInfo.SongTitle))
-				// // .ThenBy(beatmap => beatmap.BeatmapDBInfo.SongTitle.Length)
-				.ThenBy(beatmap => beatmap.BeatmapDBInfo.SongTitle)
-				.ToList();
+			_sortedBeatmapsList = FilterSongs(_query);
 
 			_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector);
 		}
@@ -276,6 +266,10 @@ public class Menu {
 			beatmapPlayer.ScrollSpeedUp();
 
 		_mainContainer.Update();
+	}
+
+	private List<BeatmapWithScores> FilterSongs(string query) {
+		return _beatmapsList.Where(beatmap => beatmap.BeatmapDBInfo.SongTitle.Contains(query, System.StringComparison.OrdinalIgnoreCase)).ToList();
 	}
 
 	public void レンダー(SpriteBatch spriteBatch) {

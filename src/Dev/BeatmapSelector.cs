@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core.Beatmap;
@@ -30,6 +29,8 @@ public class BeatmapSelector : Dropdown {
 	}
 
 	public void UpdateBeatmapsDropdown(List<BeatmapWithScores> beatmaps, int start, ReplaySelector replaySelector) {
+		ResetButtons();
+
 		for (int i = 0; i < DisplayedBeatmapsCount && start + i < beatmaps.Count; i++) {
 			BeatmapDataFromDatabase beatmap = beatmaps[start + i].BeatmapDBInfo;
 			string title = beatmap.SongTitle + " [" + beatmap.Difficulty + "]";
@@ -53,12 +54,22 @@ public class BeatmapSelector : Dropdown {
 					SelectedBeatmap = beatmaps[start + index];
 					replaySelector.UpdateScoresDropdown(SelectedBeatmap);
 					if (SelectedBeatmap.Beatmap == null) {
-						string folderPath = "E:/osu maps de giga ultra mort/" + SelectedBeatmap.BeatmapDBInfo.FolderName.Trim() + "/";
+						string folderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + SelectedBeatmap.BeatmapDBInfo.FolderName.Trim() + "/";
 						string filePath = folderPath + SelectedBeatmap.BeatmapDBInfo.Filename;
 						SelectedBeatmap.Beatmap = BeatmapParser.Parse(filePath);
 					}
 				});
 			}
+		}
+	}
+
+	private void ResetButtons() {
+		for (int i = 0; i < DisplayedBeatmapsCount; i++) {
+			UIElementsList[i].Visuals.Texts[0] = new Text("", new Vector2(0, 0));
+			UIElementsList[i].Visuals.Texts[1] = new Text("", new Vector2(0, 0));
+			UIElementsList[i].Visuals.Texts[2] = new Text("", new Vector2(0, 0));
+			UIElementsList[i].Visuals.Texts[3] = new Text("", new Vector2(0, 0));
+			UIElementsList[i].Visuals.SetColor(Microsoft.Xna.Framework.Color.Gray);
 		}
 	}
 }

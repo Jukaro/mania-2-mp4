@@ -7,7 +7,7 @@ namespace Rythmify.Core.Replay;
 public static partial class ReplayParser {
 	public static ReplayData Parse(byte[] bytes, int currentByteIndex, int laneCount, bool skipInputsParsing) {
 		ReplayData replay = ParseBytes(bytes, currentByteIndex, laneCount, skipInputsParsing);
-		replay.FilePath = "D:/osssu/Data/r/" + replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr";
+		replay.FilePath = "C:/Users/shiro/AppData/Local/osu!/Data/r/" + replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr";
 
 		return replay;
 	}
@@ -27,25 +27,26 @@ public static partial class ReplayParser {
 		if (!Enum.IsDefined(typeof(GameMode), (int)bytes[currentByteIndex]))
 			throw new ArgumentException($"Unexpected argument type for enum GameMode: {bytes[currentByteIndex]}");
 
-		ReplayData replay = new(laneCount);
-
-		replay.GameMode = (GameMode)Parser.ParseByte(bytes, ref currentByteIndex);
-		replay.GameVersion = Parser.ParseInt(bytes, ref currentByteIndex);
-		replay.BeatmapMD5 = Parser.ParseString(bytes, ref currentByteIndex);
-		replay.PlayerName = Parser.ParseString(bytes, ref currentByteIndex);
-		replay.ReplayMD5 = Parser.ParseString(bytes, ref currentByteIndex);
-		replay.Nb300s = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.Nb100s = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.Nb50s = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.NbMax300s = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.Nb200s = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.NbMiss = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.Score = Parser.ParseInt(bytes, ref currentByteIndex);
-		replay.MaxCombo = Parser.ParseShort(bytes, ref currentByteIndex);
-		replay.FullCombo = Parser.ParseBool(bytes, ref currentByteIndex);
-		replay.Mods = Parser.ParseInt(bytes, ref currentByteIndex);
-		replay.LifeBar = Parser.ParseString(bytes, ref currentByteIndex);
-		replay.TimeStamp = Parser.ParseLong(bytes, ref currentByteIndex);
+		ReplayData replay = new(laneCount)
+		{
+			GameMode = (GameMode)Parser.ParseByte(bytes, ref currentByteIndex),
+			GameVersion = Parser.ParseInt(bytes, ref currentByteIndex),
+			BeatmapMD5 = Parser.ParseString(bytes, ref currentByteIndex),
+			PlayerName = Parser.ParseString(bytes, ref currentByteIndex),
+			ReplayMD5 = Parser.ParseString(bytes, ref currentByteIndex),
+			Nb300s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb100s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb50s = Parser.ParseShort(bytes, ref currentByteIndex),
+			NbMax300s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb200s = Parser.ParseShort(bytes, ref currentByteIndex),
+			NbMiss = Parser.ParseShort(bytes, ref currentByteIndex),
+			Score = Parser.ParseInt(bytes, ref currentByteIndex),
+			MaxCombo = Parser.ParseShort(bytes, ref currentByteIndex),
+			FullCombo = Parser.ParseBool(bytes, ref currentByteIndex),
+			Mods = Parser.ParseInt(bytes, ref currentByteIndex),
+			LifeBar = Parser.ParseString(bytes, ref currentByteIndex),
+			TimeStamp = Parser.ParseLong(bytes, ref currentByteIndex)
+		};
 
 		DateTime newTimeStamp = new DateTime(replay.TimeStamp).AddYears(-1600); // je ????
 		replay.ReplayTimeStamp = newTimeStamp.ToBinary();

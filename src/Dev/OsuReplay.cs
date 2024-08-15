@@ -31,9 +31,9 @@ public class OsuReplay
 
 	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
 	{
-		// dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
+		dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
 		// dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
-		testCase = Datasets.TestCases.Jukaro.Polyriddim;
+		// testCase = Datasets.TestCases.Jukaro.Polyriddim;
 
 		_beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 
