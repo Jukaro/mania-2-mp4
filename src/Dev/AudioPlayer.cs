@@ -1,19 +1,20 @@
 using System;
 using NAudio.Wave;
+using Rythmify.Core;
 
 namespace Rythmify.UI;
 
 public class AudioPlayer {
 	private WaveOutEvent _outputDevice;
-	private AudioFileReader _song;
+	private AudioReader _song;
 	private string _songPath;
 	private bool _needToPlayAudio;
 
 	public AudioPlayer(string songPath) {
 		_outputDevice = new WaveOutEvent();
 		_songPath = songPath;
-		_song = new AudioFileReader(_songPath);
-		_outputDevice.Init(_song);
+		_song = new(_songPath);
+		_outputDevice.Init(_song.GetSampleProvider());
 		_outputDevice.Volume = 0.01f;
 		_needToPlayAudio = false;
 	}
@@ -29,8 +30,8 @@ public class AudioPlayer {
 
 	public void Reset() {
 		_outputDevice.Stop();
-		_song = new AudioFileReader(_songPath);
-		_outputDevice.Init(_song);
+		_song = new(_songPath);
+		_outputDevice.Init(_song.GetSampleProvider());
 	}
 
 	public void Update(bool audioStarted) {

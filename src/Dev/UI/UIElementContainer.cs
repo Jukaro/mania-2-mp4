@@ -12,23 +12,26 @@ public class UIElementContainer : Button {
 	private Scrollbar _scrollbar;
 
 	public int nbRenderedUIElements = 0;
+	public int UsableWidth = 0;
+	public int UsableHeight = 0;
 
 	public UIElementContainer(GraphicsDevice graphics, int width, int height, Vector2 pos, string name, Color color) : base(graphics, width, height, pos, name, color) {
-		UIElementsList = new();
-		_firstUIElement = null;
-		_lastUIElement = null;
-		SetOnScroll(UpdateScroll);
-		int scrollBarWidth = 20;
-		_scrollbar = new Scrollbar(graphics, scrollBarWidth, Height, Height, 0, ScrollUIElements, new Vector2(AbsolutePos.X + Width - scrollBarWidth, AbsolutePos.Y));
+		Init(graphics);
 	}
 
 	public UIElementContainer(GraphicsDevice graphics, Vector2 pos, string name, Visuals visuals)  : base(graphics, pos, name, visuals) {
+		Init(graphics);
+	}
+
+	private void Init(GraphicsDevice graphics) {
 		UIElementsList = new();
 		_firstUIElement = null;
 		_lastUIElement = null;
 		SetOnScroll(UpdateScroll);
 		int scrollBarWidth = 20;
 		_scrollbar = new Scrollbar(graphics, scrollBarWidth, Height, Height, 0, ScrollUIElements, new Vector2(AbsolutePos.X + Width - scrollBarWidth, AbsolutePos.Y));
+		UsableWidth = Width - scrollBarWidth;
+		UsableHeight = Height;
 	}
 
 /* -------------------------------- Accessors ------------------------------- */

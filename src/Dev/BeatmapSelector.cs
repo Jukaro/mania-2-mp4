@@ -20,6 +20,7 @@ public class BeatmapSelector : Dropdown {
 	public void Init(List<BeatmapWithScores> beatmaps, int start, ReplaySelector replaySelector) {
 		for (int i = 0; i < DisplayedBeatmapsCount; i++) {
 			Add(new Button(_graphics, new Vector2(0, 0), "beatmap" + i, _beatmapVisuals));
+			UIElementsList[i].Visuals.Resize(UsableWidth, _beatmapVisuals.Height);
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));

@@ -1,3 +1,4 @@
+using Rythmify.Core;
 using SharpHook;
 
 namespace Rythmify.UI;
@@ -15,11 +16,10 @@ public class ManagedGlobalHook {
 	public readonly TaskPoolGlobalHook Hook = new();
 
 	ManagedGlobalHook() {
-		Hook.RunAsync();
-	}
-
-	~ManagedGlobalHook() {
-		Logger.LogDebug("Yio c detrui !!!!");
-		Hook.Dispose();
+		TaskEnBien<bool> task = new();
+		task.Start(() => {
+			 Hook.Run();
+			 return true;
+		});
 	}
 }
