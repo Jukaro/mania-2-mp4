@@ -201,7 +201,7 @@ public class Menu {
 		_sideMenu["Play"].SetColor(new Color(255, 0, 0));
 	}
 
-	public void アップデート(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
+	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, Skin skin) {
 		MouseManager.Update();
 
 		if (_replaySelector.NeedToUpdatePlayers) {
@@ -265,7 +265,7 @@ public class Menu {
 		return _beatmapsList.Where(beatmap => beatmap.BeatmapDBInfo.SongTitle.Contains(query, System.StringComparison.OrdinalIgnoreCase)).ToList();
 	}
 
-	public void レンダー(SpriteBatch spriteBatch) {
+	public void Render(SpriteBatch spriteBatch) {
 		_mainContainer.Render(spriteBatch);
 	}
 }

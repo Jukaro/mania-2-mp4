@@ -68,7 +68,7 @@ public class OsuReplay
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
 		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
 
-		_menu.アップデート(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _skin);
+		_menu.Update(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _skin);
 		_test.Update();
 	}
 
@@ -77,7 +77,7 @@ public class OsuReplay
 		_beatmapRenderer.Render(_beatmapPlayer, spriteBatch);
 		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
 
-		_menu.レンダー(spriteBatch);
+		_menu.Render(spriteBatch);
 		_test.Render(spriteBatch);
 	}
 
