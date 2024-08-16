@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Databases;
 using Rythmify.UI;
@@ -21,6 +21,11 @@ public class BeatmapSelector : Dropdown {
 		for (int i = 0; i < DisplayedBeatmapsCount; i++) {
 			Add(new Button(_graphics, new Vector2(0, 0), "beatmap" + i, _beatmapVisuals));
 			UIElementsList[i].Visuals.Resize(UsableWidth, _beatmapVisuals.Height);
+
+			GradientList gdList = new();
+			gdList.Add(new Gradient(new Color(0, 0, 0) * 0.5f, Color.Transparent));
+			UIElementsList[i].Visuals.InitGradientTexture(gdList, 255);
+
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
@@ -70,7 +75,7 @@ public class BeatmapSelector : Dropdown {
 			UIElementsList[i].Visuals.Texts[1] = new Text("", new Vector2(0, 0));
 			UIElementsList[i].Visuals.Texts[2] = new Text("", new Vector2(0, 0));
 			UIElementsList[i].Visuals.Texts[3] = new Text("", new Vector2(0, 0));
-			UIElementsList[i].Visuals.SetColor(Microsoft.Xna.Framework.Color.Gray);
+			UIElementsList[i].Visuals.SetColor(Color.White);
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class Game1 : Game
 	{
 		GraphicsDevice.Clear(Color.Black);
 
-		_spriteBatch.Begin();
+		_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 		_osuReplay.Render(_spriteBatch);
 		_spriteBatch.End();
 

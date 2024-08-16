@@ -32,9 +32,6 @@ public class Menu {
 	private bool _play;
 	private bool _isPlaying;
 
-	private Texture2D _testBG;
-	private Texture2D _testBG2;
-
 	private int _beatmapsPageIndex = 0;
 	private BeatmapDB _beatmapsDB;
 	private ScoreDB _scoresDB;
@@ -112,7 +109,7 @@ public class Menu {
 		_visualsList.Add(beatmapDropdown);
 
 		// 5
-		Visuals beatmapDisplay = new(_graphics, 600, 100, Color.DarkGray) {
+		Visuals beatmapDisplay = new(_graphics, 600, 100, Color.White) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
@@ -127,7 +124,7 @@ public class Menu {
 		_visualsList.Add(scoreDropdown);
 
 		// 7
-		Visuals scoreDisplay = new(_graphics, 600, 100, Color.DarkGray) {
+		Visuals scoreDisplay = new(_graphics, 600, 100, Color.White) {
 			BlinkOnMouseClick = true,
 			BlinkOnMouseOver = true
 		};
@@ -138,7 +135,6 @@ public class Menu {
 		List<GradientList> gradientListsList = new();
 
 		SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
-		// Logger.LogDebug($"Sync context: {SynchronizationContext.Current}");
 
 		InitGradientListsList(gradientListsList);
 		InitVisualsList(_visualsList, gradientListsList);
@@ -181,9 +177,6 @@ public class Menu {
 		_beatmapSelector.SetColor(Color.Transparent);
 		_sideMenu.Add(_beatmapSelector);
 		_beatmapSelector.Init(_sortedBeatmapsList, 0, _replaySelector);
-
-		// string texturePath2 = "C:/Users/shiro/AppData/Local/osu!/Songs/2112649 Camellia - Kisaragi/61163969_p0.jpg";
-		// _testBG = Texture2D.FromFile(_graphics, texturePath2);
 	}
 
 	private void NextPage() {

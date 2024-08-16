@@ -59,16 +59,16 @@ public class UIElement {
 	public virtual void Render(SpriteBatch spriteBatch) {
 		if (Hide)
 			return;
-		Visuals.Render(spriteBatch, AbsolutePos);
+		Visuals.Render(spriteBatch, AbsolutePos, new Rectangle(0, 0, Width, Height));
 	}
 
 	public virtual void RenderPartial(SpriteBatch spriteBatch, float limitY, int mode) {
 		if (Hide)
 			return;
 		if (mode == 1)
-			Visuals.RenderPartial(spriteBatch, AbsolutePos, new Rectangle(0, 0, Width, (int)(limitY - AbsolutePos.Y)));
+			Visuals.Render(spriteBatch, AbsolutePos, new Rectangle(0, 0, Width, (int)(limitY - AbsolutePos.Y)));
 		else
-			Visuals.RenderPartial(spriteBatch, new Vector2(AbsolutePos.X, limitY), new Rectangle(0, (int)(limitY - AbsolutePos.Y), Width, (int)(Height - (limitY - AbsolutePos.Y))));
+			Visuals.Render(spriteBatch, new Vector2(AbsolutePos.X, limitY), new Rectangle(0, (int)(limitY - AbsolutePos.Y), Width, (int)(Height - (limitY - AbsolutePos.Y))));
 	}
 
 /* ---------------------------------- Utils --------------------------------- */

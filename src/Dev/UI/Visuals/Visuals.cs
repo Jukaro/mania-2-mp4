@@ -22,20 +22,22 @@ public class Visuals {
 	private readonly GraphicsDevice _graphics;
 
 	public Texture2D Texture;
-	private Texture2D RealTexture;
+	private Texture2D _realTexture;
+	private Texture2D _overlayTexture;
+	private Texture2D _gradientTexture;
 	public Color Color;
 	private Color _baseColor;
 	private Color[] BaseTextureData;
-	private Color[] MouseOverTextureData;
-	private Color[] OnClickTextureData;
 
 	public List<Text> Texts;
 
-	private const int BASE_STATE = 0;
-	private const int MOUSE_OVER_STATE = 1;
-	private const int CLICK_STATE = 2;
+	enum BlinkState {
+		BaseState,
+		MouseOverState,
+		ClickState
+	}
 
-	private int _blinkState;
+	private BlinkState _blinkState;
 	public bool BlinkOnMouseOver;
 	public bool BlinkOnMouseClick;
 
@@ -73,12 +75,32 @@ public class Visuals {
 	private void Init(Color color) {
 		BlinkOnMouseOver = false;
 		BlinkOnMouseClick = false;
-		_blinkState = BASE_STATE;
+		_blinkState = BlinkState.BaseState;
 		BaseTextureData = new Color[Texture.Width * Texture.Height];
-		MouseOverTextureData = new Color[Texture.Width * Texture.Height];
-		OnClickTextureData = new Color[Texture.Width * Texture.Height];
 		Texts = new();
 		SetColor(color);
+		InitOverlayTextures();
+	}
+
+	public void InitGradientTexture(GradientList gradientList, int step) {
+		_gradientTexture = new(_graphics, Width, Height);
+
+		Color[] colors = new Color[Width * Height];
+		for (int y = 0; y < Height; y++) {
+			for (int x = 0; x < Width; x++) {
+				double index = x / (double)Width * 255;
+				colors[y * Width + x] = gradientList.GetColor(index, step);
+			}
+		}
+		_gradientTexture.SetData(colors);
+	}
+
+	private void InitOverlayTextures() {
+		_overlayTexture = new(_graphics, Width, Height);
+
+		Color[] colors = new Color[Width * Height];
+		Array.Fill(colors, Color.White);
+		_overlayTexture.SetData(colors);
 	}
 
 	public void SetTextureFromFileAsync(string path) {
@@ -135,13 +157,12 @@ public class Visuals {
 	}
 
 	public void SetTexture(Texture2D texture) {
-		_baseColor = Color.DarkGray;
 		Color = _baseColor;
 		Texture = texture;
 
 		if (Texture.Width > Width || Texture.Height > Height) {
-			RealTexture = Texture;
-			Texture = ResizeTexture(RealTexture, Width, Height);
+			_realTexture = Texture;
+			Texture = ResizeTexture(_realTexture, Width, Height);
 		}
 
 		SetTextureRelatedData();
@@ -181,11 +202,7 @@ public class Visuals {
 
 	public void SetTextureRelatedData() {
 		BaseTextureData = new Color[Texture.Width * Texture.Height];
-		MouseOverTextureData = new Color[Texture.Width * Texture.Height];
-		OnClickTextureData = new Color[Texture.Width * Texture.Height];
 		Texture.GetData(BaseTextureData);
-		SetMouseOverTexture();
-		SetOnClickTexture();
 	}
 
 	public void SetColor(Color color) {
@@ -222,51 +239,43 @@ public class Visuals {
 		}
 	}
 
-	private void SetMouseOverTexture() {
-		Texture.GetData(MouseOverTextureData);
-		AddValueToTextureData(MouseOverTextureData, 50);
-	}
-
-	private void SetOnClickTexture() {
-		Texture.GetData(OnClickTextureData);
-		AddValueToTextureData(OnClickTextureData, 100);
-	}
-
 	public void Update(bool isMouseOver, bool isLeftButtonPressed) {
 		UpdateBlinkState(isMouseOver, isLeftButtonPressed);
 	}
 
 	private void UpdateBlinkState(bool isMouseOver, bool isLeftButtonPressed) {
-		if (BlinkOnMouseOver && isMouseOver && (_blinkState == BASE_STATE || (_blinkState == CLICK_STATE && !isLeftButtonPressed))) {
-			Texture.SetData(MouseOverTextureData);
+		if (BlinkOnMouseOver && isMouseOver && (_blinkState == BlinkState.BaseState || (_blinkState == BlinkState.ClickState && !isLeftButtonPressed))) {
 			Color = Color.White;
-			_blinkState = MOUSE_OVER_STATE;
+			_blinkState = BlinkState.MouseOverState;
 		}
-		else if (BlinkOnMouseClick && isMouseOver && isLeftButtonPressed && _blinkState != CLICK_STATE) {
-			Texture.SetData(OnClickTextureData);
+		else if (BlinkOnMouseClick && isMouseOver && isLeftButtonPressed && _blinkState != BlinkState.ClickState) {
 			Color = Color.White;
-			_blinkState = CLICK_STATE;
+			_blinkState = BlinkState.ClickState;
 		}
-		else if ((_blinkState == MOUSE_OVER_STATE && !isMouseOver) || (_blinkState == CLICK_STATE && ((isMouseOver && !isLeftButtonPressed) || !isMouseOver))) {
-			Texture.SetData(BaseTextureData);
+		else if ((_blinkState == BlinkState.MouseOverState && !isMouseOver) || (_blinkState == BlinkState.ClickState && ((isMouseOver && !isLeftButtonPressed) || !isMouseOver))) {
 			Color = _baseColor;
-			_blinkState = BASE_STATE;
+			_blinkState = BlinkState.BaseState;
 		}
 	}
 
-	public void Render(SpriteBatch spriteBatch, Vector2 pos) {
-		// DrawResized(spriteBatch, Texture, pos, new Rectangle(0, 0, Width, Height));
-		spriteBatch.Draw(Texture, pos, new Rectangle(0, 0, Width, Height), Color);
+	public void Render(SpriteBatch spriteBatch, Vector2 pos, Rectangle sourceRectangle) {
+		// DrawResized(spriteBatch, Texture, pos, sourceRectangle);
+		spriteBatch.Draw(Texture, pos, sourceRectangle, Color);
+
+		Color overlayColor = _blinkState switch {
+			BlinkState.MouseOverState => Color.White * 0.3f,
+			BlinkState.ClickState => Color.White * 0.6f,
+			_ => Color.Transparent
+		};
+
+		if (_gradientTexture != null)
+			spriteBatch.Draw(_gradientTexture, pos, sourceRectangle, Color.White);
+
+		if (_blinkState == BlinkState.ClickState || _blinkState == BlinkState.MouseOverState)
+			spriteBatch.Draw(_overlayTexture, pos, sourceRectangle, overlayColor);
 		foreach (Text text in Texts) {
 			spriteBatch.DrawString(Fonts.Arial, text.Str, new(pos.X + text.RelativePos.X, pos.Y + text.RelativePos.Y), Color.White);
 		}
-	}
-
-	public void RenderPartial(SpriteBatch spriteBatch, Vector2 pos, Rectangle sourceRectangle) {
-		// if (RealTexture != null)
-		// 	DrawResized(spriteBatch, RealTexture, pos, sourceRectangle);
-		// else
-			spriteBatch.Draw(Texture, pos, sourceRectangle, Color);
 	}
 
 	public void DrawResized(SpriteBatch spriteBatch, Texture2D texture, Vector2 pos, Rectangle sourceRectangle) {
