@@ -25,19 +25,23 @@ public enum NodeBodyStyleMode {
 }
 
 public class SkinManiaSection {
+	public const int DefaultColumnSpacing = 0;
+	public const int DefaultColumnWidth = 30;
+	public const int DefaultColumnLineWidth = 2;
+
 	public int Keys;
 
 	public double ColumnStart = 136;
 	public double ColumnRight = 19;
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public int[] ColumnSpacing = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	public List<int> ColumnSpacing;
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public int[] ColumnWidth = new int[] {30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30};
+	public List<int> ColumnWidth;
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public int[] ColumnLineWidth = new int[] {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+	public List<int> ColumnLineWidth;
 
 	public double BarlineHeight = 1.2;
 
@@ -214,7 +218,7 @@ public class SkinManiaSection {
 		IntEnumDictionaryParser<NodeBodyStyleMode>(destination, key, value, pattern);
 
 	public void CommaSeparatedIntListParser(FieldInfo destination, string key, string value, Regex pattern) {
-		var values = value.Split(',').Select(int.Parse).ToArray();
+		var values = value.Split(',').Select(int.Parse).ToList();
 		destination.SetValue(this, values);
 	}
 
@@ -241,7 +245,69 @@ public class SkinManiaSection {
 		string noteImageLanesL = string.Join(", ", NoteImageLanesL.Select(kv => $"{kv.Key}: {kv.Value}"));
 		string noteImageLanesT = string.Join(", ", NoteImageLanesT.Select(kv => $"{kv.Key}: {kv.Value}"));
 
-		return $"Keys: {Keys}, ColumnStart: {ColumnStart}, ColumnRight: {ColumnRight}, ColumnSpacing: {columnSpacing}, ColumnWidth: {columnWidth}, ColumnLineWidth: {columnLineWidth}, BarlineHeight: {BarlineHeight}, LightingNWidth: {lightingNWidth}, LightingLWidth: {lightingLWidth}, WidthForNoteHeightScale: {WidthForNoteHeightScale}, HitPosition: {HitPosition}, LightPosition: {LightPosition}, ScorePosition: {ScorePosition}, ComboPosition: {ComboPosition}, JudgementLine: {JudgementLine}, LightFramePerSecond: {LightFramePerSecond}, SpecialStyle: {SpecialStyle}, ComboBurstStyle: {ComboBurstStyle}, SplitStages: {SplitStages}, StageSeparation: {StageSeparation}, SeparateScore: {SeparateScore}, KeysUnderNotes: {KeysUnderNotes}, UpsideDown: {UpsideDown}, KeyFlipWhenUpsideDown: {keyFlipWhenUpsideDownLanes}, NoteFlipWhenUpsideDown: {noteFlipWhenUpsideDownLanes}, NoteBodyStyle: {NoteBodyStyle}, NoteBodyStyleLanes: {noteBodyStyleLanes}, ColorLanes: {colorLanes}, ColorLightLanes: {colorLightLanes}, ColorColumnLine: {ColorColumnLine}, ColorBarline: {ColorBarline}, ColorJudgementLine: {ColorJudgementLine}, ColorKeyWarning: {ColorKeyWarning}, ColorHold: {ColorHold}, ColorBreak: {ColorBreak}, KeyImageLanes: {keyImageLanes}, KeyImageLanesD: {keyImageLanesD}, NoteImageLanes: {noteImageLanes}, NoteImageLanesH: {noteImageLanesH}, NoteImageLanesL: {noteImageLanesL}, NoteImageLanesT: {noteImageLanesT}, StageLeft: {StageLeft}, StageRight: {StageRight}, StageBottom: {StageBottom}, StageHint: {StageHint}, StageLight: {StageLight}, LightingN: {LightingN}, LightingL: {LightingL}, WarningArrow: {WarningArrow}, Hit0: {Hit0}, Hit50: {Hit50}, Hit100: {Hit100}, Hit200: {Hit200}, Hit300: {Hit300}, Hit300g: {Hit300g}";
+		string result = "";
+		result += $"Keys: {Keys}, ";
+		result += $"ColumnStart: {ColumnStart}, ";
+		result += $"ColumnRight: {ColumnRight}, ";
+		result += $"ColumnSpacing: {columnSpacing}, ";
+		result += $"ColumnWidth: {columnWidth}, ";
+		result += $"ColumnLineWidth: {columnLineWidth}, ";
+		result += $"BarlineHeight: {BarlineHeight}, ";
+		result += $"LightingNWidth: {lightingNWidth}, ";
+		result += $"LightingLWidth: {lightingLWidth}, ";
+		result += $"WidthForNoteHeightScale: {WidthForNoteHeightScale}, ";
+		result += $"HitPosition: {HitPosition}, ";
+		result += $"LightPosition: {LightPosition}, ";
+		result += $"ScorePosition: {ScorePosition}, ";
+		result += $"ComboPosition: {ComboPosition}, ";
+		result += $"JudgementLine: {JudgementLine}, ";
+		result += $"LightFramePerSecond: {LightFramePerSecond}, ";
+		result += $"SpecialStyle: {SpecialStyle}, ";
+		result += $"ComboBurstStyle: {ComboBurstStyle}, ";
+		result += $"SplitStages: {SplitStages}, ";
+		result += $"StageSeparation: {StageSeparation}, ";
+		result += $"SeparateScore: {SeparateScore}, ";
+		result += $"KeysUnderNotes: {KeysUnderNotes}, ";
+		result += $"UpsideDown: {UpsideDown}, ";
+		result += $"KeyFlipWhenUpsideDown: {keyFlipWhenUpsideDownLanes}, ";
+		result += $"KeyFlipWhenUpsideDownD: {keyFlipWhenUpsideDownLanesD}, ";
+		result += $"NoteFlipWhenUpsideDown: {noteFlipWhenUpsideDownLanes}, ";
+		result += $"NoteFlipWhenUpsideDownH: {noteFlipWhenUpsideDownLanesH}, ";
+		result += $"NoteFlipWhenUpsideDownL: {noteFlipWhenUpsideDownLanesL}, ";
+		result += $"NoteFlipWhenUpsideDownT: {noteFlipWhenUpsideDownLanesT}, ";
+
+		result += $"NoteBodyStyle: {NoteBodyStyle}, ";
+		result += $"NoteBodyStyleLanes: {noteBodyStyleLanes}, ";
+		result += $"ColorLanes: {colorLanes}, ";
+		result += $"ColorLightLanes: {colorLightLanes}, ";
+		result += $"ColorColumnLine: {ColorColumnLine}, ";
+		result += $"ColorBarline: {ColorBarline}, ";
+		result += $"ColorJudgementLine: {ColorJudgementLine}, ";
+		result += $"ColorKeyWarning: {ColorKeyWarning}, ";
+		result += $"ColorHold: {ColorHold}, ";
+		result += $"ColorBreak: {ColorBreak}, ";
+		result += $"KeyImageLanes: {keyImageLanes}, ";
+		result += $"KeyImageLanesD: {keyImageLanesD}, ";
+		result += $"NoteImageLanes: {noteImageLanes}, ";
+		result += $"NoteImageLanesH: {noteImageLanesH}, ";
+		result += $"NoteImageLanesL: {noteImageLanesL}, ";
+		result += $"NoteImageLanesT: {noteImageLanesT}, ";
+		result += $"StageLeft: {StageLeft}, ";
+		result += $"StageRight: {StageRight}, ";
+		result += $"StageBottom: {StageBottom}, ";
+		result += $"StageHint: {StageHint}, ";
+		result += $"StageLight: {StageLight}, ";
+		result += $"LightingN: {LightingN}, ";
+		result += $"LightingL: {LightingL}, ";
+		result += $"WarningArrow: {WarningArrow}, ";
+		result += $"Hit0: {Hit0}, ";
+		result += $"Hit50: {Hit50}, ";
+		result += $"Hit100: {Hit100}, ";
+		result += $"Hit200: {Hit200}, ";
+		result += $"Hit300: {Hit300}, ";
+		result += $"Hit300g: {Hit300g}";
+
+		return result;
 	}
 }
 
