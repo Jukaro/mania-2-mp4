@@ -20,10 +20,8 @@ public class OsuReplay
 	private Menu _menu;
 
 	private BeatmapData _beatmap;
-	private Skin _skin;
+	private SkinData _skin;
 	private ReplayData _replay;
-
-	private dynamic testCase;
 
 	private Button _test;
 

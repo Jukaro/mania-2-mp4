@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
 using Rythmify.Core.Replay;
 using Rythmify.UI;
 

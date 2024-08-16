@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Rythmify.Core;
 
 public static class Parser {
 	public static int ParseIntFromULEB128(byte[] bytes, ref int index) {
