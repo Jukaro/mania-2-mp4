@@ -5,100 +5,65 @@ using Rythmify.Core.Shared;
 namespace Rythmify.Core.Replay;
 
 public static partial class ReplayParser {
+	public static ReplayData Parse(byte[] bytes, int currentByteIndex, int laneCount, bool skipInputsParsing) {
+		ReplayData replay = ParseBytes(bytes, currentByteIndex, laneCount, skipInputsParsing);
+		replay.FilePath = "C:/Users/shiro/AppData/Local/osu!/Data/r/" + replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr";
 
-	private static int ParseIntFromULEB128(byte[] bytes, ref int index) {
-		int result = 0;
-		int shift = 0;
-		int singleByte;
-		int notEnd;
-		int lowBytes;
-
-		while (true) {
-			singleByte = bytes[index];
-			lowBytes = singleByte & ((1 << 7) - 1);
-			result |= lowBytes << shift;
-			notEnd = singleByte & (1 << 7);
-			if (notEnd == 0)
-				break;
-			shift += 7;
-			index++;
-		}
-		return result;
+		return replay;
 	}
 
-	private static string ParseStringFromOSR(byte[] bytes, ref int index) {
-		string str = "";
-
-		if (bytes[index] == 0x00)
-			index++;
-		else if (bytes[index] == 0x0b)
-		{
-			index++;
-			int length = ParseIntFromULEB128(bytes, ref index);
-			index++;
-			str = System.Text.Encoding.UTF8.GetString(bytes, index, length);
-			index += length;
-		}
-		else
-			throw new ArgumentException($"Unknown indicator for OSR string: {bytes[index]}");
-		return str;
-	}
-
-	private static bool ParseBoolFromOSR(byte[] bytes, ref int index) {
-		bool result = bytes[index] != 0;
-		index += 1;
-		return result;
-	}
-
-	private static short ParseShortFromOSR(byte[] bytes, ref int index) {
-		short result = BitConverter.ToInt16(bytes, index);
-		index += 2;
-		return result;
-	}
-
-	private static int ParseIntFromOSR(byte[] bytes, ref int index) {
-		int result = BitConverter.ToInt32(bytes, index);
-		index += 4;
-		return result;
-	}
-
-	private static long ParseLongFromOSR(byte[] bytes, ref int index) {
-		long result = BitConverter.ToInt64(bytes, index);
-		index += 8;
-		return result;
-	}
-
-	public static ReplayData Parse(string filePath, int laneCount) {
+	public static ReplayData Parse(string filePath, int laneCount, bool skipInputsParsing) {
 		var bytes = File.ReadAllBytes(filePath);
-		int currentByteIndex = 0;
+
+		ReplayData replay = ParseBytes(bytes, 0, laneCount, skipInputsParsing);
+		replay.FilePath = filePath;
+
+		return replay;
+	}
+
+	private static ReplayData ParseBytes(byte[] bytes, int start, int laneCount, bool skipInputsParsing) {
+		int currentByteIndex = start;
 
 		if (!Enum.IsDefined(typeof(GameMode), (int)bytes[currentByteIndex]))
 			throw new ArgumentException($"Unexpected argument type for enum GameMode: {bytes[currentByteIndex]}");
 
-		ReplayData replay = new(laneCount);
+		ReplayData replay = new(laneCount)
+		{
+			GameMode = (GameMode)Parser.ParseByte(bytes, ref currentByteIndex),
+			GameVersion = Parser.ParseInt(bytes, ref currentByteIndex),
+			BeatmapMD5 = Parser.ParseString(bytes, ref currentByteIndex),
+			PlayerName = Parser.ParseString(bytes, ref currentByteIndex),
+			ReplayMD5 = Parser.ParseString(bytes, ref currentByteIndex),
+			Nb300s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb100s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb50s = Parser.ParseShort(bytes, ref currentByteIndex),
+			NbMax300s = Parser.ParseShort(bytes, ref currentByteIndex),
+			Nb200s = Parser.ParseShort(bytes, ref currentByteIndex),
+			NbMiss = Parser.ParseShort(bytes, ref currentByteIndex),
+			Score = Parser.ParseInt(bytes, ref currentByteIndex),
+			MaxCombo = Parser.ParseShort(bytes, ref currentByteIndex),
+			FullCombo = Parser.ParseBool(bytes, ref currentByteIndex),
+			Mods = Parser.ParseInt(bytes, ref currentByteIndex),
+			LifeBar = Parser.ParseString(bytes, ref currentByteIndex),
+			TimeStamp = Parser.ParseLong(bytes, ref currentByteIndex)
+		};
 
-		replay.GameMode = (GameMode)bytes[currentByteIndex];
-		currentByteIndex++;
+		DateTime newTimeStamp = new DateTime(replay.TimeStamp).AddYears(-1600); // je ????
+		replay.ReplayTimeStamp = newTimeStamp.ToBinary();
 
-		replay.GameVersion = ParseIntFromOSR(bytes, ref currentByteIndex);
-		replay.BeatmapMD5 = ParseStringFromOSR(bytes, ref currentByteIndex);
-		replay.PlayerName = ParseStringFromOSR(bytes, ref currentByteIndex);
-		replay.ReplayMD5 = ParseStringFromOSR(bytes, ref currentByteIndex);
-		replay.Nb300s = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.Nb100s = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.Nb50s = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.NbMax300s = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.Nb200s = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.NbMiss = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.Score = ParseIntFromOSR(bytes, ref currentByteIndex);
-		replay.MaxCombo = ParseShortFromOSR(bytes, ref currentByteIndex);
-		replay.FullCombo = ParseBoolFromOSR(bytes, ref currentByteIndex);
-		replay.Mods = ParseIntFromOSR(bytes, ref currentByteIndex);
-		replay.LifeBar = ParseStringFromOSR(bytes, ref currentByteIndex);
-		replay.TimeStamp = ParseLongFromOSR(bytes, ref currentByteIndex);
-		replay.CompressedReplayLength = ParseIntFromOSR(bytes, ref currentByteIndex);
-		parseInputs(bytes, replay.CompressedReplayLength, ref currentByteIndex, ref replay);
-		replay.ScoreID = ParseLongFromOSR(bytes, ref currentByteIndex);
+		replay.CompressedReplayLength = Parser.ParseInt(bytes, ref currentByteIndex);
+		if (skipInputsParsing) {
+			if (replay.CompressedReplayLength == -1)
+				currentByteIndex += 4;
+			else
+				currentByteIndex += replay.CompressedReplayLength;
+			replay.Inputs = null;
+		}
+		else
+			parseInputs(bytes, replay.CompressedReplayLength, ref currentByteIndex, ref replay);
+		replay.ScoreID = Parser.ParseInt(bytes, ref currentByteIndex);
+
+		replay.SizeInBytes = currentByteIndex - start;
 
 		return replay;
 	}

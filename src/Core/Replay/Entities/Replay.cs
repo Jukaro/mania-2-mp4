@@ -21,14 +21,18 @@ public class ReplayData {
 	public int Mods;
 	public string LifeBar;
 	public long TimeStamp;
+	public long ReplayTimeStamp;
 	public int CompressedReplayLength; // in bytes
 	public List<Input> Inputs;
 	public int LaneCount;
 	public int TotalKeyPresses;
 	public long ScoreID;
+	public int SizeInBytes;
 
 	// Used to store the offset between the beginning of the beatmap and the beginning of the replay
 	public int StartDelay;
+
+	public string FilePath;
 
 	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();

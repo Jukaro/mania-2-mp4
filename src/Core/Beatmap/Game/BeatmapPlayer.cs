@@ -17,9 +17,9 @@ public class HoldNote : GameNote {
 }
 
 public class BeatmapPlayer {
-	private readonly BeatmapData _beatmap;
-	private readonly Skin _skin;
-	private readonly ScrollInfo _scrollInfo;
+	private BeatmapData _beatmap;
+	private Skin _skin;
+	private ScrollInfo _scrollInfo;
 	private bool _isPlaying;
 	private double _currentPlayTime;
 	private int _spawnedNotes = 0;
@@ -41,6 +41,9 @@ public class BeatmapPlayer {
 	public void Play() => _isPlaying = true;
 	public void Pause() => _isPlaying = false;
 
+	public void ScrollSpeedUp() => _scrollInfo.ScrollSpeedUp();
+	public void ScrollSpeedDown() => _scrollInfo.ScrollSpeedDown();
+
 	public void Update(double deltaTime) {
 		if (!_isPlaying) return;
 		_currentPlayTime += deltaTime;
@@ -48,6 +51,13 @@ public class BeatmapPlayer {
 		HandleNoteSpawn(deltaTime);
 		HandleNoteScroll();
 		HandleNoteDespawn();
+	}
+
+	public void Reset(ReplayData replayData) {
+		_isPlaying = false;
+		_currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
+		RenderedNotes = new List<GameNote>();
+		_spawnedNotes = 0;
 	}
 
 	public void HandleNoteDespawn() {

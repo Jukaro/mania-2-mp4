@@ -57,7 +57,7 @@ public static partial class ReplayParser {
 			if (int.Parse(splitted[1]) != 256)
 				break;
 
-			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
+			// Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 		}
 
 		for (; to_skip < inputsArray.Length; to_skip++) {
@@ -65,7 +65,7 @@ public static partial class ReplayParser {
 			if (int.Parse(splitted[0]) >= 0)
 				break;
 
-			Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
+			// Logger.LogDebug("Skipping non-initialized input: " + inputsArray[to_skip]);
 		}
 
 		return to_skip;
@@ -74,6 +74,9 @@ public static partial class ReplayParser {
 	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref ReplayData replay) {
 		byte[] compressedReplayLZMA = new byte[length];
 		Buffer.BlockCopy(bytes, index, compressedReplayLZMA, 0, length);
+
+		if (length == 0)
+			return null;
 
 		MemoryStream inputs = DecompressFileLZMA(compressedReplayLZMA);
 

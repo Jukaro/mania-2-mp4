@@ -7,10 +7,14 @@ public class InputsPlayer {
 	public bool[] RenderedInputs;
 	public double CurrentPlayTime;
 	public int CurrentInputIndex;
-	private readonly ReplayData _replay;
+	private ReplayData _replay;
 	public bool IsPlaying { get; private set; }
 
 	public InputsPlayer(ReplayData replay) {
+		Init(replay);
+	}
+
+	public void Init(ReplayData replay) {
 		_replay = replay;
 		RenderedInputs = new bool[replay.LaneCount];
 		CurrentInputIndex = 0;

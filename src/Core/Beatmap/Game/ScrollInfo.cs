@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Win32.SafeHandles;
 
 namespace Rythmify.Core.Beatmap;
 
@@ -7,15 +8,24 @@ public class ScrollInfo {
 	public float SpawnPoint;
 	public double DominantBpm;
 	public double BeatmapScrollSpeed;
+	private int _scrollSpeed;
 
 	public ScrollInfo(int scrollSpeed, int hitPosition, float spawnPoint, double dominantBpm) {
 		Logger.LogDebug($"Creating ScrollInfo with ScrollSpeed: {scrollSpeed}, HitPosition: {hitPosition}, SpawnPoint: {spawnPoint}, DominantBpm: {dominantBpm}");
 		HitPosition = hitPosition;
 		SpawnPoint = spawnPoint;
-
-		double baseScrollSpeedMultiplier = 1 / GetBPMScrollSpeedMultiplier(dominantBpm);
-		BeatmapScrollSpeed = scrollSpeed * baseScrollSpeedMultiplier;
+		DominantBpm = dominantBpm;
+		SetScrollSpeed(scrollSpeed);
 	}
+
+	private void SetScrollSpeed(int scrollSpeed) {
+		_scrollSpeed = Math.Max(scrollSpeed, 1);
+		double baseScrollSpeedMultiplier = 1 / GetBPMScrollSpeedMultiplier(DominantBpm);
+		BeatmapScrollSpeed = _scrollSpeed * baseScrollSpeedMultiplier;
+	}
+
+	public void ScrollSpeedUp() => SetScrollSpeed(_scrollSpeed + 1);
+	public void ScrollSpeedDown() => SetScrollSpeed(_scrollSpeed - 1);
 
 	public static double GetBPMScrollSpeedMultiplier(double bpm) => bpm / 100.0;
 
