@@ -9,17 +9,21 @@ public class BeatmapRenderer
 {
 	private readonly GraphicsDeviceManager _graphics;
 	private readonly SkinRenderer _skinRenderer;
+	private readonly ScreenMath _screenMath;
 
 	public BeatmapRenderer(GraphicsDeviceManager graphics, SkinRenderer skinRenderer) {
 		_graphics = graphics;
 		_skinRenderer = skinRenderer;
+		_screenMath = new ScreenMath(graphics);
 	}
 
 	public void Render(BeatmapPlayer beatmapPlayer, SpriteBatch spriteBatch) {
 		foreach (var note in beatmapPlayer.RenderedNotes) {
 			if (note is HoldNote holdNote) {
 				RenderHoldNote(holdNote, spriteBatch);
-			} if (note is GameNote gameNote) {
+			}
+
+			if (note is GameNote gameNote) {
 				RenderGameNote(gameNote, spriteBatch);
 			}
 		}
@@ -27,36 +31,39 @@ public class BeatmapRenderer
 		RenderHitLine(spriteBatch);
 	}
 
-	private float ToScreenSpaceY(double y) => (float)(y * _graphics.PreferredBackBufferHeight / Playfield.PlayfieldHeight);
-	private static float GetXFromLane(int lane, int laneWidth) => lane * laneWidth + 30 * lane;
-
-	private static void DrawScaled(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Vector2 scale) =>
-		spriteBatch.Draw(texture, position, null, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
-
 	private void RenderGameNote(GameNote note, SpriteBatch spriteBatch) {
+		var noteTexture = _skinRenderer.GetNoteTextureAtLane(note.Lane);
+
+		var laneSize = _screenMath.GetLaneSize(note.Lane, _skinRenderer.GetSkin().ManiaSection);
+		Vector2 scale = new(laneSize / noteTexture.Width, laneSize / noteTexture.Width);
+
 		Vector2 screenSpacePos = new(
-			GetXFromLane(note.Lane, _skinRenderer.HoldNoteBodyTexture.Width),
-			ToScreenSpaceY(note.Y) - _skinRenderer.NoteTexture.Height
+			_screenMath.GetLaneX(note.Lane, _skinRenderer.GetSkin().ManiaSection),
+			_screenMath.PlayfieldToScreenSpaceY(note.Y) - noteTexture.Height * scale.Y
 		);
-		spriteBatch.Draw(_skinRenderer.NoteTexture, screenSpacePos, Color.White);
+
+		Rendering.DrawScaled(spriteBatch, noteTexture, screenSpacePos, scale);
 	}
 
 	private void RenderHoldNote(HoldNote note, SpriteBatch spriteBatch) {
-		float screenSpaceHoldNoteSize = ToScreenSpaceY(note.Height);
-		float screenSpaceY = ToScreenSpaceY(note.Y);
+		float screenSpaceHoldNoteSize = _screenMath.PlayfieldToScreenSpaceY(note.Height);
+		float screenSpaceY = _screenMath.PlayfieldToScreenSpaceY(note.Y);
+		var holdNoteTexture = _skinRenderer.GetHoldNoteTextureAtLane(note.Lane);
 
 		Vector2 screenSpaceHoldNoteTop = new(
-			GetXFromLane(note.Lane, _skinRenderer.HoldNoteBodyTexture.Width),
+			_screenMath.GetLaneX(note.Lane, _skinRenderer.GetSkin().ManiaSection),
 			screenSpaceY - screenSpaceHoldNoteSize
 		);
 
-		Vector2 scale = new(1, screenSpaceHoldNoteSize / _skinRenderer.HoldNoteBodyTexture.Height);
-		DrawScaled(spriteBatch, _skinRenderer.HoldNoteBodyTexture, screenSpaceHoldNoteTop, scale);
+		var laneSize = _screenMath.GetLaneSize(note.Lane, _skinRenderer.GetSkin().ManiaSection);
+		Vector2 scale = new(laneSize / holdNoteTexture.Width, screenSpaceHoldNoteSize / holdNoteTexture.Height);
+		Rendering.DrawScaled(spriteBatch, holdNoteTexture, screenSpaceHoldNoteTop, scale);
 	}
 
 	private void RenderHitLine(SpriteBatch spriteBatch) {
-		Vector2 screenSpaceHitlinePos = new(0, ToScreenSpaceY(_skinRenderer.Skin.HitPosition));
+		var hitLineY = _screenMath.PlayfieldToScreenSpaceY(_skinRenderer.GetSkin().ManiaSection.HitPosition);
+		Vector2 screenSpaceHitlinePos = new(0, hitLineY);
 		Vector2 hitlineScale = new(_graphics.PreferredBackBufferWidth, 1);
-		DrawScaled(spriteBatch, _skinRenderer.HitLineTexture, screenSpaceHitlinePos, hitlineScale);
+		Rendering.DrawScaled(spriteBatch, _skinRenderer.HitLineTexture, screenSpaceHitlinePos, hitlineScale);
 	}
 }

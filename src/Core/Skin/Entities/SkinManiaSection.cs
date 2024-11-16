@@ -35,21 +35,21 @@ public class SkinManiaSection {
 	public double ColumnRight = 19;
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnSpacing;
+	public List<int> ColumnSpacing = new();
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnWidth;
+	public List<int> ColumnWidth = new();
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnLineWidth;
+	public List<int> ColumnLineWidth = new();
 
 	public double BarlineHeight = 1.2;
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public int[] LightingNWidth = Array.Empty<int>();
+	public List<int> LightingNWidth = new();
 
 	[IniHandler("CommaSeparatedIntListParser")]
-	public int[] LightingLWidth = Array.Empty<int>();
+	public List<int> LightingLWidth = new();
 
 	public double WidthForNoteHeightScale;
 	public int HitPosition = 402;

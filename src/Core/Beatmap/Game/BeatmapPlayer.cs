@@ -18,7 +18,6 @@ public class HoldNote : GameNote {
 
 public class BeatmapPlayer {
 	private BeatmapData _beatmap;
-	private SkinData _skin;
 	private ScrollInfo _scrollInfo;
 	private bool _isPlaying;
 	private double _currentPlayTime;
@@ -26,14 +25,13 @@ public class BeatmapPlayer {
 
 	public List<GameNote> RenderedNotes { get; private set; }
 
-	public BeatmapPlayer(BeatmapData beatmap, SkinData skin) {
+	public BeatmapPlayer(BeatmapData beatmap, int hitPosition) {
 		_beatmap = beatmap;
 		_isPlaying = false;
 		_currentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
-		_skin = skin;
 		_spawnedNotes = 0;
-		_scrollInfo = new(28, _skin.HitPosition, -100, beatmap.DominantBpm);
+		_scrollInfo = new(28, hitPosition, -100, beatmap.DominantBpm);
 	}
 
 	public bool AudioStarted => _currentPlayTime >= _beatmap.GeneralData.AudioLeadIn;

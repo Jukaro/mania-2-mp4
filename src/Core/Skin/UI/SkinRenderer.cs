@@ -6,33 +6,60 @@ using Rythmify.Core;
 namespace Rythmify.UI;
 
 public class SkinRenderer {
-	public Texture2D NoteTexture;
+	private Texture2D[] _noteTextures;
 	public Texture2D HitLineTexture;
-	public Texture2D HoldNoteBodyTexture;
-	public Texture2D InputTexture;
-	public readonly SkinData Skin;
+	private Texture2D[] _holdNoteBodyTextures;
+	private Texture2D[] _inputTextures;
+	private Texture2D[] _inputTexturesHeld;
 
-	public SkinRenderer(SkinData skin, GraphicsDevice graphicsDevice) {
-		Skin = skin;
+	private ReplaySkinData _skin;
+	private readonly GraphicsDevice _graphicsDevice;
 
-		NoteTexture = new(graphicsDevice, 150, 50);
-		var colors = new Color[150 * 50];
-		Array.Fill(colors, Color.White);
-		NoteTexture.SetData(colors);
 
-		HoldNoteBodyTexture = new(graphicsDevice, 150, 1);
-		var colors2 = new Color[150 * 1];
-		Array.Fill(colors2, Color.White);
-		HoldNoteBodyTexture.SetData(colors2);
+	public SkinRenderer(ReplaySkinData skin, GraphicsDevice graphicsDevice) {
+		_graphicsDevice = graphicsDevice;
+		LoadSkin(skin);
+	}
 
-		HitLineTexture = new(graphicsDevice, 1, 4);
+	public void LoadSkin(ReplaySkinData skin) {
+		_skin = skin;
+
+		_noteTextures = new Texture2D[_skin.LaneCount];
+		for (int i = 0; i < _skin.LaneCount; i++) {
+			var filePath = _skin.GetFilePath(_skin.ManiaSection.NoteImageLanes[i]);
+			Logger.LogDebug($"Loading note texture at lane {i} from {filePath}");
+			_noteTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
+		}
+
+		_holdNoteBodyTextures = new Texture2D[_skin.LaneCount];
+		for (int i = 0; i < _skin.LaneCount; i++) {
+			var filePath = _skin.GetFilePath(_skin.ManiaSection.NoteImageLanesL[i]);
+			Logger.LogDebug($"Loading hold note body texture at lane {i} from {filePath}");
+			_holdNoteBodyTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
+		}
+
+		HitLineTexture = new(_graphicsDevice, 1, 4);
 		var colors1 = new Color[1 * 4];
 		Array.Fill(colors1, Color.Red);
 		HitLineTexture.SetData(colors1);
 
-		InputTexture = new(graphicsDevice, 150, 150);
-		var colors3 = new Color[150 * 150];
-		Array.Fill(colors3, Color.Red);
-		InputTexture.SetData(colors3);
+		_inputTextures = new Texture2D[_skin.LaneCount];
+		for (int i = 0; i < _skin.LaneCount; i++) {
+			var filePath = _skin.GetFilePath(_skin.ManiaSection.KeyImageLanes[i]);
+			Logger.LogDebug($"Loading input texture at lane {i} from {filePath}");
+			_inputTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
+		}
+
+		_inputTexturesHeld = new Texture2D[_skin.LaneCount];
+		for (int i = 0; i < _skin.LaneCount; i++) {
+			var filePath = _skin.GetFilePath(_skin.ManiaSection.KeyImageLanesD[i]);
+			Logger.LogDebug($"Loading input texture at lane {i} from {filePath}");
+			_inputTexturesHeld[i] = Texture2D.FromFile(_graphicsDevice, filePath);
+		}
 	}
+
+	public Texture2D GetNoteTextureAtLane(int lane) => _noteTextures[lane];
+	public Texture2D GetHoldNoteTextureAtLane(int lane) => _holdNoteBodyTextures[lane];
+	public Texture2D GetInputTextureAtLane(int lane, bool held) => held ? _inputTexturesHeld[lane] : _inputTextures[lane];
+	public ReplaySkinData GetSkin() => _skin;
 }

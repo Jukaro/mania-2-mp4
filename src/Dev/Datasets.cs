@@ -1,9 +1,14 @@
+using Rythmify.Core;
+
 namespace Rythmify.Dev;
 
 public static class Datasets {
 
 	public static dynamic TestCases = new {
 		ShiroW = new {
+			Skins = new {
+				KizunaAkari = "C:/Users/shiro/AppData/Local/osu!/Skins/-           Kizuna Akari  +  4K mania"
+			},
 			GalaxyCollapse = new {
 				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu",
 				ReplayPath = "C:/Users/shiro/AppData/Local/osu!/Replays/bojii - Kurokotei - Galaxy Collapse [Cataclysmic Hypernova] (2023-06-01) OsuMania.osr",
