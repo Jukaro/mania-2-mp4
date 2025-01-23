@@ -201,15 +201,14 @@ public class Menu {
 		_sideMenu["Play"].SetColor(new Color(255, 0, 0));
 	}
 
-	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, SkinData skin) {
+	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, ReplaySkinData skin) {
 		MouseManager.Update();
 
 		if (_replaySelector.NeedToUpdatePlayers) {
 
 			if (_beatmapSelector.SelectedBeatmap != null && _replaySelector.SelectedReplay != null) {
-				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin);
+				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin.ManiaSection.HitPosition);
 				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay);
-				Logger.LogDebug($"AudioPath: {_beatmapSelector.SelectedBeatmap.AudioPath}");
 				audioPlayer = new AudioPlayer(_beatmapSelector.SelectedBeatmap.AudioPath);
 			}
 			_replaySelector.NeedToUpdatePlayers = false;

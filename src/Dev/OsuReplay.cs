@@ -20,7 +20,8 @@ public class OsuReplay
 	private Menu _menu;
 
 	private BeatmapData _beatmap;
-	private SkinData _skin;
+	private SkinData _rawSkin;
+	private ReplaySkinData _replaySkin;
 	private ReplayData _replay;
 
 	private Button _test;
@@ -30,19 +31,21 @@ public class OsuReplay
 	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
 	{
 		dynamic testCase = Datasets.TestCases.ShiroW.Stronger;
+		dynamic skinPath = Datasets.TestCases.ShiroW.Skins.KizunaAkari;
 		// dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
 		// testCase = Datasets.TestCases.Jukaro.Polyriddim;
 
 		_beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
 
-		_skin = new() { HitPosition = 384 };
+		_rawSkin = SkinParser.Parse(skinPath);
+		_replaySkin = new ReplaySkinData(_rawSkin, _beatmap.DifficultyData.LaneCount);
 
 		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount, false);
 
-		_beatmapPlayer = new(_beatmap, _skin);
+		_beatmapPlayer = new(_beatmap, _replaySkin.ManiaSection.HitPosition);
 		_inputsPlayer = new(_replay);
 
-		SkinRenderer skinRenderer = new(_skin, graphicsDevice);
+		SkinRenderer skinRenderer = new(_replaySkin, graphicsDevice);
 		_beatmapRenderer = new(graphics, skinRenderer);
 		_inputsRenderer = new(graphics, skinRenderer);
 
@@ -66,7 +69,7 @@ public class OsuReplay
 		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
 		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
 
-		_menu.Update(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _skin);
+		_menu.Update(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _replaySkin);
 		_test.Update();
 	}
 

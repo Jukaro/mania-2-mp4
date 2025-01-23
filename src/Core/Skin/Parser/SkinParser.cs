@@ -4,11 +4,12 @@ using System.Linq;
 namespace Rythmify.Core;
 
 public static class SkinParser {
-	public static void Parse(string skinPath) {
+	public static SkinData Parse(string skinPath) {
 		IniParser skinIniParser = new(Path.Combine(skinPath, "skin.ini"));
 
 		SkinData skin = new()
 		{
+			BasePath = skinPath,
 			General = skinIniParser.GetSection("General")?.As<SkinGeneralSection>() ?? new(),
 			Colors = skinIniParser.GetSection("Colours")?.As<SkinColorsSection>() ?? new(),
 			Fonts = skinIniParser.GetSection("Fonts")?.As<SkinFontsSection>() ?? new(),
@@ -21,5 +22,7 @@ public static class SkinParser {
 		Logger.LogInfo(skin.Fonts.ToString());
 		Logger.LogInfo(skin.CatchTheBeat.ToString());
 		skin.Mania.Values.Select(section => section.ToString()).ToList().ForEach(Logger.LogInfo);
+
+		return skin;
 	}
 }

@@ -27,8 +27,6 @@ public class Game1 : Game
 
 	protected override void Initialize()
 	{
-		SkinParser.Parse($"C:/Users/shiro/AppData/Local/osu!/Skins/-           Kizuna Akari  +  4K mania");
-
 		_graphics.PreferredBackBufferWidth = (int)(1000 * (16/9f));
 		_graphics.PreferredBackBufferHeight = 1000;
 		_graphics.SynchronizeWithVerticalRetrace = false;
