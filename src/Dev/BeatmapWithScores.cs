@@ -17,7 +17,7 @@ public class BeatmapWithScores {
 
 	public BeatmapWithScores(BeatmapDataFromDatabase beatmapDBInfo) {
 		BeatmapDBInfo = beatmapDBInfo;
-		FolderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + BeatmapDBInfo.FolderName.Trim() + "/";
+		FolderPath = "G:/Jeux/osu maps de giga ultra mort/" + BeatmapDBInfo.FolderName.Trim() + "/";
 		FilePath = FolderPath + BeatmapDBInfo.Filename;
 		AudioPath = FolderPath + BeatmapDBInfo.AudioFilename;
 	}
@@ -50,8 +50,6 @@ public class BeatmapWithScores {
 	}
 
 	public void LoadBeatmap() {
-		string folderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + BeatmapDBInfo.FolderName + "/";
-		string filePath = folderPath + BeatmapDBInfo.Filename;
-		Beatmap = BeatmapParser.Parse(filePath);
+		Beatmap = BeatmapParser.Parse(FilePath);
 	}
 }

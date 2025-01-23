@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Rythmify.Core.Shared;
 
@@ -47,16 +48,27 @@ public static partial class BeatmapDBParser {
 			beatmap.OverallDifficulty = beatmapDB.GameVersion < 20140609 ? Parser.ParseByte(bytes, ref currentByteIndex) : Parser.ParseSingle(bytes, ref currentByteIndex);
 			beatmap.SliderVelocity = Parser.ParseDouble(bytes, ref currentByteIndex);
 
+			bool shouldSkipStarRatingParsing = false;
+
 			if (beatmapDB.GameVersion >= 20140609) {
-				beatmap.StandardStarRating = Parser.ParseDictionary(bytes, ref currentByteIndex, true);
-				beatmap.TaikoStarRating = Parser.ParseDictionary(bytes, ref currentByteIndex, true);
-				beatmap.CatchTheBeatStarRating = Parser.ParseDictionary(bytes, ref currentByteIndex, true);
-				beatmap.ManiaStarRating = Parser.ParseDictionary(bytes, ref currentByteIndex, true);
+				if (beatmapDB.GameVersion <= 20250107) {
+					beatmap.StandardStarRating = Parser.ParseIntDoubleDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.TaikoStarRating = Parser.ParseIntDoubleDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.CatchTheBeatStarRating = Parser.ParseIntDoubleDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.ManiaStarRating = Parser.ParseIntDoubleDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+				} else {
+					beatmap.StandardStarRating = Parser.ParseIntFloatDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.TaikoStarRating = Parser.ParseIntFloatDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.CatchTheBeatStarRating = Parser.ParseIntFloatDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+					beatmap.ManiaStarRating = Parser.ParseIntFloatDictionary(bytes, ref currentByteIndex, shouldSkipStarRatingParsing);
+				}
 			}
 
 			beatmap.DrainTime = Parser.ParseInt(bytes, ref currentByteIndex);
 			beatmap.TotalTime = Parser.ParseInt(bytes, ref currentByteIndex);
 			beatmap.AudioPreviewTime = Parser.ParseInt(bytes, ref currentByteIndex);
+
+			// Logger.LogDebug($"{beatmap}");
 
 			int timingPointsCount = Parser.ParseInt(bytes, ref currentByteIndex);
 			currentByteIndex += timingPointsCount * 17;

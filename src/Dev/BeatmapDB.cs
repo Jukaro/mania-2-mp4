@@ -53,10 +53,10 @@ public class BeatmapDataFromDatabase {
 	public float HPDrain;
 	public float OverallDifficulty;
 	public double SliderVelocity;
-	public Dictionary<int, double> StandardStarRating;
-	public Dictionary<int, double> TaikoStarRating;
-	public Dictionary<int, double> CatchTheBeatStarRating;
-	public Dictionary<int, double> ManiaStarRating;
+	public Dictionary<int, float> StandardStarRating;
+	public Dictionary<int, float> TaikoStarRating;
+	public Dictionary<int, float> CatchTheBeatStarRating;
+	public Dictionary<int, float> ManiaStarRating;
 	public int DrainTime;
 	public int TotalTime;
 	public int AudioPreviewTime;

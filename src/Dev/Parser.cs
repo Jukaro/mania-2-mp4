@@ -15,10 +15,10 @@ public static class Parser {
 			lowBytes = singleByte & ((1 << 7) - 1);
 			result |= lowBytes << shift;
 			notEnd = singleByte & (1 << 7);
+			index++;
 			if (notEnd == 0)
 				break;
 			shift += 7;
-			index++;
 		}
 		return result;
 	}
@@ -32,7 +32,6 @@ public static class Parser {
 		{
 			index++;
 			int length = ParseIntFromULEB128(bytes, ref index);
-			index++;
 			str = System.Text.Encoding.UTF8.GetString(bytes, index, length);
 			index += length;
 		}
@@ -41,29 +40,32 @@ public static class Parser {
 		return str;
 	}
 
-	public static KeyValuePair<int, double> ParseIntDoublePair(byte[] bytes, ref int index) {
+	private static KeyValuePair<int, float> ParseIntDecimalPair(byte[] bytes, ref int index, bool inputIsFloat) {
 		index++;
 		int i = ParseInt(bytes, ref index);
 		index++;
-		double d = ParseDouble(bytes, ref index);
-		return new KeyValuePair<int, double>(i, d);
+		float f = inputIsFloat ? ParseFloat(bytes, ref index) : (float)ParseDouble(bytes, ref index);
+		return new KeyValuePair<int, float>(i, f);
 	}
 
-	public static Dictionary<int, double> ParseDictionary(byte[] bytes, ref int index, bool skip) {
+	private static Dictionary<int, float> ParseDictionary(byte[] bytes, ref int index, bool skip, bool inputIsFloat) {
 		int pairCount = ParseInt(bytes, ref index);
 		if (pairCount < 0)
 			return null;
 		if (skip) {
-			index += pairCount * 14;
+			index += inputIsFloat ? pairCount * (sizeof(int) + sizeof(float) + 2) : pairCount * (sizeof(int) + sizeof(double) + 2);
 			return null;
 		}
-		Dictionary<int, double> dict = new();
+		Dictionary<int, float> dict = new();
 		for (int j = 0; j < pairCount; j++) {
-			KeyValuePair<int, double> pair = ParseIntDoublePair(bytes, ref index);
+			KeyValuePair<int, float> pair = ParseIntDecimalPair(bytes, ref index, inputIsFloat);
 			dict[pair.Key] = pair.Value;
 		}
 		return dict;
 	}
+
+	public static Dictionary<int, float> ParseIntFloatDictionary(byte[] bytes, ref int index, bool skip) => ParseDictionary(bytes, ref index, skip, true);
+	public static Dictionary<int, float> ParseIntDoubleDictionary(byte[] bytes, ref int index, bool skip) => ParseDictionary(bytes, ref index, skip, false);
 
 	public static bool ParseBool(byte[] bytes, ref int index) {
 		bool result = bytes[index] != 0;
@@ -96,6 +98,12 @@ public static class Parser {
 	}
 
 	public static float ParseSingle(byte[] bytes, ref int index) {
+		float result = BitConverter.ToSingle(bytes, index);
+		index += 4;
+		return result;
+	}
+
+	public static float ParseFloat(byte[] bytes, ref int index) {
 		float result = BitConverter.ToSingle(bytes, index);
 		index += 4;
 		return result;

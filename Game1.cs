@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,6 +9,11 @@ namespace Rythmify.UI;
 
 public static class Fonts {
 	public static SpriteFont Arial;
+	public static SpriteFontBase Arial2;
+}
+
+public static class Paths {
+	public static string OsuPath = "G:/Jeux/osssu";
 }
 
 public class Game1 : Game

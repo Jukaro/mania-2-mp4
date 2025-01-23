@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Databases;
 using Rythmify.UI;
+using Rythmify.Core.Shared;
 
 public class BeatmapSelector : Dropdown {
 	private GraphicsDevice _graphics;
@@ -42,12 +43,12 @@ public class BeatmapSelector : Dropdown {
 			string title = beatmap.SongTitle + " [" + beatmap.Difficulty + "]";
 			string artist = beatmap.ArtistName;
 			string mapper = beatmap.CreatorName;
-			// string starRating = beatmap.ManiaStarRating[(int)Mods.None].ToString("F2") + "*";
+			string starRating = beatmap.ManiaStarRating == null ? "" : beatmap.ManiaStarRating[(int)Mods.None].ToString("F2") + "*";
 
 			UIElementsList[i].Visuals.Texts[0] = new Text(title, new Vector2(0, 0));
-			UIElementsList[i].Visuals.Texts[1] = new Text("by " + artist, new Vector2(0, 15));
-			UIElementsList[i].Visuals.Texts[2] = new Text("mapped by " + mapper, new Vector2(0, 30));
-			// UIElementsList[i].Visuals.Texts[3] = new Text("star rating: " + starRating, new Vector2(0, 45));
+			UIElementsList[i].Visuals.Texts[1] = new Text("by " + artist, new Vector2(0, 20));
+			UIElementsList[i].Visuals.Texts[2] = new Text("mapped by " + mapper, new Vector2(0, 40));
+			UIElementsList[i].Visuals.Texts[3] = new Text("star rating: " + starRating, new Vector2(0, 60));
 			if (beatmaps[start + i].TexturePath == null) {
 				beatmaps[start + i].SetTexturePath();
 			}
@@ -58,11 +59,9 @@ public class BeatmapSelector : Dropdown {
 				int index = i;
 				button.SetOnClick(() => {
 					SelectedBeatmap = beatmaps[start + index];
-					replaySelector.UpdateScoresDropdown(SelectedBeatmap);
+					replaySelector.UpdateScores(SelectedBeatmap);
 					if (SelectedBeatmap.Beatmap == null) {
-						string folderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + SelectedBeatmap.BeatmapDBInfo.FolderName.Trim() + "/";
-						string filePath = folderPath + SelectedBeatmap.BeatmapDBInfo.Filename;
-						SelectedBeatmap.Beatmap = BeatmapParser.Parse(filePath);
+						SelectedBeatmap.LoadBeatmap();
 					}
 				});
 			}
