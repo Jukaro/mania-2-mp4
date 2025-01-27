@@ -284,7 +284,7 @@ public class Visuals {
 		if (_blinkState == BlinkState.ClickState || _blinkState == BlinkState.MouseOverState)
 			spriteBatch.Draw(_overlayTexture, pos, sourceRectangle, overlayColor);
 		foreach (Text text in Texts) {
-			spriteBatch.DrawString(Fonts.Arial2, text.Str, new(pos.X + text.RelativePos.X, pos.Y + text.RelativePos.Y), Color.White);
+			spriteBatch.DrawString(FontsStore.Arial2, text.Str, new(pos.X + text.RelativePos.X, pos.Y + text.RelativePos.Y), Color.White);
 		}
 	}
 

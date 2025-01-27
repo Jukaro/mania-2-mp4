@@ -43,6 +43,10 @@ public static class Datasets {
 			}
 		},
 		Jukaro = new {
+			Skins = new {
+				KizunaAkari = "G:/Jeux/osssu/Skins/-           Kizuna Akari  +  4K mania",
+				O2Jam = "G:/Jeux/osssu/Skins/O2Jam U Ultimate modif"
+			},
 			GalaxyCollapse = new {
 				BeatmapPath = "G:/Jeux/osu maps de giga ultra mort/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu",
 				ReplayPath = "G:/Jeux/osssu/Replays/Jukaro - Kurokotei - Galaxy Collapse [Cataclysmic Hypernova] (2024-02-27) OsuMania.osr"

@@ -39,7 +39,7 @@ public class BeatmapSelector : Dropdown {
 		ResetButtons();
 
 		for (int i = 0; i < DisplayedBeatmapsCount && start + i < beatmaps.Count; i++) {
-			BeatmapDataFromDatabase beatmap = beatmaps[start + i].BeatmapDBInfo;
+			BeatmapDataFromDB beatmap = beatmaps[start + i].BeatmapDBInfo;
 			string title = beatmap.SongTitle + " [" + beatmap.Difficulty + "]";
 			string artist = beatmap.ArtistName;
 			string mapper = beatmap.CreatorName;

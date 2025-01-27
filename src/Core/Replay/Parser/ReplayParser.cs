@@ -8,7 +8,7 @@ namespace Rythmify.Core.Replay;
 public static partial class ReplayParser {
 	public static ReplayData Parse(byte[] bytes, int currentByteIndex, int laneCount, bool skipInputsParsing) {
 		ReplayData replay = ParseBytes(bytes, currentByteIndex, laneCount, skipInputsParsing);
-		replay.FilePath = Path.Join(Path.Join(Paths.OsuPath, "Data/r"), replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr");
+		replay.FilePath = Path.Join(Path.Join(Paths.OsuDirectoryPath, "Data/r"), replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr");
 
 		return replay;
 	}

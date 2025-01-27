@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,13 +8,9 @@ using Rythmify.Core;
 
 namespace Rythmify.UI;
 
-public static class Fonts {
-	public static SpriteFont Arial;
-	public static SpriteFontBase Arial2;
-}
-
 public static class Paths {
-	public static string OsuPath = "G:/Jeux/osssu";
+	public static string OsuDirectoryPath = "G:/Jeux/osssu";
+	public static string OsuSongsDirectoryPath = "G:/Jeux/osu maps de giga ultra mort";
 }
 
 public class Game1 : Game
@@ -48,7 +45,7 @@ public class Game1 : Game
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-		Fonts.Arial = Content.Load<SpriteFont>("Fonts/Arial");
+		FontsStore.Arial = Content.Load<SpriteFont>("Fonts/Arial");
 		_osuReplay.Init(_graphics, GraphicsDevice);
 	}
 

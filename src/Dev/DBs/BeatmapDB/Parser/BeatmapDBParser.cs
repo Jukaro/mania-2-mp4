@@ -23,7 +23,7 @@ public static partial class BeatmapDBParser {
 		watch.Start();
 
 		for (int i = 0; i < beatmapDB.BeatmapCount; i++) {
-			BeatmapDataFromDatabase beatmap = new();
+			BeatmapDataFromDB beatmap = new();
 
 			if (beatmapDB.GameVersion < 20191106)
 				beatmap.SizeInBytes = Parser.ParseInt(bytes, ref currentByteIndex);
