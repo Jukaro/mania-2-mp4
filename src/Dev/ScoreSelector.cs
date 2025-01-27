@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core;
@@ -48,11 +49,29 @@ public class ReplaySelector : Dropdown {
 			ReplayData r = replays[i];
 
 			string player = r.PlayerName + " " + r.TimeStamp;
-			float acc = (r.NbMax300s + r.Nb300s) * 300 + r.Nb200s * 200 + r.Nb100s * 100 + r.Nb50s * 50;
-			float maxAcc = (r.NbMax300s + r.Nb300s + r.Nb200s + r.Nb100s + r.Nb50s + r.NbMiss) * 300;
-			float realAcc = acc / maxAcc * 100.0f;
-			string accuracy = realAcc.ToString("F2");
-			string score = r.Score.ToString() + " " + accuracy + "%";
+
+			int totalHits = r.NbMax300s + r.Nb300s + r.Nb200s + r.Nb100s + r.Nb50s + r.NbMiss;
+			float accuracyV1 = (r.NbMax300s + r.Nb300s) * 300 + r.Nb200s * 200 + r.Nb100s * 100 + r.Nb50s * 50;
+			float accuracyV2 = r.NbMax300s * 320 + r.Nb300s * 300 + r.Nb200s * 200 + r.Nb100s * 100 + r.Nb50s * 50;
+			float maxAccuracyV1 = totalHits * 300;
+			float maxAccuracyV2 = totalHits * 320;
+			float realAccuracyV1 = accuracyV1 / maxAccuracyV1 * 100.0f;
+			float realAccuracyV2 = accuracyV2 / maxAccuracyV2 * 100.0f;
+
+			string accuracyStr = realAccuracyV1.ToString("F2");
+
+			double difficultyValue = 0.0f;
+
+			if (beatmapDB != null) {
+				BeatmapWithScores beatmap2 = new BeatmapWithScores(beatmapDB.Beatmaps[replays[i].BeatmapMD5]);
+				double starRating2 = beatmap2.BeatmapDBInfo.ManiaStarRating == null ? 0.0f : beatmap2.BeatmapDBInfo.ManiaStarRating[(int)Mods.None];
+
+				difficultyValue = 8.0 * Math.Pow(Math.Max(starRating2 - 0.15, 0.05), 2.2) // Star rating to pp curve
+									  * Math.Max(0, 5 * (realAccuracyV2 / 100) - 4) // From 80% accuracy, 1/20th of total pp is awarded per additional 1% accuracy
+									  * (1 + 0.1 * Math.Min(1, (double)totalHits / 1500)); // Length bonus, capped at 1500 notes
+			}
+
+			string score = r.Score.ToString() + " " + accuracyStr + "%" + " " + difficultyValue.ToString("F0") + "pp";
 			string judgements1 = "Nb maxs: " + r.NbMax300s.ToString() + " | ";
 			judgements1 += "Nb 300s: " + r.Nb300s.ToString() + " | ";
 			judgements1 += "Nb 200s: " + r.Nb200s.ToString() + " | ";
