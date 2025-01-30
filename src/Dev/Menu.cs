@@ -110,8 +110,8 @@ public class Menu {
 
 		_sideMenu.Add(new Dropdown(_graphics, new(0, 1000), 0, "Sessions", VisualsStore.visuals[8]));
 		if (_sideMenu["Sessions"] is Dropdown sessionsButton) {
-			for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
-			// for (int i = 0; i < 100; i++) {
+			// for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
+			for (int i = 0; i < 100; i++) {
 				sessionsButton.Add(new Button(_graphics, new(0, 0), "Session" + i, VisualsStore.visuals[9]));
 				sessionsButton[i].Visuals.Resize(sessionsButton.UsableWidth, VisualsStore.visuals[9].Height);
 				sessionsButton[i].Visuals.Texts.Add(new Text(_sessionList.SessionsOrderedList.ElementAt(i).Key.ToString(), new Vector2(0, 0)));
