@@ -43,25 +43,21 @@ public static class Datasets {
 			}
 		},
 		Jukaro = new {
-			Skins = new {
-				KizunaAkari = "G:/Jeux/osssu/Skins/-           Kizuna Akari  +  4K mania",
-				O2Jam = "G:/Jeux/osssu/Skins/O2Jam U Ultimate modif"
-			},
 			GalaxyCollapse = new {
-				BeatmapPath = "G:/Jeux/osu maps de giga ultra mort/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu",
-				ReplayPath = "G:/Jeux/osssu/Replays/Jukaro - Kurokotei - Galaxy Collapse [Cataclysmic Hypernova] (2024-02-27) OsuMania.osr"
+				BeatmapPath = "E:/osu maps de giga ultra mort/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu",
+				ReplayPath = "D:/osssu/Replays/Jukaro - Kurokotei - Galaxy Collapse [Cataclysmic Hypernova] (2024-02-27) OsuMania.osr"
 			},
 			BackbeatManiac = new {
-				BeatmapPath = "G:/Jeux/osu maps de giga ultra mort/586848 Camellia - Backbeat Maniac/Camellia - Backbeat Maniac (Evening) [Rewind VIP].osu",
-				ReplayPath = "G:/Jeux/osssu/Replays/CrewK - Camellia - Backbeat Maniac [Rewind VIP] (2021-10-08) OsuMania.osr"
+				BeatmapPath = "E:/osu maps de giga ultra mort/586848 Camellia - Backbeat Maniac/Camellia - Backbeat Maniac (Evening) [Rewind VIP].osu",
+				ReplayPath = "D:/osssu/Replays/CrewK - Camellia - Backbeat Maniac [Rewind VIP] (2021-10-08) OsuMania.osr"
 			},
 			TheMastermind = new {
-				BeatmapPath = "G:/Jeux/osu maps de giga ultra mort/663258 Mick Gordon - The Mastermind/Mick Gordon - The Mastermind (Pope Gadget) [Brainstorm].osu",
-				ReplayPath = "G:/Jeux/osssu/Replays/CrewK - Mick Gordon - The Mastermind [Brainstorm] (2022-04-20) OsuMania.osr"
+				BeatmapPath = "E:/osu maps de giga ultra mort/663258 Mick Gordon - The Mastermind/Mick Gordon - The Mastermind (Pope Gadget) [Brainstorm].osu",
+				ReplayPath = "D:/osssu/Replays/CrewK - Mick Gordon - The Mastermind [Brainstorm] (2022-04-20) OsuMania.osr"
 			},
 			Polyriddim = new {
-				BeatmapPath = "G:/Jeux/osu maps de giga ultra mort/1182702 phonon - polyriddim/phonon - polyriddim (HowToPlayLN) [brrrrrrrrrrrrrr].osu",
-				ReplayPath = "G:/Jeux/osssu/Replays/CrewK - phonon - polyriddim [brrrrrrrrrrrrrr] (2021-08-30) OsuMania.osr"
+				BeatmapPath = "E:/osu maps de giga ultra mort/1182702 phonon - polyriddim/phonon - polyriddim (HowToPlayLN) [brrrrrrrrrrrrrr].osu",
+				ReplayPath = "D:/osssu/Replays/CrewK - phonon - polyriddim [brrrrrrrrrrrrrr] (2021-08-30) OsuMania.osr"
 			}
 		},
 	};

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Rythmify.Core.Shared;
 
@@ -21,7 +20,7 @@ public class ReplayData {
 	public bool FullCombo;
 	public int Mods;
 	public string LifeBar;
-	public DateTime TimeStamp;
+	public long TimeStamp;
 	public long ReplayTimeStamp;
 	public int CompressedReplayLength; // in bytes
 	public List<Input> Inputs;

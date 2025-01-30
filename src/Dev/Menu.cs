@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using Rythmify.Dev;
-using System.IO;
 
 namespace Rythmify.UI;
 
@@ -24,7 +23,7 @@ public class Menu {
 	private KeyboardKey _F4;
 
 	private UIElementContainer _mainContainer;
-	private ScrollableUIElementContainer _sideMenu;
+	private UIElementContainer _sideMenu;
 	private ReplaySelector _replaySelector;
 	private BeatmapSelector _beatmapSelector;
 	private InputBox _searchBar;
@@ -39,7 +38,7 @@ public class Menu {
 	private List<BeatmapWithScores> _beatmapsList;
 	private List<BeatmapWithScores> _sortedBeatmapsList;
 
-	SessionList _sessionList;
+	private List<Visuals> _visualsList = new();
 
 	public Menu(GraphicsDevice graphics) {
 		_graphics = graphics;
@@ -53,22 +52,102 @@ public class Menu {
 		_isPlaying = false;
 	}
 
+	public void InitGradientListsList(List<GradientList> gradientListsList) {
+		GradientList RGBGradient = new();
+		RGBGradient.Add(new(new(255, 0, 0), new(255, 255, 0)));
+		RGBGradient.Add(new(new(255, 255, 0), new(0, 255, 0)));
+		RGBGradient.Add(new(new(0, 255, 0), new(0, 255, 255)));
+		RGBGradient.Add(new(new(0, 255, 255), new(0, 0, 255)));
+		RGBGradient.Add(new(new(0, 0, 255), new(255, 0, 255)));
+		RGBGradient.Add(new(new(255, 0, 255), new(255, 0, 0)));
+		gradientListsList.Add(RGBGradient);
+
+		GradientList BlackRedGradient = new();
+		BlackRedGradient.Add(new(Color.Black, Color.Red));
+		BlackRedGradient.Add(new(Color.Red, Color.Black));
+		gradientListsList.Add(BlackRedGradient);
+	}
+
+	public void InitVisualsList(List<Visuals> _visualsList, List<GradientList> gradientListsList) {
+		// 0
+		Visuals basicBlackButton = new(_graphics, 100, 50, Color.Black) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		_visualsList.Add(basicBlackButton);
+
+		// 1
+		Visuals basicRGBButton = new(_graphics, 300, 50, Color.White) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		basicRGBButton.SetGradientAsColor(gradientListsList[0], 10);
+		_visualsList.Add(basicRGBButton);
+
+		// 2
+		Visuals basicBlackRedButton = new(_graphics, 100, 50, Color.White) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		basicBlackRedButton.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(basicBlackRedButton);
+
+		// 3
+		Visuals basicThinBlackRedButton = new(_graphics, 100, 10, Color.White) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		basicThinBlackRedButton.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(basicThinBlackRedButton);
+
+		// 4
+		Visuals beatmapDropdown = new(_graphics, 600, 800, Color.White) {
+			BlinkOnMouseClick = false,
+			BlinkOnMouseOver = false
+		};
+		beatmapDropdown.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(beatmapDropdown);
+
+		// 5
+		Visuals beatmapDisplay = new(_graphics, 600, 100, Color.White) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		_visualsList.Add(beatmapDisplay);
+
+		// 6
+		Visuals scoreDropdown = new(_graphics, 600, 800, Color.White) {
+			BlinkOnMouseClick = false,
+			BlinkOnMouseOver = false
+		};
+		scoreDropdown.SetGradientAsColor(gradientListsList[1], 100);
+		_visualsList.Add(scoreDropdown);
+
+		// 7
+		Visuals scoreDisplay = new(_graphics, 600, 100, Color.White) {
+			BlinkOnMouseClick = true,
+			BlinkOnMouseOver = true
+		};
+		_visualsList.Add(scoreDisplay);
+	}
+
 	public void Init() {
+		List<GradientList> gradientListsList = new();
+
 		SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
-		FontsStore.InitFonts();
-		GradientStore.InitGradients();
-		VisualsStore.InitVisuals(_graphics, GradientStore.gradients);
+		InitGradientListsList(gradientListsList);
+		InitVisualsList(_visualsList, gradientListsList);
 
 		_mainContainer = new UIElementContainer(_graphics, _graphics.Viewport.Bounds.Width, _graphics.Viewport.Bounds.Height, new Vector2(0, 0), "mainContainer", Color.Transparent);
 
-		_sideMenu = new ScrollableUIElementContainer(_graphics, _graphics.Viewport.Bounds.Width - 1000, 1000, new(1000, 0), "sideMenu", new Color(100, 100, 100));
+		_sideMenu = new UIElementContainer(_graphics, _graphics.Viewport.Bounds.Width - 1000, 1000, new(1000, 0), "sideMenu", new Color(100, 100, 100));
 		_mainContainer.Add(_sideMenu);
 
-		_sideMenu.Add(new ToggleButton(_graphics, new(0, 50 * 2 + 10 * 2), "Play", Play, Pause, VisualsStore.visuals[0]));
-		_sideMenu.Add(new Button(_graphics, new(200, 50 * 2 + 10 * 2), "NextPage", VisualsStore.visuals[0]));
-		_sideMenu.Add(new Button(_graphics, new(400, 50 * 2 + 10 * 2), "PreviousPage", VisualsStore.visuals[0]));
-		_sideMenu.Add(new Button(_graphics, new(600, 50 * 2 + 10 * 2), "DisplayScores", VisualsStore.visuals[0]));
+		_sideMenu.Add(new ToggleButton(_graphics, new(0, 50 * 2 + 10 * 2), "Play", Play, Pause, _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(200, 50 * 2 + 10 * 2), "NextPage", _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(400, 50 * 2 + 10 * 2), "PreviousPage", _visualsList[0]));
+		_sideMenu.Add(new Button(_graphics, new(600, 50 * 2 + 10 * 2), "DisplayScores", _visualsList[0]));
 		if (_sideMenu["DisplayScores"] is Button displayScores)
 			displayScores.SetOnClick(() => _replaySelector.Hide = !_replaySelector.Hide);
 
@@ -77,15 +156,16 @@ public class Menu {
 		if (_sideMenu["PreviousPage"] is Button button2)
 			button2.SetOnClick(PreviousPage);
 
-		_beatmapsDB = BeatmapDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "osu!.db"));
-		_scoresDB = ScoreDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "scores.db"), _beatmapsDB);
+		_beatmapsDB = BeatmapDBParser.Parse("C:/Users/shiro/AppData/Local/osu!/osu!.db");
+		_scoresDB = ScoreDBParser.Parse("C:/Users/shiro/AppData/Local/osu!/scores.db", _beatmapsDB);
 
-		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]);
+		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, _visualsList[6], _visualsList[7]);
+		_replaySelector.SetColor(Color.Transparent);
 		_replaySelector.Hide = true;
 		_mainContainer.Add(_replaySelector);
 
-		_searchBar = new InputBox(_graphics, new (0, 0), "inputBox", VisualsStore.visuals[0]);
-		_searchBar.Visuals.Resize(600, VisualsStore.visuals[0].Height);
+		_searchBar = new InputBox(_graphics, new (0, 0), "inputBox", _visualsList[0]);
+		_searchBar.Visuals.Resize(600, _visualsList[0].Height);
 		_sideMenu.Add(_searchBar);
 
 		_query = "";
@@ -93,42 +173,10 @@ public class Menu {
 
 		_sortedBeatmapsList = FilterSongs(_query);
 
-		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, VisualsStore.visuals[4], VisualsStore.visuals[5]);
+		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, _visualsList[4], _visualsList[5]);
 		_beatmapSelector.SetColor(Color.Transparent);
 		_sideMenu.Add(_beatmapSelector);
 		_beatmapSelector.Init(_sortedBeatmapsList, 0, _replaySelector);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Sessions                                  */
-/* -------------------------------------------------------------------------- */
-
-		_sessionList = new SessionList(_scoresDB);
-
-		Logger.LogInfo($"SessionList: {_sessionList}");
-
-		_sideMenu.Add(new ReplaySelector(_graphics, new(0, 2000), "SessionReplays", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]));
-
-		_sideMenu.Add(new Dropdown(_graphics, new(0, 1000), 0, "Sessions", VisualsStore.visuals[8]));
-		if (_sideMenu["Sessions"] is Dropdown sessionsButton) {
-			// for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
-			for (int i = 0; i < 100; i++) {
-				sessionsButton.Add(new Button(_graphics, new(0, 0), "Session" + i, VisualsStore.visuals[9]));
-				sessionsButton[i].Visuals.Resize(sessionsButton.UsableWidth, VisualsStore.visuals[9].Height);
-				sessionsButton[i].Visuals.Texts.Add(new Text(_sessionList.SessionsOrderedList.ElementAt(i).Key.ToString(), new Vector2(0, 0)));
-
-				int index = i;
-				if (sessionsButton[i] is Button button1) {
-					button1.SetOnClick(() => { UpdateSession(index); });
-				}
-			}
-		}
-	}
-
-	private void UpdateSession(int i) {
-		if (_sideMenu["SessionReplays"] is ReplaySelector rs) {
-			rs.UpdateScores(_sessionList.SessionsOrderedList.ElementAt(i).Value.Replays, _beatmapsDB);
-			Logger.LogDebug($"Number of scores: {_sessionList.SessionsOrderedList.ElementAt(i).Value.Replays.Count}");
-		}
 	}
 
 	private void NextPage() {

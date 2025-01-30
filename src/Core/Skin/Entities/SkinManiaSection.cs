@@ -223,11 +223,11 @@ public class SkinManiaSection {
 	}
 
 	public override string ToString() {
-		string columnSpacing = string.Join(", ", ColumnSpacing != null ? ColumnSpacing : "");
-		string columnWidth = string.Join(", ", ColumnWidth != null ? ColumnWidth : "");
-		string columnLineWidth = string.Join(", ", ColumnLineWidth != null ? ColumnLineWidth : "");
-		string lightingNWidth = string.Join(", ", LightingNWidth != null ? LightingNWidth : "");
-		string lightingLWidth = string.Join(", ", LightingLWidth != null ? LightingLWidth : "");
+		string columnSpacing = string.Join(", ", ColumnSpacing);
+		string columnWidth = string.Join(", ", ColumnWidth);
+		string columnLineWidth = string.Join(", ", ColumnLineWidth);
+		string lightingNWidth = string.Join(", ", LightingNWidth);
+		string lightingLWidth = string.Join(", ", LightingLWidth);
 
 		string keyFlipWhenUpsideDownLanes = string.Join(", ", KeyFlipWhenUpsideDownLanes.Select(kv => $"{kv.Key}: {kv.Value}"));
 		string keyFlipWhenUpsideDownLanesD = string.Join(", ", KeyFlipWhenUpsideDownLanesD.Select(kv => $"{kv.Key}: {kv.Value}"));
