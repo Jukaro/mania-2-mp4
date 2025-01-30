@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core;
 using StbImageSharp;
+using FontStashSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,11 +63,20 @@ public class Visuals {
 		_graphics = visuals._graphics;
 		Width = visuals.Width;
 		Height = visuals.Height;
+
 		Texture = new(_graphics, Width, Height);
+
 		Init(visuals.Color);
 		Color[] colors = new Color[Texture.Width * Texture.Height];
+
 		visuals.Texture.GetData(colors);
 		Texture.SetData(colors);
+		if (visuals._gradientTexture != null) {
+			_gradientTexture = new(_graphics, Width, Height);
+			visuals._gradientTexture.GetData(colors);
+			_gradientTexture.SetData(colors);
+		}
+
 		SetTextureRelatedData();
 		BlinkOnMouseOver = visuals.BlinkOnMouseOver;
 		BlinkOnMouseClick = visuals.BlinkOnMouseClick;
@@ -274,7 +284,7 @@ public class Visuals {
 		if (_blinkState == BlinkState.ClickState || _blinkState == BlinkState.MouseOverState)
 			spriteBatch.Draw(_overlayTexture, pos, sourceRectangle, overlayColor);
 		foreach (Text text in Texts) {
-			spriteBatch.DrawString(Fonts.Arial, text.Str, new(pos.X + text.RelativePos.X, pos.Y + text.RelativePos.Y), Color.White);
+			spriteBatch.DrawString(FontsStore.Arial2, text.Str, new(pos.X + text.RelativePos.X, pos.Y + text.RelativePos.Y), Color.White);
 		}
 	}
 

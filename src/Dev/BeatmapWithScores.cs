@@ -5,21 +5,22 @@ using Rythmify.Core.Replay;
 using System.IO;
 using System.Linq;
 using System;
+using Rythmify.UI;
 
 public class BeatmapWithScores {
 	public BeatmapData Beatmap = null;
-	public BeatmapDataFromDatabase BeatmapDBInfo = null;
+	public BeatmapDataFromDB BeatmapDBInfo = null;
 	public List<ReplayData> Replays = new();
 	public string TexturePath = null;
 	public string AudioPath;
 	public string FolderPath;
 	public string FilePath;
 
-	public BeatmapWithScores(BeatmapDataFromDatabase beatmapDBInfo) {
+	public BeatmapWithScores(BeatmapDataFromDB beatmapDBInfo) {
 		BeatmapDBInfo = beatmapDBInfo;
-		FolderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + BeatmapDBInfo.FolderName.Trim() + "/";
-		FilePath = FolderPath + BeatmapDBInfo.Filename;
-		AudioPath = FolderPath + BeatmapDBInfo.AudioFilename;
+		FolderPath = Path.Combine(Paths.OsuSongsDirectoryPath, BeatmapDBInfo.FolderName.Trim() + "/");
+		FilePath = Path.Combine(FolderPath, BeatmapDBInfo.Filename);
+		AudioPath = Path.Combine(FolderPath, BeatmapDBInfo.AudioFilename);
 	}
 
 	public void SetTexturePath() {
@@ -50,8 +51,6 @@ public class BeatmapWithScores {
 	}
 
 	public void LoadBeatmap() {
-		string folderPath = "C:/Users/shiro/AppData/Local/osu!/Songs/" + BeatmapDBInfo.FolderName + "/";
-		string filePath = folderPath + BeatmapDBInfo.Filename;
-		Beatmap = BeatmapParser.Parse(filePath);
+		Beatmap = BeatmapParser.Parse(FilePath);
 	}
 }

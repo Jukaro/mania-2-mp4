@@ -16,7 +16,7 @@ public class UIElement {
 		AbsolutePos = pos;
 		Name = name;
 		Visuals = new(graphics, width, height, color);
-		Visuals.SetColor(color);
+		// Visuals.SetColor(color);
 	}
 
 	public UIElement(GraphicsDevice graphics, Vector2 pos, string name, Visuals visuals) {

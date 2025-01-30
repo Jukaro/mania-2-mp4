@@ -1,13 +1,14 @@
 using System;
 using System.IO;
 using Rythmify.Core.Shared;
+using Rythmify.UI;
 
 namespace Rythmify.Core.Replay;
 
 public static partial class ReplayParser {
 	public static ReplayData Parse(byte[] bytes, int currentByteIndex, int laneCount, bool skipInputsParsing) {
 		ReplayData replay = ParseBytes(bytes, currentByteIndex, laneCount, skipInputsParsing);
-		replay.FilePath = "C:/Users/shiro/AppData/Local/osu!/Data/r/" + replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr";
+		replay.FilePath = Path.Join(Path.Join(Paths.OsuDirectoryPath, "Data/r"), replay.BeatmapMD5 + "-" + replay.ReplayTimeStamp + ".osr");
 
 		return replay;
 	}
@@ -45,10 +46,10 @@ public static partial class ReplayParser {
 			FullCombo = Parser.ParseBool(bytes, ref currentByteIndex),
 			Mods = Parser.ParseInt(bytes, ref currentByteIndex),
 			LifeBar = Parser.ParseString(bytes, ref currentByteIndex),
-			TimeStamp = Parser.ParseLong(bytes, ref currentByteIndex)
+			TimeStamp = new DateTime(Parser.ParseLong(bytes, ref currentByteIndex)),
 		};
 
-		DateTime newTimeStamp = new DateTime(replay.TimeStamp).AddYears(-1600); // je ????
+		DateTime newTimeStamp = replay.TimeStamp.AddYears(-1600); // je ????
 		replay.ReplayTimeStamp = newTimeStamp.ToBinary();
 
 		replay.CompressedReplayLength = Parser.ParseInt(bytes, ref currentByteIndex);

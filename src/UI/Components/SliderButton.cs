@@ -1,3 +1,4 @@
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -71,6 +72,6 @@ public class SliderButton : Button {
 
 	public override void Render(SpriteBatch spriteBatch) {
 		spriteBatch.Draw(Visuals.Texture, AbsolutePos, Visuals.Color);
-		spriteBatch.DrawString(Fonts.Arial, _value.ToString("F2"), AbsolutePos, Color.White);
+		spriteBatch.DrawString(FontsStore.Arial2, _value.ToString("F2"), AbsolutePos, Color.White);
 	}
 }

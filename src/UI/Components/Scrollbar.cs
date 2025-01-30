@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
 using System;
 
 namespace Rythmify.UI;
@@ -31,8 +32,17 @@ public class Scrollbar : Button {
 		_onSliderChange = onSliderChange;
 	}
 
+	public void Reset() {
+		_min = AbsolutePos.Y;
+		_max = 0;
+		_lastValue = 0;
+		UpdateSliderSize(Height);
+	}
+
 	public void UpdateSliderSize(int max_height) {
-		_slider = new(_graphics, _slider.Width, Height * Height / max_height, AbsolutePos, "slider", Color.LightGray);
+		_slider = new(_graphics, _slider.Width, Height * Height / max_height, _slider.AbsolutePos, "slider", Color.LightGray);
+		// renommer UIElement.Height en originalHeight pour la scrollbar ?
+		// Logger.LogDebug($"slider height updated to {Height * Height / max_height} ({max_height})");
 	}
 
 	public void UpdateMax(double max) {

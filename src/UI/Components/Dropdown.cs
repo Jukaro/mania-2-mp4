@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Rythmify.UI;
 
-public class Dropdown : UIElementContainer {
+public class Dropdown : ScrollableUIElementContainer {
 	private int _margin;
 	private int _lastUIElementHeight;
 
