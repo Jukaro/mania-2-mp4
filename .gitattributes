@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+# Fichiers C#
+*.cs text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf
+
+# Shaders et fichiers MonoGame
+*.fx text eol=lf
+*.mgfx text eol=lf
+*.mgcb text eol=lf
