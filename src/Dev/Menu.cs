@@ -137,7 +137,7 @@ public class Menu {
 /*                               Scores Top 100                               */
 /* -------------------------------------------------------------------------- */
 
-		DateTime limit = new DateTime(2021, 01, 01);
+		DateTime limit = new DateTime(2026, 01, 01);
 
 		Logger.LogDebug($"limit: {limit}");
 
