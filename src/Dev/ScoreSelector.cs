@@ -14,22 +14,22 @@ using Rythmify.UI;
 public class ReplaySelector : Dropdown {
 	private GraphicsDevice _graphics;
 	private Visuals _scoreVisuals;
+	private GradientList _overlay;
 	public ReplayData SelectedReplay = null;
 	public bool NeedToUpdatePlayers = false;
 
 	public ReplaySelector(GraphicsDevice graphics, Vector2 pos, string name, int margin, Visuals visuals, Visuals scoreVisuals) : base(graphics, pos, margin, name, visuals) {
 		_graphics = graphics;
-		_scoreVisuals = scoreVisuals;
+		_scoreVisuals = new Visuals(scoreVisuals);
+		_scoreVisuals.Resize(UsableWidth, _scoreVisuals.Height);
+		_overlay = new GradientList();
+		_overlay.Add(new Gradient(new Microsoft.Xna.Framework.Color(0, 0, 0) * 0.6f, new Microsoft.Xna.Framework.Color(0, 0, 0) * 0.6f));
+		_scoreVisuals.InitGradientTexture(_overlay, 255);
 	}
 
-	private void UpdateScoresDropdown(List<ReplayData> replays, Texture2D texture, BeatmapDB beatmapDB) {
+	private void UpdateScoresDropdown(List<ReplayData> replays, Texture2D texture, BeatmapDB beatmapDB, BeatmapDataFromDB beatmapDBInfo) {
 		for (int i = 0; i < replays.Count; i++) {
 			Add(new Button(_graphics, new Vector2(0, 0), "replay" + i, _scoreVisuals));
-			UIElementsList[i].Visuals.Resize(UsableWidth, _scoreVisuals.Height);
-
-			GradientList gdList = new();
-			gdList.Add(new Gradient(new Microsoft.Xna.Framework.Color(0, 0, 0) * 0.6f, new Microsoft.Xna.Framework.Color(0, 0, 0) * 0.6f));
-			UIElementsList[i].Visuals.InitGradientTexture(gdList, 255);
 
 			int text_y = 0;
 
@@ -49,30 +49,12 @@ public class ReplaySelector : Dropdown {
 			ReplayData r = replays[i];
 
 			string player = r.PlayerName + " " + r.TimeStamp;
+			string accuracyStr = ScoreMetrics.ComputeV1Accuracy(replays[i]).ToString("F2");
 
-			int totalHits = r.NbMax300s + r.Nb300s + r.Nb200s + r.Nb100s + r.Nb50s + r.NbMiss;
-			float accuracyV1 = (r.NbMax300s + r.Nb300s) * 300 + r.Nb200s * 200 + r.Nb100s * 100 + r.Nb50s * 50;
-			float accuracyV2 = r.NbMax300s * 320 + r.Nb300s * 300 + r.Nb200s * 200 + r.Nb100s * 100 + r.Nb50s * 50;
-			float maxAccuracyV1 = totalHits * 300;
-			float maxAccuracyV2 = totalHits * 320;
-			float realAccuracyV1 = accuracyV1 / maxAccuracyV1 * 100.0f;
-			float realAccuracyV2 = accuracyV2 / maxAccuracyV2 * 100.0f;
+			double performancePoints = r.PerformancePoints;
 
-			string accuracyStr = realAccuracyV1.ToString("F2");
-
-			double difficultyValue = 0.0f;
-
-			if (beatmapDB != null) {
-				BeatmapWithScores beatmap2 = new BeatmapWithScores(beatmapDB.Beatmaps[replays[i].BeatmapMD5]);
-				double starRating2 = beatmap2.BeatmapDBInfo.ManiaStarRating == null ? 0.0f : beatmap2.BeatmapDBInfo.ManiaStarRating[(int)Mods.None];
-
-				difficultyValue = 8.0 * Math.Pow(Math.Max(starRating2 - 0.15, 0.05), 2.2) // Star rating to pp curve
-									  * Math.Max(0, 5 * (realAccuracyV2 / 100) - 4) // From 80% accuracy, 1/20th of total pp is awarded per additional 1% accuracy
-									  * (1 + 0.1 * Math.Min(1, (double)totalHits / 1500)); // Length bonus, capped at 1500 notes
-			}
-
-			string score = r.Score.ToString() + " " + accuracyStr + "%" + " " + difficultyValue.ToString("F0") + "pp";
-			string judgements1 = "Nb maxs: " + r.NbMax300s.ToString() + " | ";
+			string score = r.Score.ToString() + " " + accuracyStr + "%" + " " + performancePoints.ToString("F0") + "pp";
+			string judgements1 = "Nb 320s: " + r.NbMax300s.ToString() + " | ";
 			judgements1 += "Nb 300s: " + r.Nb300s.ToString() + " | ";
 			judgements1 += "Nb 200s: " + r.Nb200s.ToString() + " | ";
 			judgements1 += "Nb 100s: " + r.Nb100s.ToString();
@@ -105,11 +87,11 @@ public class ReplaySelector : Dropdown {
 		Logger.LogDebug($"Updating scores with beatmap: {beatmap.BeatmapDBInfo.SongTitle}");
 		RemoveAll();
 		Texture2D texture = Texture2D.FromFile(_graphics, beatmap.TexturePath);
-		UpdateScoresDropdown(beatmap.Replays, texture, null);
+		UpdateScoresDropdown(beatmap.Replays, texture, null, beatmap.BeatmapDBInfo);
 	}
 
 	public void UpdateScores(List<ReplayData> replays, BeatmapDB beatmapDB) {
 		RemoveAll();
-		UpdateScoresDropdown(replays, null, beatmapDB);
+		UpdateScoresDropdown(replays, null, beatmapDB, null);
 	}
 }

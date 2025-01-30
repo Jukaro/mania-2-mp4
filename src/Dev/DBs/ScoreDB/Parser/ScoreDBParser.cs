@@ -39,11 +39,15 @@ public static partial class ScoreDBParser {
 			int scoresCount = Parser.ParseInt(bytes, ref currentByteIndex);
 			totalScoresCount += scoresCount;
 
-			// Logger.LogDebug($"beatmap: {beatmapDB.Beatmaps[beatmap.BeatmapMD5].SongTitle} [{beatmapDB.Beatmaps[beatmap.BeatmapMD5].Difficulty}], score count: {beatmap.ScoresCount}");
+			// Logger.LogDebug($"beatmap: {beatmapDB.Beatmaps[beatmap.BeatmapDBInfo.BeatmapMD5].SongTitle} [{beatmapDB.Beatmaps[beatmap.BeatmapDBInfo.BeatmapMD5].Difficulty}], score count: {scoresCount}");
 
 			for (int j = 0; j < scoresCount; j++) {
 				// Parser.PrintNextHundredBytes(bytes, ref currentByteIndex);
 				ReplayData replay = ReplayParser.Parse(bytes, currentByteIndex, 4, true);
+				if (beatmap.BeatmapDBInfo.Mode == GameMode.Mania && !skip) {
+					replay.PerformancePoints = ScoreMetrics.ComputePerformancePoints(replay, beatmap.BeatmapDBInfo);
+					replay.LaneCount = (int)beatmap.BeatmapDBInfo.CircleSize;
+				}
 				currentByteIndex += replay.SizeInBytes; // help
 				beatmap.Replays.Add(replay);
 			}

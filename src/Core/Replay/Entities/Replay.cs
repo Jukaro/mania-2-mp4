@@ -35,6 +35,8 @@ public class ReplayData {
 
 	public string FilePath;
 
+	public double PerformancePoints;
+
 	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
 		LaneCount = laneCount;
