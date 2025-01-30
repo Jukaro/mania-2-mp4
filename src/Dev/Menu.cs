@@ -10,6 +10,7 @@ using System.Threading;
 using System.Linq;
 using Rythmify.Dev;
 using System.IO;
+using System;
 
 namespace Rythmify.UI;
 
@@ -40,6 +41,9 @@ public class Menu {
 	private List<BeatmapWithScores> _sortedBeatmapsList;
 
 	SessionList _sessionList;
+
+	List<ReplayData> _allScores = new();
+	List<ReplayData> _top100Scores = new();
 
 	public Menu(GraphicsDevice graphics) {
 		_graphics = graphics;
@@ -106,12 +110,15 @@ public class Menu {
 
 		Logger.LogInfo($"SessionList: {_sessionList}");
 
+		var watch = new System.Diagnostics.Stopwatch();
+		watch.Start();
+
 		_sideMenu.Add(new ReplaySelector(_graphics, new(0, 2000), "SessionReplays", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]));
 
 		_sideMenu.Add(new Dropdown(_graphics, new(0, 1000), 0, "Sessions", VisualsStore.visuals[8]));
 		if (_sideMenu["Sessions"] is Dropdown sessionsButton) {
-			for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
-			// for (int i = 0; i < 100; i++) {
+			// for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
+			for (int i = 0; i < 100; i++) {
 				sessionsButton.Add(new Button(_graphics, new(0, 0), "Session" + i, VisualsStore.visuals[9]));
 				sessionsButton[i].Visuals.Resize(sessionsButton.UsableWidth, VisualsStore.visuals[9].Height);
 				sessionsButton[i].Visuals.Texts.Add(new Text(_sessionList.SessionsOrderedList.ElementAt(i).Key.ToString(), new Vector2(0, 0)));
@@ -122,6 +129,50 @@ public class Menu {
 				}
 			}
 		}
+
+		watch.Stop();
+		Logger.LogDebug($"Sessions: {watch.ElapsedMilliseconds}ms");
+
+/* -------------------------------------------------------------------------- */
+/*                               Scores Top 100                               */
+/* -------------------------------------------------------------------------- */
+
+		DateTime limit = new DateTime(2021, 01, 01);
+
+		Logger.LogDebug($"limit: {limit}");
+
+		List<ReplayData> filteredScores = new();
+
+		foreach (BeatmapWithScores beatmap in _scoresDB.Beatmaps.Values) {
+			beatmap.Replays = beatmap.Replays
+				.OrderByDescending(r => r.PerformancePoints)
+				.ToList();
+			filteredScores = beatmap.Replays
+				.Where(r => r.TimeStamp < limit)
+				.ToList();
+			if (filteredScores.Count > 0) {
+				_allScores.Add(filteredScores[0]);
+				// Logger.LogDebug($"Adding {filteredScores[0].TimeStamp}");
+			}
+		}
+
+		_top100Scores =	_allScores
+							.OrderByDescending(r => r.PerformancePoints)
+							.Where(r => r.PlayerName == "Jukaro"
+								&& r.LaneCount == 4
+								&& _beatmapsDB.Beatmaps[r.BeatmapMD5].RankedStatus == 4)
+							.Take(100)
+							.ToList();
+
+		watch.Restart();
+
+		_sideMenu.Add(new ReplaySelector(_graphics, new(0, 3000), "Top 100", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]));
+		if (_sideMenu["Top 100"] is ReplaySelector top100Dropdown) {
+			top100Dropdown.UpdateScores(_top100Scores, _beatmapsDB);
+		}
+
+		watch.Stop();
+		Logger.LogDebug($"Top 100: {watch.ElapsedMilliseconds}ms");
 	}
 
 	private void UpdateSession(int i) {
