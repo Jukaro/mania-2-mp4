@@ -1,7 +1,7 @@
 namespace Rythmify.Core.Beatmap;
 
 public class TimingPointEffects {
-	private readonly int Flags;
+	public readonly int Flags;
 
 	public TimingPointEffects(int flags) {
 		Flags = flags;

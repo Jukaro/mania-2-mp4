@@ -10,7 +10,7 @@ public enum HitSoundType {
 }
 
 public class HitSound {
-	private readonly int Flags;
+	public readonly int Flags;
 
 	public HitSound(int flags) {
 		Flags = flags;
@@ -39,7 +39,7 @@ public enum HitObjectType {
 }
 
 public class HitObjectTypeFlag {
-	private readonly int Flags;
+	public readonly int Flags;
 
 	public HitObjectTypeFlag(int flags) {
 		Flags = flags;

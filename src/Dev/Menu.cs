@@ -10,6 +10,7 @@ using System.Threading;
 using System.Linq;
 using Rythmify.Dev;
 using System.IO;
+using Rythmify.Core.Beatmap;
 
 namespace Rythmify.UI;
 
