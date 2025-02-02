@@ -16,6 +16,8 @@ public class InputsRenderer {
 	}
 
 	public void Render(InputsPlayer inputsPlayer, SpriteBatch spriteBatch) {
+		spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+
 		for (int i = 0; i < inputsPlayer.RenderedInputs.Length; i++) {
 			var inputTexture = _skinRenderer.GetInputTextureAtLane(i, inputsPlayer.RenderedInputs[i]);
 
@@ -30,5 +32,7 @@ public class InputsRenderer {
 
 			Rendering.DrawScaled(spriteBatch, inputTexture, screenSpacePos, scale);
 		}
+
+		spriteBatch.End();
 	}
 }

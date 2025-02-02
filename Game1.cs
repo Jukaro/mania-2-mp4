@@ -9,8 +9,8 @@ using Rythmify.Core;
 namespace Rythmify.UI;
 
 public static class Paths {
-	public static string OsuDirectoryPath = "G:/Jeux/osssu";
-	public static string OsuSongsDirectoryPath = "G:/Jeux/osu maps de giga ultra mort";
+	public static string OsuDirectoryPath = "C:/Users/shiro/AppData/Local/osu!";
+	public static string OsuSongsDirectoryPath = "C:/Users/shiro/AppData/Local/osu!/Songs";
 }
 
 public class Game1 : Game
@@ -64,9 +64,7 @@ public class Game1 : Game
 	{
 		GraphicsDevice.Clear(Color.Black);
 
-		_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 		_osuReplay.Render(_spriteBatch);
-		_spriteBatch.End();
 
 		base.Draw(gameTime);
 	}

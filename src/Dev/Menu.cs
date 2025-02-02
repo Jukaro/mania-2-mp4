@@ -217,6 +217,8 @@ public class Menu {
 	}
 
 	public void Render(SpriteBatch spriteBatch) {
+		spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 		_mainContainer.Render(spriteBatch);
+		spriteBatch.End();
 	}
 }

@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Rythmify.Core;
 using Rythmify.Core.Game;
 
 namespace Rythmify.UI;
@@ -17,18 +16,24 @@ public class BeatmapRenderer
 		_screenMath = new ScreenMath(graphics);
 	}
 
+	private static Vector2 GetSizeAfterScale(Texture2D texture, float targetWidth) {
+		float scale = targetWidth / texture.Width;
+		return new(texture.Width * scale, texture.Height * scale);
+	}
+
 	public void Render(BeatmapPlayer beatmapPlayer, SpriteBatch spriteBatch) {
+		spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+
 		foreach (var note in beatmapPlayer.RenderedNotes) {
 			if (note is HoldNote holdNote) {
 				RenderHoldNote(holdNote, spriteBatch);
-			}
-
-			if (note is GameNote gameNote) {
+			} else if (note is GameNote gameNote) {
 				RenderGameNote(gameNote, spriteBatch);
 			}
 		}
-
 		RenderHitLine(spriteBatch);
+
+		spriteBatch.End();
 	}
 
 	private void RenderGameNote(GameNote note, SpriteBatch spriteBatch) {
@@ -46,18 +51,29 @@ public class BeatmapRenderer
 	}
 
 	private void RenderHoldNote(HoldNote note, SpriteBatch spriteBatch) {
-		float screenSpaceHoldNoteSize = _screenMath.PlayfieldToScreenSpaceY(note.Height);
-		float screenSpaceY = _screenMath.PlayfieldToScreenSpaceY(note.Y);
-		var holdNoteTexture = _skinRenderer.GetHoldNoteTextureAtLane(note.Lane);
+		var holdNoteHeadTexture = _skinRenderer.GetHoldNoteHeadTextureAtLane(note.Lane);
 
-		Vector2 screenSpaceHoldNoteTop = new(
-			_screenMath.GetLaneX(note.Lane, _skinRenderer.GetSkin().ManiaSection),
-			screenSpaceY - screenSpaceHoldNoteSize
-		);
-
+		var laneX = _screenMath.GetLaneX(note.Lane, _skinRenderer.GetSkin().ManiaSection);
 		var laneSize = _screenMath.GetLaneSize(note.Lane, _skinRenderer.GetSkin().ManiaSection);
+
+		float screenSpaceHoldNoteSize = _screenMath.PlayfieldToScreenSpaceY(note.Height) - (GetSizeAfterScale(holdNoteHeadTexture, laneSize).Y / 2);
+		float screenSpaceY = _screenMath.PlayfieldToScreenSpaceY(note.Y) - (GetSizeAfterScale(holdNoteHeadTexture, laneSize).Y / 2);
+		var holdNoteTexture = _skinRenderer.GetHoldNoteTextureAtLane(note.Lane);
+		var holdNoteTailTexture = _skinRenderer.GetHoldNoteTailTextureAtLane(note.Lane);
+
+
+		Vector2 screenSpaceHoldNoteTop = new(laneX, screenSpaceY - screenSpaceHoldNoteSize);
 		Vector2 scale = new(laneSize / holdNoteTexture.Width, screenSpaceHoldNoteSize / holdNoteTexture.Height);
 		Rendering.DrawScaled(spriteBatch, holdNoteTexture, screenSpaceHoldNoteTop, scale);
+
+		var tailScale = laneSize / holdNoteTailTexture.Width;
+		Vector2 screenSpaceHoldNoteTailTop = new(laneX, screenSpaceHoldNoteTop.Y - holdNoteTailTexture.Height * tailScale);
+		Rendering.DrawScaled(spriteBatch, holdNoteTailTexture, screenSpaceHoldNoteTailTop, new(tailScale, tailScale), SpriteEffects.FlipVertically);
+
+		var headScale = laneSize / holdNoteHeadTexture.Width;
+
+		Vector2 headPos = new(laneX, _screenMath.PlayfieldToScreenSpaceY(note.Y) - holdNoteHeadTexture.Height * headScale);
+		Rendering.DrawScaled(spriteBatch, holdNoteHeadTexture, headPos, new(headScale, headScale));
 	}
 
 	private void RenderHitLine(SpriteBatch spriteBatch) {

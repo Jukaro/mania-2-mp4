@@ -31,8 +31,8 @@ public class OsuReplay
 	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
 	{
 		// dynamic testCase = Datasets.TestCases.Jukaro.Stronger;
-		dynamic skinPath = Datasets.TestCases.Jukaro.Skins.KizunaAkari;
-		dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
+		dynamic skinPath = Datasets.TestCases.ShiroW.Skins.KizunaAkari;
+		dynamic testCase = Datasets.TestCases.ShiroW.Polyriddim;
 		// testCase = Datasets.TestCases.Jukaro.Polyriddim;
 
 		_beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
@@ -79,7 +79,9 @@ public class OsuReplay
 		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
 
 		_menu.Render(spriteBatch);
+		spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 		_test.Render(spriteBatch);
+		spriteBatch.End();
 	}
 
 	private void UpdateSpeedMultiplier(double value) {
