@@ -21,6 +21,8 @@ public abstract class BeatmapEvent {
 		};
 	}
 
+	public abstract BeatmapEvent DeepClone();
+
 	public override abstract string ToString();
 }
 
@@ -32,6 +34,8 @@ public class BackgroundEvent : BeatmapEvent {
 	public BackgroundEvent() {
 		Type = BeatmapEventType.Background;
 	}
+
+	public override BackgroundEvent DeepClone() => (BackgroundEvent)MemberwiseClone();
 
 	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, Filename: {Filename}, XOffset: {XOffset}, YOffset: {YOffset}";
 }
@@ -45,6 +49,8 @@ public class VideoEvent : BeatmapEvent {
 		Type = BeatmapEventType.Video;
 	}
 
+	public override VideoEvent DeepClone() => (VideoEvent)MemberwiseClone();
+
 	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, Filename: {Filename}, XOffset: {XOffset}, YOffset: {YOffset}";
 }
 
@@ -54,6 +60,8 @@ public class BreakEvent : BeatmapEvent {
 	public BreakEvent() {
 		Type = BeatmapEventType.Break;
 	}
+
+	public override BreakEvent DeepClone() => (BreakEvent)MemberwiseClone();
 
 	public override string ToString() => $"Type: {Type}, StartTime: {StartTime}, EndTime: {EndTime}";
 }

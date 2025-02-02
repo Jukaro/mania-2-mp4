@@ -31,6 +31,8 @@ public class HitSound {
 		var filteredValues = Array.FindAll(values, (string s) => !string.IsNullOrEmpty(s));
 		return filteredValues.Length > 0 ? string.Join(", ", filteredValues) : "None";
 	}
+
+	public HitSound DeepClone() => (HitSound)MemberwiseClone();
 }
 
 public enum HitObjectType {
@@ -59,6 +61,8 @@ public class HitObjectTypeFlag {
 			throw new ArgumentException($"HitObjectType {Flags} has an unsupported type");
 		}
 	}
+
+	public HitObjectTypeFlag DeepClone() => (HitObjectTypeFlag)MemberwiseClone();
 }
 
 public class HitSample {
@@ -67,6 +71,8 @@ public class HitSample {
 	public int Index;
 	public int Volume;
 	public string Filename;
+
+	public HitSample DeepClone() => (HitSample)MemberwiseClone();
 
 	public override string ToString() => $"NormalSet: {NormalSet}, AdditionSet: {AdditionSet}, Index: {Index}, Volume: {Volume}, Filename: {Filename ?? "None"}";
 }
@@ -78,6 +84,14 @@ public class BeatmapHitObject {
 	public HitObjectTypeFlag Type;
 	public HitSound HitSound;
 	public HitSample HitSample;
+
+	public BeatmapHitObject DeepClone() {
+		BeatmapHitObject res = (BeatmapHitObject)MemberwiseClone();
+		res.Type = Type.DeepClone();
+		res.HitSound = HitSound.DeepClone();
+		res.HitSample = HitSample.DeepClone();
+		return res;
+	}
 
 	public int GetLane(int laneCount) => (int)Math.Floor(X * laneCount / 512f);
 }

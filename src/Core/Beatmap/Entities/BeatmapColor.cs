@@ -6,5 +6,7 @@ public class BeatmapColor {
 	public byte G;
 	public byte B;
 
+	public BeatmapColor DeepClone() => (BeatmapColor)MemberwiseClone();
+
 	public override string ToString() => $"Label: {Label} R: {R}, G: {G}, B: {B}";
 }
