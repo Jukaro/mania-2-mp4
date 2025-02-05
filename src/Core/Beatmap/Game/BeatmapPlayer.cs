@@ -28,13 +28,13 @@ public class BeatmapPlayer {
 	public BeatmapPlayer(BeatmapData beatmap, int hitPosition) {
 		_beatmap = beatmap;
 		_isPlaying = false;
-		_currentPlayTime = 0;
+		_currentPlayTime = -_beatmap.GeneralData.AudioLeadIn;
 		RenderedNotes = new List<GameNote>();
 		_spawnedNotes = 0;
 		_scrollInfo = new(28, hitPosition, -100, beatmap.DominantBpm);
 	}
 
-	public bool AudioStarted => _currentPlayTime >= _beatmap.GeneralData.AudioLeadIn;
+	public bool AudioStarted => _currentPlayTime >= 0;
 
 	public void Play() => _isPlaying = true;
 	public void Pause() => _isPlaying = false;

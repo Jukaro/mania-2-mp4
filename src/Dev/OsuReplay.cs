@@ -43,7 +43,7 @@ public class OsuReplay
 		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount, false);
 
 		_beatmapPlayer = new(_beatmap, _replaySkin.ManiaSection.HitPosition);
-		_inputsPlayer = new(_replay);
+		_inputsPlayer = new(_replay, _beatmap.GeneralData.AudioLeadIn);
 
 		SkinRenderer skinRenderer = new(_replaySkin, graphicsDevice);
 		_beatmapRenderer = new(graphics, skinRenderer);

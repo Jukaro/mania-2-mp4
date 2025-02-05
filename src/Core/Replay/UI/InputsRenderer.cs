@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core.Game;
@@ -21,9 +22,11 @@ public class InputsRenderer {
 		for (int i = 0; i < inputsPlayer.RenderedInputs.Length; i++) {
 			var inputTexture = _skinRenderer.GetInputTextureAtLane(i, inputsPlayer.RenderedInputs[i]);
 
-			var laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
+			float laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
 
-			Vector2 scale = new(laneSize / inputTexture.Width, laneSize / inputTexture.Width);
+
+			Vector2 scale = new(laneSize / inputTexture.Width, 4/3f);
+			Console.WriteLine(scale.X);
 
 			Vector2 screenSpacePos = new(
 				_screenMath.GetLaneX(i, _skinRenderer.GetSkin().ManiaSection),
