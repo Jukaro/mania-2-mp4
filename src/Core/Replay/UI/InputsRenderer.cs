@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rythmify.Core;
 using Rythmify.Core.Game;
 
 namespace Rythmify.UI;
@@ -25,7 +26,7 @@ public class InputsRenderer {
 			float laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
 
 
-			Vector2 scale = new(laneSize / inputTexture.Width, 4/3f);
+			Vector2 scale = new(laneSize / inputTexture.Width, Playfield.AspectRatio);
 			Console.WriteLine(scale.X);
 
 			Vector2 screenSpacePos = new(
