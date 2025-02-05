@@ -182,6 +182,7 @@ public class SkinManiaSection {
 	public string GetNoteImageLaneT(int lane) => NoteImageLanesT.ContainsKey(lane) ? NoteImageLanesT[lane] : $"mania-note{GetLaneImageNumber(lane)}T";
 	public string GetKeyImageLane(int lane) => KeyImageLanes.ContainsKey(lane) ? KeyImageLanes[lane] : $"mania-key{GetLaneImageNumber(lane)}";
 	public string GetKeyImageLaneD(int lane) => KeyImageLanesD.ContainsKey(lane) ? KeyImageLanesD[lane] : $"mania-key{GetLaneImageNumber(lane)}D";
+	public bool ShouldFlipTail(int lane) => !NoteFlipWhenUpsideDownLanesT.ContainsKey(lane) || NoteFlipWhenUpsideDownLanesT[lane] == true;
 
 	public void ComboBurstStyleParser(FieldInfo destination, string key, string value, Regex pattern) {
 		if (int.TryParse(value, out int result))

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core;
@@ -34,9 +35,11 @@ public class SkinRenderer {
 		var inputTexturePath = _skin.ManiaSection.GetKeyImageLane(lane);
 		var inputTextureHeldPath = _skin.ManiaSection.GetKeyImageLaneD(lane);
 
-		AnimatedSkinTexture tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneT(lane));
+		var tailModifier = _skin.ManiaSection.ShouldFlipTail(lane) ? TextureModifier.FlipVertically : TextureModifier.None;
+
+		AnimatedSkinTexture tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneT(lane), tailModifier);
 		if (tailAnimatedTexture.FrameCount == 0)
-			tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneH(lane));
+			tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneH(lane), tailModifier);
 
 		AnimatedSkinTexture headAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneH(lane));
 		if (headAnimatedTexture.FrameCount == 0)

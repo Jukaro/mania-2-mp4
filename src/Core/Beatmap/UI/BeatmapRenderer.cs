@@ -68,7 +68,7 @@ public class BeatmapRenderer
 
 		var tailScale = laneSize / holdNoteTailTexture.Width;
 		Vector2 screenSpaceHoldNoteTailTop = new(laneX, screenSpaceHoldNoteTop.Y - holdNoteTailTexture.Height * tailScale);
-		Rendering.DrawScaled(spriteBatch, holdNoteTailTexture, screenSpaceHoldNoteTailTop, new(tailScale, tailScale), SpriteEffects.FlipVertically);
+		Rendering.DrawScaled(spriteBatch, holdNoteTailTexture, screenSpaceHoldNoteTailTop, new(tailScale, tailScale));
 
 		var headScale = laneSize / holdNoteHeadTexture.Width;
 
