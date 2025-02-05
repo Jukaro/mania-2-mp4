@@ -47,13 +47,6 @@ public class AnimatedSkinTexture {
 
 	private void AddFrame(Texture2D frame, TextureModifier modifier) {
 		if (modifier == TextureModifier.FlipVertically) {
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
-			Console.WriteLine("Flipping vertically");
 			var data = new Color[frame.Width * frame.Height];
 			frame.GetData(data);
 			Array.Reverse(data);

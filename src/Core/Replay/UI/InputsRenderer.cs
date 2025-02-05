@@ -27,7 +27,6 @@ public class InputsRenderer {
 
 
 			Vector2 scale = new(laneSize / inputTexture.Width, Playfield.AspectRatio);
-			Console.WriteLine(scale.X);
 
 			Vector2 screenSpacePos = new(
 				_screenMath.GetLaneX(i, _skinRenderer.GetSkin().ManiaSection),
