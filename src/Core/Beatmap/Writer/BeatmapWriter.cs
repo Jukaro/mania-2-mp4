@@ -5,7 +5,7 @@ namespace Rythmify.Core.Beatmap;
 
 public static partial class BeatmapWriter {
 	public static void WriteBeatmap(BeatmapData beatmap, string filePath) {
-		string str = "osu file format v14\n\n";
+		string str = "osu file format v13\n\n";
 
 		str += GetGeneralSectionString(beatmap.GeneralData) + "\n";
 		str += GetEditorSectionString(beatmap.EditorData) + "\n";
@@ -13,12 +13,13 @@ public static partial class BeatmapWriter {
 		str += GetDifficultySectionString(beatmap.DifficultyData) + "\n";
 		str += GetEventsSectionString(beatmap.Events) + "\n";
 		str += GetTimingPointsSectionString(beatmap.TimingPoints) + "\n";
-
+		str += GetColoursSectionString(beatmap.Colors) + "\n";
 		str += GetHitObjectsSectionString(beatmap.HitObjects) + "\n";
 
-		FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+		FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
 		byte[] info = new UTF8Encoding(true).GetBytes(str);
 		fs.Write(info, 0, info.Length);
+		fs.Close();
 	}
 
 	private static string GetGeneralSectionString(BeatmapGeneralData generalData) {
@@ -87,10 +88,10 @@ public static partial class BeatmapWriter {
 	}
 
 	private static string GetEventsSectionString(BeatmapEvent[] events) {
-		string str = "[Events]\n";
-
-		if (events == null)
+		if (events == null || events.Length == 0)
 			return "";
+
+		string str = "[Events]\n";
 
 		foreach (BeatmapEvent ev in events) {
 			object[] values = null;
@@ -110,10 +111,10 @@ public static partial class BeatmapWriter {
 	}
 
 	private static string GetTimingPointsSectionString(BeatmapTimingPoint[] timingPoints) {
-		string str = "[TimingPoints]\n";
-
-		if (timingPoints == null)
+		if (timingPoints == null || timingPoints.Length == 0)
 			return "";
+
+		string str = "[TimingPoints]\n";
 
 		foreach (BeatmapTimingPoint tp in timingPoints) {
 			object[] values;
@@ -125,33 +126,36 @@ public static partial class BeatmapWriter {
 		return str;
 	}
 
-	// private static string WriteColorsSection(BeatmapTimingPoint[] timingPoints) {
-	// 	str += "\n[Events]\n";
+	private static string GetColoursSectionString(BeatmapColor[] colors) {
+		if (colors == null || colors.Length == 0)
+			return "";
 
-	// 	if (timingPoints == null)
-	// 		return;
+		string str = "[Colours]\n";
 
-	// 	foreach (BeatmapTimingPoint tp in timingPoints) {
-	// 		object[] values;
+		foreach (BeatmapColor color in colors) {
+			object[] values;
 
-	// 		values = new object[] { tp.Time, tp.BeatLength, tp.Meter, tp.SampleSet, tp.SampleIndex, tp.Volume, tp.Uninherited, tp.Effects.Flags };
-	// 		WriteObject(values, ",");
-	// 		str += "\n";
-	// 	}
-	// }
+			values = new object[] { color.R, color.G, color.B };
+			str += color.Label + ": " + GetObjectString(values, ",") + "\n";
+		}
+		return str;
+	}
 
 	private static string GetHitObjectsSectionString(BeatmapHitObject[] hitObjects) {
-		string str = "[HitObjects]\n";
-
-		if (hitObjects == null)
+		if (hitObjects == null || hitObjects.Length == 0)
 			return "";
+
+		string str = "[HitObjects]\n";
 
 		foreach (BeatmapHitObject ho in hitObjects) {
 			object[] values;
 
 			values = new object[] { ho.X, ho.Y, ho.Time, ho.Type.Flags, ho.HitSound.Flags };
 			str += GetObjectString(values, ",") + ",";
-			values = new object[] { ho.HitSample.NormalSet, ho.HitSample.AdditionSet, ho.HitSample.Index, ho.HitSample.Volume, ho.HitSample.Filename };
+			if (ho is HoldHitObject holdHitObject)
+				values = new object[] { holdHitObject.EndTime, ho.HitSample.NormalSet, ho.HitSample.AdditionSet, ho.HitSample.Index, ho.HitSample.Volume, ho.HitSample.Filename };
+			else
+				values = new object[] { ho.HitSample.NormalSet, ho.HitSample.AdditionSet, ho.HitSample.Index, ho.HitSample.Volume, ho.HitSample.Filename };
 			str += GetObjectString(values, ":") + "\n";
 		}
 

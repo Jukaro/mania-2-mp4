@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 
 namespace Rythmify.Core.Beatmap;
 
@@ -16,6 +17,10 @@ public partial class BeatmapWriter {
 			return ((int)value).ToString();
 		else if (type == typeof(bool))
 			return (bool)value ? "1" : "0";
+		else if (value is float f)
+			return f.ToString(CultureInfo.InvariantCulture);
+		else if (value is double d)
+			return d.ToString(CultureInfo.InvariantCulture);
 		return value.ToString();
 	}
 
