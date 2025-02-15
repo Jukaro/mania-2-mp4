@@ -1,10 +1,11 @@
 using System.IO;
 using System.Text;
+using Rythmify.UI;
 
 namespace Rythmify.Core.Beatmap;
 
 public static partial class BeatmapWriter {
-	public static void WriteBeatmap(BeatmapData beatmap, string filePath) {
+	public static void WriteBeatmap(BeatmapData beatmap, Stream audio, string folder, string filename) {
 		string str = "osu file format v13\n\n";
 
 		str += GetGeneralSectionString(beatmap.GeneralData) + "\n";
@@ -16,9 +17,17 @@ public static partial class BeatmapWriter {
 		str += GetColoursSectionString(beatmap.Colors) + "\n";
 		str += GetHitObjectsSectionString(beatmap.HitObjects) + "\n";
 
+		string folderPath = Path.Combine(Paths.OsuSongsDirectoryPath, folder);
+		string filePath = Path.Combine(folderPath, filename + ".osu");
+
+		Directory.CreateDirectory(folderPath);
 		FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
 		byte[] info = new UTF8Encoding(true).GetBytes(str);
 		fs.Write(info, 0, info.Length);
+		fs.Close();
+
+		fs = new FileStream(Path.Combine(folderPath, "audio.ogg"), FileMode.Create, FileAccess.Write);
+		audio.CopyTo(fs);
 		fs.Close();
 	}
 

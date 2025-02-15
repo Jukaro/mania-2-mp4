@@ -4,10 +4,10 @@ using System.Linq;
 namespace Rythmify.Core.Beatmap;
 
 public partial class BeatmapManipulation {
-	private static void UpdateTimingPoints(BeatmapData beatmap, BeatmapData beatmapToAdd, int offset, int addedGap, TrimType trimOption) {
+	private static void UpdateTimingPoints(BeatmapData beatmap, BeatmapData beatmapToAdd, int offset, int delay, TrimType trimOption) {
 		BeatmapTimingPoint[] adjustedTimingPoints = beatmapToAdd.TimingPoints.Select(t => t.DeepClone()).ToArray();
 
-		TrimExcessTimingPoints(ref adjustedTimingPoints, beatmapToAdd, addedGap, trimOption);
+		TrimExcessTimingPoints(ref adjustedTimingPoints, beatmapToAdd, delay, trimOption);
 
 		for (int j = 0; j < adjustedTimingPoints.Length; j++)
 				adjustedTimingPoints[j].Time += offset;
@@ -27,19 +27,19 @@ public partial class BeatmapManipulation {
 		beatmap.HitObjects = beatmap.HitObjects.Concat(adjustedHitObjects).ToArray();
 	}
 
-	private static void TrimExcessTimingPoints(ref BeatmapTimingPoint[] timingPoints, BeatmapData beatmapData, int addedGap, TrimType trimOption) {
+	private static void TrimExcessTimingPoints(ref BeatmapTimingPoint[] timingPoints, BeatmapData beatmapData, int delay, TrimType trimOption) {
 		int beatmapStart = beatmapData.HitObjects.First().Time;
 		int beatmapEnd = GetHitObjectEndTime(beatmapData.HitObjects.Last());
 
 		List<BeatmapTimingPoint> temp = timingPoints.ToList();
 		if (trimOption == TrimType.Start || trimOption == TrimType.Full)
-			TrimStartTimingPoints(temp, beatmapStart, addedGap);
+			TrimStartTimingPoints(temp, beatmapStart, delay);
 		if (trimOption == TrimType.End || trimOption == TrimType.Full)
 			temp.RemoveAll(t => t.Time > beatmapEnd);
 		timingPoints = temp.ToArray();
 	}
 
-	private static void TrimStartTimingPoints(List<BeatmapTimingPoint> trimmedTimingPoints, int beatmapStart, int addedGap) {
+	private static void TrimStartTimingPoints(List<BeatmapTimingPoint> trimmedTimingPoints, int beatmapStart, int delay) {
 		BeatmapTimingPoint lastUninheritedTimingPoint = null;
 		int i = 0;
 
@@ -50,10 +50,10 @@ public partial class BeatmapManipulation {
 		}
 
 		trimmedTimingPoints.RemoveRange(0, i);
-		trimmedTimingPoints.First().Time = beatmapStart - addedGap / 2;
+		trimmedTimingPoints.First().Time = beatmapStart - delay / 2;
 
 		if (!trimmedTimingPoints.First().Uninherited) {
-			lastUninheritedTimingPoint.Time = beatmapStart - addedGap / 2;
+			lastUninheritedTimingPoint.Time = beatmapStart - delay / 2;
 			trimmedTimingPoints.Prepend(lastUninheritedTimingPoint);
 		}
 	}
