@@ -10,7 +10,7 @@ public partial class BeatmapManipulation {
 		TrimExcessTimingPoints(ref adjustedTimingPoints, beatmapToAdd, delay, trimOption);
 
 		for (int j = 0; j < adjustedTimingPoints.Length; j++)
-				adjustedTimingPoints[j].Time += offset;
+			adjustedTimingPoints[j].Time += offset;
 
 		beatmap.TimingPoints = beatmap.TimingPoints.Concat(adjustedTimingPoints).ToArray();
 	}
@@ -55,6 +55,34 @@ public partial class BeatmapManipulation {
 		if (!trimmedTimingPoints.First().Uninherited) {
 			lastUninheritedTimingPoint.Time = beatmapStart - delay / 2;
 			trimmedTimingPoints.Prepend(lastUninheritedTimingPoint);
+		}
+	}
+
+	private static void UpdateInheritedTimingPointsWithDominantBpm(BeatmapData beatmap) {
+		double dominantBpm = BeatmapParser.GetDominantBpm(beatmap);
+		List<BeatmapTimingPoint> timingPointsList = beatmap.TimingPoints.ToList();
+		int addedCount = 0;
+
+		for (int i = 0; i < beatmap.TimingPoints.Length; i++) {
+			if (beatmap.TimingPoints[i].Uninherited) {
+				BeatmapTimingPoint nextTimingPoint = i < beatmap.TimingPoints.Length - 1 ? beatmap.TimingPoints[i + 1] : null;
+
+				if (nextTimingPoint != null && nextTimingPoint.Uninherited) {
+					BeatmapTimingPoint newTimingPoint = beatmap.TimingPoints[i].DeepClone();
+					newTimingPoint.LastBPM = newTimingPoint.BPM;
+					newTimingPoint.Uninherited = false;
+					newTimingPoint.BeatLength = -100;
+					timingPointsList.Insert(i + 1 + addedCount, newTimingPoint);
+					addedCount++;
+				}
+			}
+		}
+
+		beatmap.TimingPoints = timingPointsList.ToArray();
+
+		foreach (BeatmapTimingPoint timingPoint in beatmap.TimingPoints) {
+			if (!timingPoint.Uninherited)
+				timingPoint.BeatLength = timingPoint.LastBPM * timingPoint.BeatLength / dominantBpm;
 		}
 	}
 

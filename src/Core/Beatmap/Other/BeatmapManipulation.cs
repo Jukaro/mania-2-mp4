@@ -26,6 +26,8 @@ public static partial class BeatmapManipulation {
 			UpdateHitObjects(beatmap, beatmaps[i], offset);
 		}
 
+		UpdateInheritedTimingPointsWithDominantBpm(beatmap);
+
 		return beatmap;
 	}
 
