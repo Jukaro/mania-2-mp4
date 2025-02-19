@@ -1,90 +1,60 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Rythmify.Core.Beatmap;
 
-public partial class BeatmapManipulation {
-	private static void UpdateTimingPoints(BeatmapData beatmap, BeatmapData beatmapToAdd, int offset, int delay, TrimType trimOption) {
-		BeatmapTimingPoint[] adjustedTimingPoints = beatmapToAdd.TimingPoints.Select(t => t.DeepClone()).ToArray();
+public enum TrimType {
+	Start,
+	End,
+	Full
+}
 
-		TrimExcessTimingPoints(ref adjustedTimingPoints, beatmapToAdd, delay, trimOption);
+public enum DelayType {
+	Milliseconds,
+	MeasureDivision
+}
 
-		for (int j = 0; j < adjustedTimingPoints.Length; j++)
-			adjustedTimingPoints[j].Time += offset;
+public static partial class BeatmapConcatenation {
+	public static void Concatenate(List<BeatmapWithScores> beatmapList, GraphicsDevice graphics) {
+		var watch = new Stopwatch();
+		watch.Start();
 
-		beatmap.TimingPoints = beatmap.TimingPoints.Concat(adjustedTimingPoints).ToArray();
-	}
+		BeatmapMetadata metadata = beatmapList[0].Beatmap.Metadata.DeepClone();
+		metadata.Creator = "creator";
+		metadata.Version = "version";
+		metadata.BeatmapID = 0;
+		metadata.BeatmapSetID = -1;
 
-	private static void UpdateHitObjects(BeatmapData beatmap, BeatmapData beatmapToAdd, int offset) {
-		BeatmapHitObject[] adjustedHitObjects = beatmapToAdd.HitObjects.Select(t => t.DeepClone()).ToArray();
+		string beatmapFolder = "testsv1";
+		string beatmapFilename = "testv1";
 
-		for (int j = 0; j < adjustedHitObjects.Length; j++) {
-			if (adjustedHitObjects[j] is HoldHitObject holdHitObject)
-				holdHitObject.EndTime += offset;
-			adjustedHitObjects[j].Time += offset;
+		List<BeatmapData> beatmaps = beatmapList.Select(b => b.Beatmap).ToList();
+
+		Texture2D background = ConcatenateBeatmapBackground(graphics, beatmapList);
+
+		int millisecondsDelay = 100;
+		int measureDivision = 4;
+
+		int[] delays = GetDelays(beatmaps, measureDivision, DelayType.MeasureDivision);
+
+		BeatmapData result = ConcatenateBeatmapData(beatmaps, delays);
+		result.Metadata = metadata;
+		result.GeneralData.AudioFilename = "audio.ogg";
+		// ajouter un event au debut et virer les autres ?
+		foreach (BeatmapEvent ev in result.Events) {
+			if (ev is BackgroundEvent bgEvent)
+				bgEvent.Filename = "bg.jpg";
 		}
 
-		beatmap.HitObjects = beatmap.HitObjects.Concat(adjustedHitObjects).ToArray();
+		MemoryStream audioOutput = new();
+		ConcatenateBeatmapAudio(beatmapList, audioOutput, delays);
+
+		BeatmapWriter.WriteBeatmap(result, audioOutput, background, beatmapFolder, beatmapFilename);
+
+		watch.Stop();
+		Logger.LogDebug($"Concatenated beatmap in {watch.ElapsedMilliseconds}ms");
 	}
-
-	private static void TrimExcessTimingPoints(ref BeatmapTimingPoint[] timingPoints, BeatmapData beatmapData, int delay, TrimType trimOption) {
-		int beatmapStart = beatmapData.HitObjects.First().Time;
-		int beatmapEnd = GetHitObjectEndTime(beatmapData.HitObjects.Last());
-
-		List<BeatmapTimingPoint> temp = timingPoints.ToList();
-		if (trimOption == TrimType.Start || trimOption == TrimType.Full)
-			TrimStartTimingPoints(temp, beatmapStart, delay);
-		if (trimOption == TrimType.End || trimOption == TrimType.Full)
-			temp.RemoveAll(t => t.Time > beatmapEnd);
-		timingPoints = temp.ToArray();
-	}
-
-	private static void TrimStartTimingPoints(List<BeatmapTimingPoint> trimmedTimingPoints, int beatmapStart, int delay) {
-		BeatmapTimingPoint lastUninheritedTimingPoint = null;
-		int i = 0;
-
-		while (i < trimmedTimingPoints.Count - 1 && trimmedTimingPoints[i + 1].Time < beatmapStart) {
-			if (trimmedTimingPoints[i].Uninherited)
-				lastUninheritedTimingPoint = trimmedTimingPoints[i];
-			i++;
-		}
-
-		trimmedTimingPoints.RemoveRange(0, i);
-		trimmedTimingPoints.First().Time = beatmapStart - delay / 2;
-
-		if (!trimmedTimingPoints.First().Uninherited) {
-			lastUninheritedTimingPoint.Time = beatmapStart - delay / 2;
-			trimmedTimingPoints.Prepend(lastUninheritedTimingPoint);
-		}
-	}
-
-	private static void UpdateInheritedTimingPointsWithDominantBpm(BeatmapData beatmap) {
-		double dominantBpm = BeatmapParser.GetDominantBpm(beatmap);
-		List<BeatmapTimingPoint> timingPointsList = beatmap.TimingPoints.ToList();
-		int addedCount = 0;
-
-		for (int i = 0; i < beatmap.TimingPoints.Length; i++) {
-			if (beatmap.TimingPoints[i].Uninherited) {
-				BeatmapTimingPoint nextTimingPoint = i < beatmap.TimingPoints.Length - 1 ? beatmap.TimingPoints[i + 1] : null;
-
-				if (nextTimingPoint != null && nextTimingPoint.Uninherited) {
-					BeatmapTimingPoint newTimingPoint = beatmap.TimingPoints[i].DeepClone();
-					newTimingPoint.LastBPM = newTimingPoint.BPM;
-					newTimingPoint.Uninherited = false;
-					newTimingPoint.BeatLength = -100;
-					timingPointsList.Insert(i + 1 + addedCount, newTimingPoint);
-					addedCount++;
-				}
-			}
-		}
-
-		beatmap.TimingPoints = timingPointsList.ToArray();
-
-		foreach (BeatmapTimingPoint timingPoint in beatmap.TimingPoints) {
-			if (!timingPoint.Uninherited)
-				timingPoint.BeatLength = timingPoint.LastBPM * timingPoint.BeatLength / dominantBpm;
-		}
-	}
-
-	private static int GetHitObjectEndTime(BeatmapHitObject beatmapHitObject) => beatmapHitObject is HoldHitObject holdHitObject ? holdHitObject.EndTime : beatmapHitObject.Time;
 }

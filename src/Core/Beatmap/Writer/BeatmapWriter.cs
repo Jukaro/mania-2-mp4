@@ -1,11 +1,12 @@
 using System.IO;
 using System.Text;
+using Microsoft.Xna.Framework.Graphics;
 using Rythmify.UI;
 
 namespace Rythmify.Core.Beatmap;
 
 public static partial class BeatmapWriter {
-	public static void WriteBeatmap(BeatmapData beatmap, Stream audio, string folder, string filename) {
+	public static void WriteBeatmap(BeatmapData beatmap, Stream audio, Texture2D background, string folder, string filename) {
 		string str = "osu file format v13\n\n";
 
 		str += GetGeneralSectionString(beatmap.GeneralData) + "\n";
@@ -28,6 +29,10 @@ public static partial class BeatmapWriter {
 
 		fs = new FileStream(Path.Combine(folderPath, "audio.ogg"), FileMode.Create, FileAccess.Write);
 		audio.CopyTo(fs);
+		fs.Close();
+
+		fs = new FileStream(Path.Combine(folderPath, "bg.jpg"), FileMode.Create, FileAccess.Write);
+		background.SaveAsJpeg(fs, background.Width, background.Height);
 		fs.Close();
 	}
 
