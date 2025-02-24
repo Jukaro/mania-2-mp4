@@ -1,13 +1,11 @@
 using System.IO;
 using System.Text;
-using Microsoft.Xna.Framework.Graphics;
-using Rythmify.UI;
 
 namespace Rythmify.Core.Beatmap;
 
 public static partial class BeatmapWriter {
-	public static void WriteBeatmap(BeatmapData beatmap, Stream audio, Texture2D background, string folder, string filename) {
-		string str = "osu file format v13\n\n";
+	public static void Write(BeatmapData beatmap, Stream outputStream) {
+		string str = "osu file format v14\n\n";
 
 		str += GetGeneralSectionString(beatmap.GeneralData) + "\n";
 		str += GetEditorSectionString(beatmap.EditorData) + "\n";
@@ -18,22 +16,8 @@ public static partial class BeatmapWriter {
 		str += GetColoursSectionString(beatmap.Colors) + "\n";
 		str += GetHitObjectsSectionString(beatmap.HitObjects) + "\n";
 
-		string folderPath = Path.Combine(Paths.OsuSongsDirectoryPath, folder);
-		string filePath = Path.Combine(folderPath, filename + ".osu");
-
-		Directory.CreateDirectory(folderPath);
-		FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-		byte[] info = new UTF8Encoding(true).GetBytes(str);
-		fs.Write(info, 0, info.Length);
-		fs.Close();
-
-		fs = new FileStream(Path.Combine(folderPath, "audio.ogg"), FileMode.Create, FileAccess.Write);
-		audio.CopyTo(fs);
-		fs.Close();
-
-		fs = new FileStream(Path.Combine(folderPath, "bg.jpg"), FileMode.Create, FileAccess.Write);
-		background.SaveAsJpeg(fs, background.Width, background.Height);
-		fs.Close();
+		byte[] beatmapDataAsBytes = new UTF8Encoding(true).GetBytes(str);
+		outputStream.Write(beatmapDataAsBytes, 0, beatmapDataAsBytes.Length);
 	}
 
 	private static string GetGeneralSectionString(BeatmapGeneralData generalData) {

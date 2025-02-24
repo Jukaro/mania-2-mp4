@@ -15,7 +15,7 @@ public partial class BeatmapConcatenation {
 			int offset = lastBeatmapEnd - beatmapStart + delays[i - 1];
 			Logger.LogDebug($"delay: {delays[i - 1]}ms");
 
-			UpdateTimingPoints(beatmap, beatmaps[i], offset, delays[i - 1], i < beatmaps.Count - 1 ? TrimType.Full : TrimType.Start);
+			UpdateTimingPoints(beatmap, beatmaps[i], offset, delays[i - 1], i < beatmaps.Count - 1 ? TrimType.Both : TrimType.Start);
 			UpdateHitObjects(beatmap, beatmaps[i], offset);
 		}
 
@@ -52,9 +52,9 @@ public partial class BeatmapConcatenation {
 		int beatmapEnd = GetHitObjectEndTime(beatmapData.HitObjects.Last());
 
 		List<BeatmapTimingPoint> temp = timingPoints.ToList();
-		if (trimOption == TrimType.Start || trimOption == TrimType.Full)
+		if (trimOption == TrimType.Start || trimOption == TrimType.Both)
 			TrimStartTimingPoints(temp, beatmapStart, delay);
-		if (trimOption == TrimType.End || trimOption == TrimType.Full)
+		if (trimOption == TrimType.End || trimOption == TrimType.Both)
 			temp.RemoveAll(t => t.Time > beatmapEnd);
 		timingPoints = temp.ToArray();
 	}
