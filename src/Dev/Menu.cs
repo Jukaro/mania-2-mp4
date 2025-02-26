@@ -123,6 +123,24 @@ public class Menu {
 				}
 			}
 		}
+
+/* -------------------------------------------------------------------------- */
+/*                            beatmap concatenation                           */
+/* -------------------------------------------------------------------------- */
+
+		BeatmapWithScores beatmap1 = _beatmapsList.Where(b =>
+			b.BeatmapDBInfo.SongTitle == "Beyond Wood"
+			&& b.BeatmapDBInfo.Difficulty == "anatha's Hard"
+		).ToArray()[0];
+
+		beatmap1.LoadBeatmap();
+
+		List<BeatmapWithScores> beatmapList = new() {
+			beatmap1,
+			beatmap1
+		};
+
+		BeatmapConcatenation.Concatenate(beatmapList, _graphics);
 	}
 
 	private void UpdateSession(int i) {
