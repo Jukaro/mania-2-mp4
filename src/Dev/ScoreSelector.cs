@@ -79,12 +79,6 @@ public class ReplaySelector : Dropdown {
 						} catch {
 							Logger.LogError("Could not parse the replay.");
 						}
-					if (replays[index].Inputs == null) {
-						try {
-							replays[index] = ReplayParser.Parse(replays[index].FilePath, 4, false);
-						} catch {
-							Logger.LogError("Could not parse the replay.");
-						}
 					}
 					SelectedReplay = replays[index];
 					SelectedReplay = replays[index];
