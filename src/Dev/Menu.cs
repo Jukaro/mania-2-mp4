@@ -77,8 +77,8 @@ public class Menu {
 		if (_sideMenu["PreviousPage"] is Button button2)
 			button2.SetOnClick(PreviousPage);
 
-		_beatmapsDB = BeatmapDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "osu!.db"));
-		_scoresDB = ScoreDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "scores.db"), _beatmapsDB);
+		_beatmapsDB = BeatmapDBParser.Parse(Path.Combine(Env.OsuDirectoryPath, "osu!.db"));
+		_scoresDB = ScoreDBParser.Parse(Path.Combine(Env.OsuDirectoryPath, "scores.db"), _beatmapsDB);
 
 		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]);
 		_replaySelector.Hide = true;

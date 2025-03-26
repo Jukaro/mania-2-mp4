@@ -65,3 +65,7 @@ monodroid*.msi
 *.VC.opendb
 
 artifacts/
+
+*.speedscope.json
+
+.env

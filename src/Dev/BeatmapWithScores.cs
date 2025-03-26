@@ -18,7 +18,7 @@ public class BeatmapWithScores {
 
 	public BeatmapWithScores(BeatmapDataFromDB beatmapDBInfo) {
 		BeatmapDBInfo = beatmapDBInfo;
-		FolderPath = Path.Combine(Paths.OsuSongsDirectoryPath, BeatmapDBInfo.FolderName.Trim() + "/");
+		FolderPath = Path.Combine(Env.OsuSongsDirectoryPath, BeatmapDBInfo.FolderName.Trim() + "/");
 		FilePath = Path.Combine(FolderPath, BeatmapDBInfo.Filename);
 		AudioPath = Path.Combine(FolderPath, BeatmapDBInfo.AudioFilename);
 	}

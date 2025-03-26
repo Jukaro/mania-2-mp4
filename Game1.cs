@@ -1,17 +1,10 @@
 ﻿using System;
-using System.IO;
-using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core;
 
 namespace Rythmify.UI;
-
-public static class Paths {
-	public static string OsuDirectoryPath = "G:/Jeux/osssu";
-	public static string OsuSongsDirectoryPath = "G:/Jeux/osu maps de giga ultra mort";
-}
 
 public class Game1 : Game
 {
