@@ -18,14 +18,13 @@ public class Game1 : Game
 	private readonly GraphicsDeviceManager _graphics;
 	private SpriteBatch _spriteBatch;
 
-	private OsuReplay _osuReplay;
+	private Menu _menu;
 
 	public Game1()
 	{
 		_graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
-		_osuReplay = new OsuReplay();
 	}
 
 	protected override void Initialize()
@@ -46,7 +45,8 @@ public class Game1 : Game
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 		FontsStore.Arial = Content.Load<SpriteFont>("Fonts/Arial");
-		_osuReplay.Init(_graphics, GraphicsDevice);
+		_menu = new Menu(GraphicsDevice, _graphics);
+		_menu.Init();
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -55,7 +55,7 @@ public class Game1 : Game
 			Exit();
 
 		TaskManager.Update();
-		_osuReplay.Update(gameTime);
+		_menu.Update(gameTime.ElapsedGameTime.TotalMilliseconds);
 
 		base.Update(gameTime);
 	}
@@ -65,7 +65,7 @@ public class Game1 : Game
 		GraphicsDevice.Clear(Color.Black);
 
 		_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-		_osuReplay.Render(_spriteBatch);
+		_menu.Render(_spriteBatch);
 		_spriteBatch.End();
 
 		base.Draw(gameTime);

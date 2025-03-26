@@ -83,7 +83,7 @@ public class UIElementContainer : Button {
 
 	public override void Update() {
 		foreach (var UIElement in UIElementsList) {
-			if (UIElement.AbsolutePos.Y <= AbsolutePos.Y + Visuals.Texture.Height) { // mdr non faut ameliorer
+			if (UIElement.AbsolutePos.Y <= AbsolutePos.Y + Visuals.Texture.Height && UIElement.AbsolutePos.Y >= AbsolutePos.Y) { // mdr non faut ameliorer
 				UIElement.Update();
 			}
 		}

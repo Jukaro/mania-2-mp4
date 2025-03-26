@@ -25,14 +25,14 @@ public class InputsPlayer {
 	public void Pause() => IsPlaying = false;
 
 	public void Update(double deltaTime) {
-		if (!IsPlaying) return;
+		if (!IsPlaying || CurrentInputIndex >= _replay.Inputs.Count) return;
 
 		CurrentPlayTime += deltaTime;
 
 		if (CurrentPlayTime > _replay.Inputs[CurrentInputIndex].Timestamp)
 			CurrentInputIndex++;
 
-		for (int i = 0; i < RenderedInputs.Length; i++)
-			RenderedInputs[i] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << i)) != 0;;
+		for (int i = 0; i < RenderedInputs.Length && CurrentInputIndex < _replay.Inputs.Count; i++)
+			RenderedInputs[i] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << i)) != 0;
 	}
 }

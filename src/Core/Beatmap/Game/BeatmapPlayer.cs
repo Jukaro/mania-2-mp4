@@ -53,7 +53,8 @@ public class BeatmapPlayer {
 
 	public void Reset(ReplayData replayData) {
 		_isPlaying = false;
-		_currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
+		// _currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
+		_currentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
 		_spawnedNotes = 0;
 	}

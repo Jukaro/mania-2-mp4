@@ -19,6 +19,8 @@ public class AudioPlayer {
 		_needToPlayAudio = false;
 	}
 
+	public void Dispose() => _outputDevice.Dispose();
+
 	public void Pause() {
 		_outputDevice.Pause();
 		_needToPlayAudio = false;
@@ -34,8 +36,8 @@ public class AudioPlayer {
 		_outputDevice.Init(_song.GetSampleProvider());
 	}
 
-	public void Update(bool audioStarted) {
-		if (audioStarted && _needToPlayAudio && _outputDevice.PlaybackState != PlaybackState.Playing)
+	public void Update() {
+		if (_needToPlayAudio && _outputDevice.PlaybackState != PlaybackState.Playing)
 			_outputDevice.Play();
 	}
 

@@ -18,7 +18,7 @@ public class BeatmapSelector : Dropdown {
 		DisplayedBeatmapsCount = 20;
 	}
 
-	public void Init(List<BeatmapWithScores> beatmaps, int start, ReplaySelector replaySelector) {
+	public void Init(List<BeatmapWithScores> beatmaps, int start, ScoreSelector replaySelector, OsuReplayController playerManager) {
 		for (int i = 0; i < DisplayedBeatmapsCount; i++) {
 			Add(new Button(_graphics, new Vector2(0, 0), "beatmap" + i, _beatmapVisuals));
 			UIElementsList[i].Visuals.Resize(UsableWidth, _beatmapVisuals.Height);
@@ -32,10 +32,10 @@ public class BeatmapSelector : Dropdown {
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 			UIElementsList[i].Visuals.Texts.Add(new Text("", new Vector2(0, 0)));
 		}
-		UpdateBeatmapsDropdown(beatmaps, start, replaySelector);
+		UpdateBeatmapsDropdown(beatmaps, start, replaySelector, playerManager);
 	}
 
-	public void UpdateBeatmapsDropdown(List<BeatmapWithScores> beatmaps, int start, ReplaySelector replaySelector) {
+	public void UpdateBeatmapsDropdown(List<BeatmapWithScores> beatmaps, int start, ScoreSelector replaySelector, OsuReplayController playerManager) {
 		ResetButtons();
 
 		for (int i = 0; i < DisplayedBeatmapsCount && start + i < beatmaps.Count; i++) {
@@ -59,10 +59,12 @@ public class BeatmapSelector : Dropdown {
 				int index = i;
 				button.SetOnClick(() => {
 					SelectedBeatmap = beatmaps[start + index];
-					replaySelector.UpdateScores(SelectedBeatmap);
+					replaySelector.UpdateScores(SelectedBeatmap, ref SelectedBeatmap, playerManager);
 					if (SelectedBeatmap.Beatmap == null) {
 						SelectedBeatmap.LoadBeatmap();
 					}
+					// playerManager.UpdatePlayers(SelectedBeatmap, null);
+					playerManager.ChangeBeatmap(SelectedBeatmap);
 				});
 			}
 		}

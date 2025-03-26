@@ -2,8 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Rythmify.Core;
-using Rythmify.Core.Game;
-using Rythmify.Core.Replay;
 using Rythmify.Core.Databases;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,6 +13,7 @@ namespace Rythmify.UI;
 
 public class Menu {
 	private readonly GraphicsDevice _graphics;
+	private readonly GraphicsDeviceManager _graphicsDeviceManager;
 	private KeyboardKey _volumeUp;
 	private KeyboardKey _volumeDown;
 
@@ -23,9 +22,11 @@ public class Menu {
 	private KeyboardKey _F3;
 	private KeyboardKey _F4;
 
+	private OsuReplayController _playerManager;
+
 	private UIElementContainer _mainContainer;
 	private ScrollableUIElementContainer _sideMenu;
-	private ReplaySelector _replaySelector;
+	private ScoreSelector _replaySelector;
 	private BeatmapSelector _beatmapSelector;
 	private InputBox _searchBar;
 	private string _query;
@@ -41,8 +42,9 @@ public class Menu {
 
 	SessionList _sessionList;
 
-	public Menu(GraphicsDevice graphics) {
+	public Menu(GraphicsDevice graphics, GraphicsDeviceManager graphicsDeviceManager) {
 		_graphics = graphics;
+		_graphicsDeviceManager = graphicsDeviceManager;
 		_volumeUp = new(Keys.NumPad1);
 		_volumeDown = new(Keys.NumPad2);
 		_numPad8 = new(Keys.NumPad8);
@@ -59,6 +61,16 @@ public class Menu {
 		FontsStore.InitFonts();
 		GradientStore.InitGradients();
 		VisualsStore.InitVisuals(_graphics, GradientStore.gradients);
+
+		dynamic skinPath = Datasets.TestCases.Jukaro.Skins.KizunaAkari;
+
+		SkinData rawSkin = SkinParser.Parse(skinPath);
+		ReplaySkinData replaySkin = new ReplaySkinData(rawSkin, 4);
+
+		_playerManager = new(_graphics, _graphicsDeviceManager);
+		_playerManager.ChangeSkin(replaySkin);
+
+		Logger.LogDebug($"Version C#: {System.Environment.Version}");
 
 		_mainContainer = new UIElementContainer(_graphics, _graphics.Viewport.Bounds.Width, _graphics.Viewport.Bounds.Height, new Vector2(0, 0), "mainContainer", Color.Transparent);
 
@@ -80,7 +92,7 @@ public class Menu {
 		_beatmapsDB = BeatmapDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "osu!.db"));
 		_scoresDB = ScoreDBParser.Parse(Path.Combine(Paths.OsuDirectoryPath, "scores.db"), _beatmapsDB);
 
-		_replaySelector = new ReplaySelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]);
+		_replaySelector = new ScoreSelector(_graphics, new(0, 50 * 3 + 10 * 3), "replaySelector", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]);
 		_replaySelector.Hide = true;
 		_mainContainer.Add(_replaySelector);
 
@@ -96,7 +108,7 @@ public class Menu {
 		_beatmapSelector = new BeatmapSelector(_graphics, new(0, 50 * 3 + 10 * 3), "beatmapSelector", 10, VisualsStore.visuals[4], VisualsStore.visuals[5]);
 		_beatmapSelector.SetColor(Color.Transparent);
 		_sideMenu.Add(_beatmapSelector);
-		_beatmapSelector.Init(_sortedBeatmapsList, 0, _replaySelector);
+		_beatmapSelector.Init(_sortedBeatmapsList, 0, _replaySelector, _playerManager);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Sessions                                  */
@@ -106,12 +118,12 @@ public class Menu {
 
 		Logger.LogInfo($"SessionList: {_sessionList}");
 
-		_sideMenu.Add(new ReplaySelector(_graphics, new(0, 2000), "SessionReplays", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]));
+		_sideMenu.Add(new ScoreSelector(_graphics, new(0, 2000), "SessionReplays", 10, VisualsStore.visuals[6], VisualsStore.visuals[7]));
 
 		_sideMenu.Add(new Dropdown(_graphics, new(0, 1000), 0, "Sessions", VisualsStore.visuals[8]));
 		if (_sideMenu["Sessions"] is Dropdown sessionsButton) {
-			// for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < _sessionList.SessionsOrderedList.Count(); i++) {
+			// for (int i = 0; i < 100; i++) {
 				sessionsButton.Add(new Button(_graphics, new(0, 0), "Session" + i, VisualsStore.visuals[9]));
 				sessionsButton[i].Visuals.Resize(sessionsButton.UsableWidth, VisualsStore.visuals[9].Height);
 				sessionsButton[i].Visuals.Texts.Add(new Text(_sessionList.SessionsOrderedList.ElementAt(i).Key.ToString(), new Vector2(0, 0)));
@@ -125,89 +137,70 @@ public class Menu {
 	}
 
 	private void UpdateSession(int i) {
-		if (_sideMenu["SessionReplays"] is ReplaySelector rs) {
-			rs.UpdateScores(_sessionList.SessionsOrderedList.ElementAt(i).Value.Replays, _beatmapsDB);
+		if (_sideMenu["SessionReplays"] is ScoreSelector rs) {
+			rs.UpdateScores(_sessionList.SessionsOrderedList.ElementAt(i).Value.Replays, _beatmapsDB, ref _beatmapSelector.SelectedBeatmap, _playerManager);
 			Logger.LogDebug($"Number of scores: {_sessionList.SessionsOrderedList.ElementAt(i).Value.Replays.Count}");
 		}
 	}
 
 	private void NextPage() {
 		_beatmapsPageIndex++;
-		_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector);
+		_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector, _playerManager);
 	}
 
 	private void PreviousPage() {
 		if (_beatmapsPageIndex == 0)
 			return;
 		_beatmapsPageIndex--;
-		_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector);
+		_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector, _playerManager);
 	}
 
 	private void Play() {
-		_play = true;
+		// _play = true;
+		_playerManager.Play();
 		_sideMenu["Play"].SetColor(new Color(0, 255, 0));
 	}
 
 	private void Pause() {
-		_play = false;
+		// _play = false;
+		_playerManager.Pause();
 		_sideMenu["Play"].SetColor(new Color(255, 0, 0));
 	}
 
-	public void Update(ref BeatmapPlayer beatmapPlayer, ref InputsPlayer inputsPlayer, ref AudioPlayer audioPlayer, ReplayData replay, ReplaySkinData skin) {
+	public void Update(double deltaTime) {
 		MouseManager.Update();
-
-		if (_replaySelector.NeedToUpdatePlayers) {
-
-			if (_beatmapSelector.SelectedBeatmap != null && _replaySelector.SelectedReplay != null) {
-				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin.ManiaSection.HitPosition);
-				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay);
-				audioPlayer = new AudioPlayer(_beatmapSelector.SelectedBeatmap.AudioPath);
-			}
-			_replaySelector.NeedToUpdatePlayers = false;
-		}
 
 		if (_searchBar.Input != null && _searchBar.Input != _query) {
 			_query = _searchBar.Input;
 
 			_sortedBeatmapsList = FilterSongs(_query);
 
-			_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector);
+			_beatmapSelector.UpdateBeatmapsDropdown(_sortedBeatmapsList, _beatmapsPageIndex * _beatmapSelector.DisplayedBeatmapsCount, _replaySelector, _playerManager);
 		}
 
-		if (_play && !_isPlaying) {
-			beatmapPlayer.Play();
-			inputsPlayer.Play();
-			audioPlayer.Play();
-			_isPlaying = true;
-		}
-		else if (!_play && _isPlaying) {
-			beatmapPlayer.Pause();
-			inputsPlayer.Pause();
-			audioPlayer.Pause();
-			_isPlaying = false;
-		}
+		// if (_numPad8.IsPressed()) {
+		// 	beatmapPlayer.Reset(replay);
+		// 	inputsPlayer.Init(replay);
+		// 	audioPlayer.Reset();
+		// 	_isPlaying = false;
 
-		if (_numPad8.IsPressed()) {
-			beatmapPlayer.Reset(replay);
-			inputsPlayer.Init(replay);
-			audioPlayer.Reset();
-			_isPlaying = false;
+		// 	// beatmapPlayer.Play();
+		// 	// inputsPlayer.Play();
+		// 	// audioPlayer.Play();
+		// }
 
-			// beatmapPlayer.Play();
-			// inputsPlayer.Play();
-			// audioPlayer.Play();
-		}
+		// if (_volumeUp.IsPressed())
+		// 	audioPlayer.VolumeUp();
+		// if (_volumeDown.IsPressed())
+		// 	audioPlayer.VolumeDown();
 
-		if (_volumeUp.IsPressed())
-			audioPlayer.VolumeUp();
-		if (_volumeDown.IsPressed())
-			audioPlayer.VolumeDown();
+		// if (_F3.IsPressed())
+		// 	beatmapPlayer.ScrollSpeedDown();
 
-		if (_F3.IsPressed())
-			beatmapPlayer.ScrollSpeedDown();
+		// if (_F4.IsPressed())
+		// 	beatmapPlayer.ScrollSpeedUp();
 
-		if (_F4.IsPressed())
-			beatmapPlayer.ScrollSpeedUp();
+		_playerManager.Update(deltaTime, 1.0);
 
 		_mainContainer.Update();
 	}
@@ -217,6 +210,7 @@ public class Menu {
 	}
 
 	public void Render(SpriteBatch spriteBatch) {
+		_playerManager.Render(spriteBatch);
 		_mainContainer.Render(spriteBatch);
 	}
 }
