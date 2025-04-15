@@ -160,7 +160,7 @@ public class Menu {
 
 			if (_beatmapSelector.SelectedBeatmap != null && _replaySelector.SelectedReplay != null) {
 				beatmapPlayer = new BeatmapPlayer(_beatmapSelector.SelectedBeatmap.Beatmap, skin.ManiaSection.HitPosition);
-				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay);
+				inputsPlayer = new InputsPlayer(_replaySelector.SelectedReplay, _beatmapSelector.SelectedBeatmap.Beatmap.GeneralData.AudioLeadIn);
 				audioPlayer = new AudioPlayer(_beatmapSelector.SelectedBeatmap.AudioPath);
 			}
 			_replaySelector.NeedToUpdatePlayers = false;
@@ -189,7 +189,7 @@ public class Menu {
 
 		if (_numPad8.IsPressed()) {
 			beatmapPlayer.Reset(replay);
-			inputsPlayer.Init(replay);
+			inputsPlayer.Init(replay, _beatmapSelector.SelectedBeatmap.Beatmap.GeneralData.AudioLeadIn);
 			audioPlayer.Reset();
 			_isPlaying = false;
 
@@ -217,6 +217,8 @@ public class Menu {
 	}
 
 	public void Render(SpriteBatch spriteBatch) {
+		spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 		_mainContainer.Render(spriteBatch);
+		spriteBatch.End();
 	}
 }

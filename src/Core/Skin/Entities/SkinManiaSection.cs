@@ -170,6 +170,20 @@ public class SkinManiaSection {
 	public string Hit300;
 	public string Hit300g;
 
+	private int GetLaneImageNumber(int lane) {
+		int specialNoteOffset = Keys % 2 == 0 ? 0 : 1;
+		int result = lane < Keys / 2 ? (lane % 2) + 1 : 2 - ((lane + specialNoteOffset) % 2);
+		return result;
+	}
+
+	public string GetNoteImageLane(int lane) => NoteImageLanes.ContainsKey(lane) ? NoteImageLanes[lane] : $"mania-note{GetLaneImageNumber(lane)}";
+	public string GetNoteImageLaneL(int lane) => NoteImageLanesL.ContainsKey(lane) ? NoteImageLanesL[lane] : $"mania-note{GetLaneImageNumber(lane)}L";
+	public string GetNoteImageLaneH(int lane) => NoteImageLanesH.ContainsKey(lane) ? NoteImageLanesH[lane] : $"mania-note{GetLaneImageNumber(lane)}H";
+	public string GetNoteImageLaneT(int lane) => NoteImageLanesT.ContainsKey(lane) ? NoteImageLanesT[lane] : $"mania-note{GetLaneImageNumber(lane)}T";
+	public string GetKeyImageLane(int lane) => KeyImageLanes.ContainsKey(lane) ? KeyImageLanes[lane] : $"mania-key{GetLaneImageNumber(lane)}";
+	public string GetKeyImageLaneD(int lane) => KeyImageLanesD.ContainsKey(lane) ? KeyImageLanesD[lane] : $"mania-key{GetLaneImageNumber(lane)}D";
+	public bool ShouldFlipTail(int lane) => !NoteFlipWhenUpsideDownLanesT.ContainsKey(lane) || NoteFlipWhenUpsideDownLanesT[lane] == true;
+
 	public void ComboBurstStyleParser(FieldInfo destination, string key, string value, Regex pattern) {
 		if (int.TryParse(value, out int result))
 			destination.SetValue(this, (ComboBurstStyleMode)result);

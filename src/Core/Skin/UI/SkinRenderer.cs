@@ -1,16 +1,24 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Rythmify.Core;
 
 namespace Rythmify.UI;
 
+public class LaneTextures {
+	public AnimatedSkinTexture NoteTexture;
+	public AnimatedSkinTexture HoldNoteBodyTexture;
+	public AnimatedSkinTexture HoldNoteTailTexture;
+	public AnimatedSkinTexture HoldNoteHeadTexture;
+	public AnimatedSkinTexture InputTexture;
+	public AnimatedSkinTexture InputTextureHeld;
+}
+
 public class SkinRenderer {
-	private Texture2D[] _noteTextures;
+	private List<LaneTextures> _laneTextures = new();
 	public Texture2D HitLineTexture;
-	private Texture2D[] _holdNoteBodyTextures;
-	private Texture2D[] _inputTextures;
-	private Texture2D[] _inputTexturesHeld;
 
 	private ReplaySkinData _skin;
 	private readonly GraphicsDevice _graphicsDevice;
@@ -21,45 +29,60 @@ public class SkinRenderer {
 		LoadSkin(skin);
 	}
 
+	public void LoadLaneTextures(int lane) {
+		var noteTexturePath = _skin.ManiaSection.GetNoteImageLane(lane);
+		var holdNoteBodyTexturePath = _skin.ManiaSection.GetNoteImageLaneL(lane);
+		var inputTexturePath = _skin.ManiaSection.GetKeyImageLane(lane);
+		var inputTextureHeldPath = _skin.ManiaSection.GetKeyImageLaneD(lane);
+
+		var tailModifier = _skin.ManiaSection.ShouldFlipTail(lane) ? TextureModifier.FlipVertically : TextureModifier.None;
+
+		AnimatedSkinTexture tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneT(lane), tailModifier);
+		if (tailAnimatedTexture.FrameCount == 0)
+			tailAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneH(lane), tailModifier);
+
+		AnimatedSkinTexture headAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLaneH(lane));
+		if (headAnimatedTexture.FrameCount == 0)
+			headAnimatedTexture = new(_graphicsDevice, _skin.Data, _skin.ManiaSection.GetNoteImageLane(lane));
+
+		LaneTextures laneTextures = new() {
+			NoteTexture = new(_graphicsDevice, _skin.Data, noteTexturePath),
+			HoldNoteBodyTexture = new(_graphicsDevice, _skin.Data, holdNoteBodyTexturePath),
+			HoldNoteTailTexture = tailAnimatedTexture,
+			HoldNoteHeadTexture = headAnimatedTexture,
+			InputTexture = new(_graphicsDevice, _skin.Data, inputTexturePath),
+			InputTextureHeld = new(_graphicsDevice, _skin.Data, inputTextureHeldPath)
+		};
+
+		_laneTextures.Add(laneTextures);
+	}
+
 	public void LoadSkin(ReplaySkinData skin) {
 		_skin = skin;
 
-		_noteTextures = new Texture2D[_skin.LaneCount];
-		for (int i = 0; i < _skin.LaneCount; i++) {
-			var filePath = _skin.GetFilePath(_skin.ManiaSection.NoteImageLanes[i]);
-			Logger.LogDebug($"Loading note texture at lane {i} from {filePath}");
-			_noteTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
-		}
-
-		_holdNoteBodyTextures = new Texture2D[_skin.LaneCount];
-		for (int i = 0; i < _skin.LaneCount; i++) {
-			var filePath = _skin.GetFilePath(_skin.ManiaSection.NoteImageLanesL[i]);
-			Logger.LogDebug($"Loading hold note body texture at lane {i} from {filePath}");
-			_holdNoteBodyTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
-		}
-
-		HitLineTexture = new(_graphicsDevice, 1, 4);
+		HitLineTexture = new Texture2D(_graphicsDevice, 1, 4);
 		var colors1 = new Color[1 * 4];
 		Array.Fill(colors1, Color.Red);
 		HitLineTexture.SetData(colors1);
 
-		_inputTextures = new Texture2D[_skin.LaneCount];
-		for (int i = 0; i < _skin.LaneCount; i++) {
-			var filePath = _skin.GetFilePath(_skin.ManiaSection.KeyImageLanes[i]);
-			Logger.LogDebug($"Loading input texture at lane {i} from {filePath}");
-			_inputTextures[i] = Texture2D.FromFile(_graphicsDevice, filePath);
-		}
+		for (int i = 0; i < 8; i++) LoadLaneTextures(i);
+	}
 
-		_inputTexturesHeld = new Texture2D[_skin.LaneCount];
-		for (int i = 0; i < _skin.LaneCount; i++) {
-			var filePath = _skin.GetFilePath(_skin.ManiaSection.KeyImageLanesD[i]);
-			Logger.LogDebug($"Loading input texture at lane {i} from {filePath}");
-			_inputTexturesHeld[i] = Texture2D.FromFile(_graphicsDevice, filePath);
+	public void Update(float deltaTimeSeconds) {
+		foreach (var laneTexture in _laneTextures) {
+			laneTexture.NoteTexture.Update(deltaTimeSeconds);
+			laneTexture.HoldNoteBodyTexture.Update(deltaTimeSeconds);
+			laneTexture.HoldNoteTailTexture.Update(deltaTimeSeconds);
+			laneTexture.HoldNoteHeadTexture.Update(deltaTimeSeconds);
+			laneTexture.InputTexture.Update(deltaTimeSeconds);
+			laneTexture.InputTextureHeld.Update(deltaTimeSeconds);
 		}
 	}
 
-	public Texture2D GetNoteTextureAtLane(int lane) => _noteTextures[lane];
-	public Texture2D GetHoldNoteTextureAtLane(int lane) => _holdNoteBodyTextures[lane];
-	public Texture2D GetInputTextureAtLane(int lane, bool held) => held ? _inputTexturesHeld[lane] : _inputTextures[lane];
+	public Texture2D GetNoteTextureAtLane(int lane) => _laneTextures[lane].NoteTexture.GetCurrentFrame();
+	public Texture2D GetHoldNoteTextureAtLane(int lane) => _laneTextures[lane].HoldNoteBodyTexture.GetCurrentFrame();
+	public Texture2D GetHoldNoteHeadTextureAtLane(int lane) => _laneTextures[lane].HoldNoteHeadTexture.GetCurrentFrame();
+	public Texture2D GetHoldNoteTailTextureAtLane(int lane) => _laneTextures[lane].HoldNoteTailTexture.GetCurrentFrame();
+	public Texture2D GetInputTextureAtLane(int lane, bool held) => held ? _laneTextures[lane].InputTextureHeld.GetCurrentFrame() : _laneTextures[lane].InputTexture.GetCurrentFrame();
 	public ReplaySkinData GetSkin() => _skin;
 }

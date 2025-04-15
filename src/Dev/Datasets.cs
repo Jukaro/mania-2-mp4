@@ -7,7 +7,9 @@ public static class Datasets {
 	public static dynamic TestCases = new {
 		ShiroW = new {
 			Skins = new {
-				KizunaAkari = "C:/Users/shiro/AppData/Local/osu!/Skins/-           Kizuna Akari  +  4K mania"
+				KizunaAkari = "C:/Users/shiro/AppData/Local/osu!/Skins/-           Kizuna Akari  +  4K mania",
+				O2Jam = "C:/Users/shiro/AppData/Local/osu!/Skins/O2Jam U Ultimate modif",
+				JakadsBars = "C:/Users/shiro/AppData/Local/osu!/Skins/Jakads (4K - Bars) 4-2-2018"
 			},
 			GalaxyCollapse = new {
 				BeatmapPath = "C:/Users/shiro/AppData/Local/osu!/Songs/400078 Kurokotei - Galaxy Collapse/Kurokotei - Galaxy Collapse (Mat) [Cataclysmic Hypernova].osu",
