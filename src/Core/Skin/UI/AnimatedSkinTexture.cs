@@ -86,14 +86,6 @@ public class AnimatedSkinTexture {
 	}
 
 	public Bitmap GetCurrentFrame() => _frames[_currentFrame];
-	// public Bitmap GetCurrentFrame() {
-	// 	try {
-	// 		return  _frames[_currentFrame];
-	// 	} catch (Exception e) {
-	// 		// Logger.LogDebug($"error while getting the frame: {e.Message}");
-	// 		return _frames.FirstOrDefault();
-	// 	}
-	// }
 	public void SetCurrentFrame(int frame) => _currentFrame = frame;
 
 }

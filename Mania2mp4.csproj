@@ -24,8 +24,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
-    <PackageReference Include="NLayer" Version="1.16.0" />
-    <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
     <PackageReference Include="SevenZip" Version="19.0.0" />
     <PackageReference Include="SharpHook" Version="5.3.7" />
     <PackageReference Include="SharpHook.Reactive" Version="5.3.7" />
