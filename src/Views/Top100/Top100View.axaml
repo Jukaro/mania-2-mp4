@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:generic="using:System.Collections.Generic"
+	xmlns:displays="using:Mania2mp4.Displays"
+	xmlns:views="using:Mania2mp4.Views"
+	x:Class="Mania2mp4.Views.Top100View"
+	x:DataType="vm:Top100ViewModel"
+	Name="RootControl">
+
+	<StackPanel>
+		<Expander Header="Filters" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+			<views:FilterSetsView />
+		</Expander>
+		<TabControl ItemsSource="{Binding Tabs}">
+			<TabControl.ItemTemplate>
+				<DataTemplate DataType="vm:ScoreTabViewModel">
+					<TextBlock Text="{Binding Title}" />
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+			<TabControl.ContentTemplate>
+				<DataTemplate DataType="vm:ScoreTabViewModel">
+					<StackPanel>
+						<Border CornerRadius="8"
+							Margin="0,5,0,5"
+							Padding="5"
+							Background="#46383F">
+							<TextBlock FontFamily="avares://Mania2mp4/Assets/Fonts#Torus" FontSize="18" VerticalAlignment="Center">
+								<TextBlock.Inlines>
+									<Run Text="Total weighted: " />
+									<Run Text="{Binding ScoreList.TotalWeightedPPDetails.TotalPP, StringFormat='{}{0:0}pp'}" />
+									<Run Text=" (" />
+									<Run Text="{Binding ScoreList.TotalWeightedPPDetails.TotalWeightedPP, StringFormat='{}{0:0}pp'}" />
+									<Run Text=" + " />
+									<Run Text="{Binding ScoreList.TotalWeightedPPDetails.BonusPP, StringFormat='{}{0:0}pp'}" />
+									<Run Text=" bonus )" />
+								</TextBlock.Inlines>
+							</TextBlock>
+						</Border>
+						<ScrollViewer VerticalScrollBarVisibility="Visible" Height="500">
+							<ListBox ItemsSource="{Binding ScoreList.DisplayManager.Displays}"
+								Background="Transparent"
+								ItemTemplate="{StaticResource Top100ScoreTemplate}"
+								SelectedItem="{Binding #RootControl.((vm:Top100ViewModel)DataContext).SelectedTop100ScoreDisplay}">
+								<ListBox.ItemsPanel>
+									<ItemsPanelTemplate>
+										<VirtualizingStackPanel />
+									</ItemsPanelTemplate>
+								</ListBox.ItemsPanel>
+							</ListBox>
+						</ScrollViewer>
+					</StackPanel>
+				</DataTemplate>
+			</TabControl.ContentTemplate>
+		</TabControl>
+	</StackPanel>
+</UserControl>

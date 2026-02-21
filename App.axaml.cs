@@ -21,6 +21,7 @@ public static class Services {
 
 		serviceCollection.AddSingleton<OsuReplayModel>();
 		serviceCollection.AddSingleton<DatabasesService>();
+		serviceCollection.AddSingleton<FilterSetsService>();
 
 		serviceCollection.AddTransient<MainWindowViewModel>();
 		serviceCollection.AddTransient<OsuReplayViewModel>();
@@ -30,6 +31,8 @@ public static class Services {
 		serviceCollection.AddTransient<BeatmapLocalScoresViewModel>();
 		serviceCollection.AddTransient<SkinSelectorViewModel>();
 		serviceCollection.AddTransient<SessionViewerViewModel>();
+		serviceCollection.AddTransient<FilterSetsViewModel>();
+		serviceCollection.AddTransient<Top100ViewModel>();
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 	}

@@ -1,0 +1,160 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:displays="using:Mania2mp4.Displays"
+	xmlns:controls="using:Mania2mp4.Controls">
+
+	<DataTemplate x:Key="Top100ScoreTemplate" DataType="displays:Top100ScoreDisplay">
+		<Panel>
+			<Border
+				BorderThickness="0"
+				Padding="0"
+				HorizontalAlignment="Stretch"
+				CornerRadius="8"
+				Margin="0,0,0,2"
+				Height="44"
+				Background="#54454C">
+				<Border.Styles>
+					<Style Selector="TextBlock">
+						<Setter Property="FontFamily" Value="avares://Mania2mp4/Assets/Fonts#Torus" />
+					</Style>
+				</Border.Styles>
+				<Border.Background>
+					<ImageBrush Source="{Binding BeatmapDisplay.Background}" Stretch="UniformToFill" />
+				</Border.Background>
+				<Grid ColumnDefinitions="20,40,10,*,10,Auto,10,Auto">
+					<Border Background="Black" Opacity="0.7" Grid.ColumnSpan="8" CornerRadius="8" />
+					<ContentPresenter Grid.Column="1" DataContext="{Binding Grade}" Content="{Binding}" />
+					<TextBlock Grid.Column="3" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<TextBlock.Inlines>
+							<Run Text="{Binding BeatmapDisplay.SongTitle}" FontSize="16" />
+							<Run Text="by" />
+							<Run Text="{Binding BeatmapDisplay.ArtistName}" />
+							<LineBreak />
+							<Run Text="{Binding BeatmapDisplay.KeyCount, StringFormat='{}[{0}K]'} " Foreground="Orange" />
+							<Run Text="{Binding BeatmapDisplay.Difficulty}" Foreground="Orange" />
+							<Run Text="  " />
+							<Run Text="{Binding ElapsedTimeSinceSet}" Foreground="#9E8A94" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<Border Grid.Column="5" MinWidth="130">
+						<TextBlock FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left">
+							<TextBlock.Inlines>
+								<Run Text="{Binding Accuracy, StringFormat='{}{0:0.00}%'}" FontSize="16" Foreground="#FECC22" />
+								<Run Text="    " />
+								<Run Text="{Binding WeightedPP, StringFormat='{}{0:0}pp'}" FontSize="16" />
+								<LineBreak />
+								<Run Text="weighted " />
+								<Run Text="{Binding Weight, StringFormat='{}{0:0}%'}" />
+							</TextBlock.Inlines>
+						</TextBlock>
+					</Border>
+					<Grid Grid.Column="7" MinWidth="110">
+						<Canvas Width="110" Height="44">
+							<Path Fill="#46383F">
+								<Path.Data>
+									<PathGeometry>
+										<PathFigure StartPoint="0,0">
+											<LineSegment Point="102,0" />
+											<ArcSegment Point="110,8" Size="8,8" SweepDirection="Clockwise" />
+											<LineSegment Point="110,36" />
+											<ArcSegment Point="102,44" Size="8,8" SweepDirection="Clockwise" />
+											<LineSegment Point="0,44" />
+											<LineSegment Point="10,22" />
+										</PathFigure>
+									</PathGeometry>
+								</Path.Data>
+							</Path>
+						</Canvas>
+						<StackPanel Orientation="Horizontal" Spacing="0" Margin="10,0,0,0" HorizontalAlignment="Center">
+							<TextBlock Text="{Binding PerformancePoints, StringFormat='{}{0:0}'}" FontSize="16" VerticalAlignment="Center" Foreground="#C0C0C0">
+								<Interaction.Behaviors>
+									<DataTriggerBehavior Binding="{Binding BeatmapDisplay.IsRanked}" ComparisonCondition="Equal" Value="True">
+										<ChangePropertyAction PropertyName="Foreground" Value="#FF66AB" />
+									</DataTriggerBehavior>
+								</Interaction.Behaviors>
+							</TextBlock>
+							<TextBlock Text="pp" FontSize="12" VerticalAlignment="Center" Foreground="#F0F0F0">
+								<Interaction.Behaviors>
+									<DataTriggerBehavior Binding="{Binding BeatmapDisplay.IsRanked}" ComparisonCondition="Equal" Value="True">
+										<ChangePropertyAction PropertyName="Foreground" Value="#D194AF" />
+									</DataTriggerBehavior>
+								</Interaction.Behaviors>
+							</TextBlock>
+						</StackPanel>
+					</Grid>
+				</Grid>
+			</Border>
+			<controls:BorderWithPressedPC Background="White" CornerRadius="8" Margin="0,0,0,2">
+				<controls:BorderWithPressedPC.Styles>
+					<Style Selector="Border">
+						<Setter Property="Opacity" Value="0" />
+					</Style>
+					<Style Selector="Border:pointerover">
+						<Setter Property="Opacity" Value="0.2" />
+					</Style>
+					<Style Selector="Border:pressed">
+						<Setter Property="Opacity" Value="0.4" />
+					</Style>
+				</controls:BorderWithPressedPC.Styles>
+			</controls:BorderWithPressedPC>
+		</Panel>
+	</DataTemplate>
+
+	<DataTemplate x:Key="Top100ScoreTemplatev1" DataType="displays:Top100ScoreDisplay">
+		<controls:CardButtonControl Theme="{StaticResource ScoreSelectorButton}"
+			CornerRadius="8"
+			Margin="0,5,0,0"
+			Height="125">
+			<controls:CardButtonControl.Background>
+				<ImageBrush Source="{Binding BeatmapDisplay.Background}" Stretch="UniformToFill"/>
+			</controls:CardButtonControl.Background>
+			<controls:CardButtonControl.HeadContent>
+				<Grid ColumnDefinitions="Auto,*,Auto,*,Auto">
+					<TextBlock Grid.Column="0" FontSize="14" VerticalAlignment="Center">
+						<TextBlock.Inlines>
+							<Run Text="{Binding PlayerName}" FontSize="18" />
+							<LineBreak />
+							<Run Text="{Binding Score} " />
+							<Run Text="{Binding MaxCombo, StringFormat='{}({0}x)'}" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<TextBlock Grid.Column="2" VerticalAlignment="Center" TextAlignment="Center">
+						<TextBlock.Inlines>
+							<Run Text="{Binding Accuracy, StringFormat='{}{0:0.00}%'}" />
+							<LineBreak />
+							<Run Text="{Binding Ratio, StringFormat='{}{0:0.0}:1'}" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Vertical">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="1">
+							<TextBlock VerticalAlignment="Center"
+								Foreground="#FFFA43A5"
+								Text="{Binding PerformancePoints, StringFormat='{}{0:0}'}" FontSize="16" />
+							<TextBlock VerticalAlignment="Center"
+								Foreground="Pink"
+								FontSize="12"
+								Text="pp" />
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</controls:CardButtonControl.HeadContent>
+			<controls:CardButtonControl.BodyContent>
+				<Grid>
+					<StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock FontSize="20">
+								<TextBlock.Text>
+									<MultiBinding StringFormat="{}{0} [{1}]">
+										<Binding Path="BeatmapDisplay.SongTitle" />
+										<Binding Path="BeatmapDisplay.Difficulty" />
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+						</StackPanel>
+						<TextBlock Text="{Binding BeatmapDisplay.StarRating}" />
+					</StackPanel>
+				</Grid>
+			</controls:CardButtonControl.BodyContent>
+		</controls:CardButtonControl>
+	</DataTemplate>
+</ResourceDictionary>

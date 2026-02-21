@@ -104,6 +104,7 @@
 				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/LocalScoreTemplate.axaml" />
 				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/SessionScoreTemplate.axaml" />
 				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/ExtendedSessionScoreTemplate.axaml" />
+				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/Top100ScoreTemplate.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 
@@ -142,6 +143,98 @@
 							Background="White"
 							Opacity="0"
 							CornerRadius="{TemplateBinding CornerRadius}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter>
+
+			<Style Selector="^:pointerover /template/ Border#PART_OverlayLayer">
+				<Setter Property="Opacity" Value="0.2" />
+			</Style>
+
+			<Style Selector="^:pressed /template/ Border#PART_OverlayLayer">
+				<Setter Property="Opacity" Value="0.4" />
+			</Style>
+		</ControlTheme>
+
+		<!-- ScoreSelectorButton -->
+		<ControlTheme x:Key="ScoreSelectorButton" TargetType="controls:CardButtonControl">
+			<Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+			<Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
+			<Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
+			<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+			<Setter Property="Padding" Value="{DynamicResource ButtonPadding}" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions">
+			<Transitions>
+				<TransformOperationsTransition Property="RenderTransform" Duration="0:0:.075" />
+			</Transitions>
+			</Setter>
+
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Grid>
+						<Border x:Name="PART_Body"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							CornerRadius="{TemplateBinding CornerRadius}">
+						</Border>
+						<Border x:Name="PART_Head"
+							Background="Black"
+							Opacity="0.75"
+							Height="50"
+							VerticalAlignment="Bottom">
+						</Border>
+						<Border x:Name="PART_DarkOverlay1"
+							Background="Black"
+							Margin="0,0,0,50"
+							Opacity="0.85">
+							<Border.Background>
+								<LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,50%">
+									<GradientStop Color="#FF000000" Offset="0.0"/>
+									<GradientStop Color="#00000000" Offset="1.0"/>
+								</LinearGradientBrush>
+							</Border.Background>
+						</Border>
+						<Border x:Name="PART_DarkOverlay2"
+							Background="Black"
+							Margin="0,0,0,50"
+							Opacity="0.75">
+							<Border.Background>
+								<LinearGradientBrush StartPoint="0%,0%" EndPoint="50%,0%">
+									<GradientStop Color="#FF000000" Offset="0.0"/>
+									<GradientStop Color="#00000000" Offset="1.0"/>
+								</LinearGradientBrush>
+							</Border.Background>
+						</Border>
+						<ContentPresenter x:Name="PART_BodyPresenter"
+							Margin="0,0,0,50"
+							VerticalAlignment="Top"
+							Content="{TemplateBinding BodyContent}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							Padding="{TemplateBinding Padding}"
+							RecognizesAccessKey="True"
+							HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+						</ContentPresenter>
+						<ContentPresenter x:Name="PART_HeadPresenter"
+							Height="50"
+							VerticalAlignment="Bottom"
+							Content="{TemplateBinding HeadContent}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							Padding="{TemplateBinding Padding}"
+							RecognizesAccessKey="True"
+							HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+						</ContentPresenter>
+						<Border x:Name="PART_OverlayLayer"
+							Background="White"
+							Opacity="0"
+							CornerRadius="{TemplateBinding CornerRadius}">
+						</Border>
 					</Grid>
 				</ControlTemplate>
 			</Setter>

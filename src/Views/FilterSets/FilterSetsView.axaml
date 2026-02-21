@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:sys="using:System"
+	x:Class="Mania2mp4.Views.FilterSetsView"
+	x:DataType="vm:FilterSetsViewModel"
+	Name="RootControl">
+
+	<UserControl.Styles>
+		<Style Selector="ListBox">
+			<Setter Property="ItemsPanel">
+				<ItemsPanelTemplate>
+					<WrapPanel ItemSpacing="20" />
+				</ItemsPanelTemplate>
+			</Setter>
+			<Setter Property="ItemTemplate">
+				<DataTemplate>
+					<CheckBox Content="{Binding .}" IsChecked="{Binding $parent[ListBoxItem].IsSelected}" />
+				</DataTemplate>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+
+	<StackPanel Spacing="10">
+		<TextBlock Text="Players" FontSize="16" />
+		<ListBox ItemsSource="{Binding Players}" SelectedItems="{Binding SelectedPlayers}" SelectionMode="Multiple,Toggle" Background="Transparent" />
+		<TextBlock Text="Key Modes" FontSize="16" Margin="0,20,0,0" />
+		<ListBox ItemsSource="{Binding KeyModes}" SelectedItems="{Binding SelectedKeyModes}" SelectionMode="Multiple,Toggle" Background="Transparent" />
+		<TextBlock Text="Ranked Statuses" FontSize="16" Margin="0,20,0,0" />
+		<ListBox ItemsSource="{Binding RankedStatuses}" SelectedItems="{Binding SelectedRankedStatuses}" SelectionMode="Multiple,Toggle" Background="Transparent" />
+	</StackPanel>
+
+</UserControl>

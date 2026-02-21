@@ -41,6 +41,10 @@
                         <Expander.Header>Sessions</Expander.Header>
                         <views:SessionViewerView />
                     </Expander>
+                    <Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+                        <Expander.Header>Top 100</Expander.Header>
+                        <views:Top100View />
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
         </Grid>
