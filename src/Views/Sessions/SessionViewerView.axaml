@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:displays="using:Mania2mp4.Displays"
+	x:Class="Mania2mp4.Views.SessionViewerView"
+	x:DataType="vm:SessionViewerViewModel"
+	Name="RootControl">
+
+	<UserControl.Styles>
+		<Style Selector="controls|SliderWithInput">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="controls:SliderWithInput">
+						<DataValidationErrors>
+							<StackPanel x:Name="PART_StackPanel">
+								<Border x:Name="PART_HeaderBorder" VerticalAlignment="Center">
+									<TextBlock x:Name="PART_Header" Classes="h3" MinWidth="25" />
+								</Border>
+								<StackPanel Orientation="Horizontal" Spacing="10">
+									<controls:CustomTextBox x:Name="PART_CustomTextBox" VerticalAlignment="Center" Width="30" />
+									<Slider x:Name="PART_Slider" VerticalAlignment="Center" MinWidth="100" />
+								</StackPanel>
+							</StackPanel>
+						</DataValidationErrors>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+
+	<StackPanel Spacing="10">
+		<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+			<Viewbox Grid.Column="0" Stretch="Uniform"
+				StretchDirection="DownOnly"
+				MaxHeight="200"
+				HorizontalAlignment="Left">
+				<controls:SessionCalendarControl Name="sessionCalendar" HighlightedDates="{Binding SessionDates}" SelectionMode="SingleDate" CornerRadius="8" />
+			</Viewbox>
+			<ContentControl Grid.Column="1" Content="{Binding SessionStats}" />
+		</Grid>
+		<CheckBox IsChecked="{Binding IsExtendedStatsEnabled}" Content="Extended stats" />
+		<ScrollViewer Height="400">
+			<ListBox ItemsSource="{Binding SessionScoreDisplayManager.Displays}"
+				SelectedItem="{Binding SelectedSessionScoreDisplay}"
+				Background="Transparent"
+				ItemTemplate="{Binding #RootControl.((vm:SessionViewerViewModel)DataContext).SelectedTemplate}">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<VirtualizingStackPanel />
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+			</ListBox>
+		</ScrollViewer>
+		<Expander Header="Render scores list" HorizontalAlignment="Stretch">
+			<DockPanel HorizontalSpacing="20" HorizontalAlignment="Stretch">
+				<controls:SliderWithInput DockPanel.Dock="Left" VerticalAlignment="Center" Theme="{StaticResource SliderWithInputTheme}" Header="Scores per screen" ToolTip.Tip="Number of scores per screen" Output="{Binding SessionScoreListRenderer.ScoreCountPerScreen}" Minimum="10" Maximum="100" SmallChange="1" LargeChange="1" TickFrequency="1" IsSnapToTickEnabled="True" />
+				<controls:SliderWithInput DockPanel.Dock="Left" VerticalAlignment="Center" Theme="{StaticResource SliderWithInputTheme}" Header="Width" ToolTip.Tip="Width of the screen" Output="{Binding SessionScoreListRenderer.RenderWidth}" Minimum="600" Maximum="2000" SmallChange="1" LargeChange="1" TickFrequency="1" IsSnapToTickEnabled="True" />
+				<Button DockPanel.Dock="Right" VerticalAlignment="Bottom" Content="Render" Command="{Binding RenderScoresList}" />
+			</DockPanel>
+		</Expander>
+	</StackPanel>
+
+</UserControl>

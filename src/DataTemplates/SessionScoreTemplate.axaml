@@ -1,0 +1,118 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:displays="using:Mania2mp4.Displays"
+	xmlns:controls="using:Mania2mp4.Controls">
+
+	<DataTemplate x:Key="SessionScoreTemplate" DataType="displays:SessionScoreDisplay">
+		<Panel>
+			<Border Height="44"
+				Margin="0,0,0,2"
+				CornerRadius="8"
+				Background="BlueViolet">
+				<Border.Styles>
+					<Style Selector="TextBlock">
+						<Setter Property="FontFamily" Value="avares://Mania2mp4/Assets/Fonts#Torus" />
+					</Style>
+				</Border.Styles>
+				<Border.Background>
+					<ImageBrush Source="{Binding BeatmapDisplay.Background}" Stretch="UniformToFill" />
+				</Border.Background>
+				<Grid ColumnDefinitions="20,40,10,*,10,Auto,4,Auto,10,Auto,Auto">
+					<Border Background="Black" Opacity="0.7" Grid.ColumnSpan="11" CornerRadius="8" Margin="0,0,0,0" />
+					<ContentPresenter Grid.Column="1" DataContext="{Binding Grade}" Content="{Binding}" />
+					<TextBlock Grid.Column="3" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<TextBlock.Inlines>
+							<Run Text="{Binding BeatmapDisplay.SongTitle}" FontSize="16" />
+							<Run Text="by" />
+							<Run Text="{Binding BeatmapDisplay.ArtistName}" />
+							<LineBreak />
+							<Run Text="{Binding BeatmapDisplay.KeyCount, StringFormat='{}[{0}K]'} " Foreground="Orange" />
+							<Run Text="{Binding BeatmapDisplay.Difficulty}" Foreground="Orange" />
+							<Run Text="{Binding BeatmapDisplay.StarRating, StringFormat='{}{0}'}" Foreground="Orange" FontSize="10" />
+							<Run Text="  " />
+							<Run Text="{Binding TimestampInHours}" Foreground="#AEAAA4" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="60" Spacing="2">
+						<TextBlock Text="{Binding Score, StringFormat='{}{0:N0}'}" FontSize="14" />
+						<TextBlock Text="{Binding ScoreDiffVsTopScore, StringFormat='{}{0:+#,0;-#,0;0}'}" FontSize="10" Margin="0,0,0,1" Foreground="{Binding ScoreDiffBrush}" />
+					</StackPanel>
+					<Border Grid.Column="7" MinWidth="60">
+						<TextBlock FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left">
+							<TextBlock.Inlines>
+								<Run Text="{Binding Accuracy, StringFormat='{}{0:0.00}%'}" FontSize="16" Foreground="#FECC22" />
+								<LineBreak />
+								<Run Text="{Binding Ratio, StringFormat='{}{0:0.0}:1'}" />
+							</TextBlock.Inlines>
+						</TextBlock>
+					</Border>
+					<TextBlock Grid.Column="9" MinWidth="40" MaxWidth="40" VerticalAlignment="Center" HorizontalAlignment="Center">
+						<TextBlock.Inlines>
+							<Run FontSize="16">
+								<Run.Text>
+									<MultiBinding StringFormat="{}{0}{1}">
+										<Binding Source="#" />
+										<Binding Path="LocalRankWhenSet" />
+									</MultiBinding>
+
+								</Run.Text>
+							</Run>
+						</TextBlock.Inlines>
+						<Interaction.Behaviors>
+							<DataTriggerBehavior Binding="{Binding LocalRankWhenSet}" ComparisonCondition="Equal" Value="1">
+								<ChangePropertyAction PropertyName="Foreground" Value="#FFFFC35D" />
+							</DataTriggerBehavior>
+
+							<DataTriggerBehavior Binding="{Binding LocalRankWhenSet}" ComparisonCondition="Equal" Value="2">
+								<ChangePropertyAction PropertyName="Foreground" Value="#FFBEBEBE" />
+							</DataTriggerBehavior>
+
+							<DataTriggerBehavior Binding="{Binding LocalRankWhenSet}" ComparisonCondition="Equal" Value="3">
+								<ChangePropertyAction PropertyName="Foreground" Value="#FFA16F3B" />
+							</DataTriggerBehavior>
+						</Interaction.Behaviors>
+					</TextBlock>
+					<Grid Grid.Column="11" MinWidth="110">
+						<Canvas Width="110" Height="44">
+							<Path Fill="#46383F"
+								Data="M 0,0 L 102,0 A 8,8 0,0,1 110,8 L 110,36 A 8,8 0,0,1 102,44 L 0,44 L 10,22 Z">
+							</Path>
+						</Canvas>
+						<StackPanel VerticalAlignment="Center">
+							<StackPanel Orientation="Horizontal" Spacing="0" Margin="10,0,0,0" HorizontalAlignment="Center">
+								<TextBlock Text="{Binding PerformancePoints, StringFormat='{}{0:0}'}" FontSize="16" VerticalAlignment="Center" Foreground="#C0C0C0">
+									<Interaction.Behaviors>
+										<DataTriggerBehavior Binding="{Binding BeatmapDisplay.IsRanked}" ComparisonCondition="Equal" Value="True">
+											<ChangePropertyAction PropertyName="Foreground" Value="#FF66AB" />
+										</DataTriggerBehavior>
+									</Interaction.Behaviors>
+								</TextBlock>
+								<TextBlock Text="pp" FontSize="12" VerticalAlignment="Center" Foreground="#F0F0F0">
+									<Interaction.Behaviors>
+										<DataTriggerBehavior Binding="{Binding BeatmapDisplay.IsRanked}" ComparisonCondition="Equal" Value="True">
+											<ChangePropertyAction PropertyName="Foreground" Value="#D194AF" />
+										</DataTriggerBehavior>
+									</Interaction.Behaviors>
+								</TextBlock>
+							</StackPanel>
+							<TextBlock HorizontalAlignment="Center" Text="{Binding PPDiffVsTopScore, StringFormat='{}{0:+0;-0;0}'}" FontSize="10" Foreground="{Binding PPDiffBrush}" />
+						</StackPanel>
+					</Grid>
+				</Grid>
+			</Border>
+			<controls:BorderWithPressedPC Background="White" CornerRadius="8" Margin="0,0,0,2">
+				<controls:BorderWithPressedPC.Styles>
+					<Style Selector="Border">
+						<Setter Property="Opacity" Value="0" />
+					</Style>
+					<Style Selector="Border:pointerover">
+						<Setter Property="Opacity" Value="0.2" />
+					</Style>
+					<Style Selector="Border:pressed">
+						<Setter Property="Opacity" Value="0.4" />
+					</Style>
+				</controls:BorderWithPressedPC.Styles>
+			</controls:BorderWithPressedPC>
+		</Panel>
+	</DataTemplate>
+</ResourceDictionary>

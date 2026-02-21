@@ -37,6 +37,10 @@
                         <Expander.Header>Skins</Expander.Header>
                         <controls:SkinSelectorControl />
                     </Expander>
+                    <Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+                        <Expander.Header>Sessions</Expander.Header>
+                        <views:SessionViewerView />
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

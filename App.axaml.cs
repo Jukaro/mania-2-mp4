@@ -29,6 +29,7 @@ public static class Services {
 		serviceCollection.AddTransient<BeatmapSearchViewModel>();
 		serviceCollection.AddTransient<BeatmapLocalScoresViewModel>();
 		serviceCollection.AddTransient<SkinSelectorViewModel>();
+		serviceCollection.AddTransient<SessionViewerViewModel>();
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 	}

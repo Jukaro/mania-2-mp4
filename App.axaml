@@ -40,12 +40,70 @@
 		</Style>
 	</Application.Styles>
 
+	<Application.DataTemplates>
+		<dataTemplates:ScoreGradeTemplateSelector>
+			<DataTemplate x:Key="SilverSS" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallSilverSS.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="SilverS" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallSilverS.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="SS" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallSS.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="S" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallS.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="A" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallA.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="B" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallB.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="C" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallC.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="D" DataType="shared:ScoreGrade">
+				<Image Source="/Assets/Images/ScoreGrades/GradeSmallD.png" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="F" DataType="shared:ScoreGrade">
+				<Border Background="Transparent" Width="64" Height="32" />
+			</DataTemplate>
+
+			<DataTemplate x:Key="None" DataType="shared:ScoreGrade">
+				<Border Background="Transparent" Width="64" Height="32" />
+			</DataTemplate>
+		</dataTemplates:ScoreGradeTemplateSelector>
+
+		<DataTemplate DataType="{x:Type displays:SessionStatsDisplay}">
+			<Border CornerRadius="8" Background="#FF202020" Padding="10">
+				<StackPanel Spacing="10">
+					<TextBlock Text="{Binding Date}" HorizontalAlignment="Center" FontSize="16" />
+					<TextBlock Text="{Binding ScoresCount, StringFormat='{}{0} scores'}" />
+					<TextBlock Text="{Binding PbsCount, StringFormat='{}{0} PBs'}" />
+					<TextBlock Text="{Binding NewScoresCount, StringFormat='{}{0} new scores'}" />
+					<TextBlock Text="{Binding InBeatmapPlaytime, StringFormat='{}{0} in game playtime'}" />
+				</StackPanel>
+			</Border>
+		</DataTemplate>
+	</Application.DataTemplates>
+
 	<Application.Resources>
 
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/BeatmapDisplay.axaml" />
 				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/LocalScoreTemplate.axaml" />
+				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/SessionScoreTemplate.axaml" />
+				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/ExtendedSessionScoreTemplate.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 
