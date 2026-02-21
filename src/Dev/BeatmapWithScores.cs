@@ -6,44 +6,71 @@ using System.IO;
 using System.Linq;
 using System;
 using Rythmify.UI;
+using Avalonia.Media.Imaging;
+using Avalonia.Media;
+using Rythmify.Core.Shared;
+
+namespace Rythmify.Core.Beatmap;
 
 public class BeatmapWithScores {
 	public BeatmapData Beatmap = null;
-	public BeatmapDataFromDB BeatmapDBInfo = null;
+	public BeatmapDataFromDB BeatmapDBInfo { get; set; } = null;
 	public List<ReplayData> Replays = new();
-	public string TexturePath = null;
-	public string AudioPath;
+	public string TexturePath { get; set; } = null;
+	public string AudioPath { get; set; }
 	public string FolderPath;
 	public string FilePath;
+	public string PrintName;
+
+	public IImage Background { get; set; }
+
+	public string StarRating { get; set; }
 
 	public BeatmapWithScores(BeatmapDataFromDB beatmapDBInfo) {
 		BeatmapDBInfo = beatmapDBInfo;
-		FolderPath = Path.Combine(Paths.OsuSongsDirectoryPath, BeatmapDBInfo.FolderName.Trim() + "/");
+		if (beatmapDBInfo.ManiaStarRating != null && beatmapDBInfo.ManiaStarRating.ContainsKey((int)Mods.None))
+			StarRating = beatmapDBInfo.ManiaStarRating[0].ToString("F2") + "*";
+		else
+			StarRating = "";
+		// FolderPath = Path.Combine(Paths.OsuSongsDirectoryPath, BeatmapDBInfo.FolderName.Trim() + "/");
+		FolderPath = Paths.OsuSongsDirectoryPath + "/" + BeatmapDBInfo.FolderName.Trim() + "/";
 		FilePath = Path.Combine(FolderPath, BeatmapDBInfo.Filename);
 		AudioPath = Path.Combine(FolderPath, BeatmapDBInfo.AudioFilename);
+		PrintName = $"{BeatmapDBInfo.SongTitle} [{BeatmapDBInfo.Difficulty}]";
+	}
+
+	public BeatmapWithScores(BeatmapData beatmapData, string folderPath, string filename) {
+		Beatmap = beatmapData;
+		FolderPath = folderPath;
+		FilePath = Path.Combine(FolderPath, filename);
+		AudioPath = Path.Combine(FolderPath, Beatmap.GeneralData.AudioFilename);
 	}
 
 	public void SetTexturePath() {
-		using (StreamReader sr = new StreamReader(FilePath)) {
-			string line;
+		if (!File.Exists(FilePath))
+			return;
 
-			while ((line = sr.ReadLine()) != null) {
-				if (line == "//Background and Video events") {
-					line = sr.ReadLine();
-					if (!line.Contains(',')) {
-						TexturePath = "";
-						break;
-					}
-					string[] splitted_line = line.Split(',');
-					while (splitted_line[0] != "0") {
-						line = sr.ReadLine();
-						splitted_line = line.Split(',');
-					}
-					TexturePath = FolderPath + splitted_line[2].Trim('\"');
-					break;
-				}
+		using StreamReader sr = new StreamReader(FilePath);
+		string line;
+
+		while ((line = sr.ReadLine()) != null && line != "[Events]");
+
+		while ((line = sr.ReadLine()) != null && !string.IsNullOrEmpty(line)) {
+			var parameters = Array.ConvertAll(line.Split(','), (string s) => s.Trim());
+			var eventType = BeatmapEvent.TryGetEventType(parameters[0]);
+
+			if (eventType == BeatmapEventType.Background) {
+				TexturePath = Path.Combine(FolderPath, parameters[2].Trim('\"'));
+				break;
 			}
 		}
+	}
+
+	public void SetBackgroundBitmap() {
+		if (Background != null) return;
+		SetTexturePath();
+		if (!string.IsNullOrEmpty(TexturePath) && File.Exists(TexturePath))
+			Background = new Bitmap(TexturePath);
 	}
 
 	public void AddReplay(ReplayData replay) {
@@ -51,6 +78,11 @@ public class BeatmapWithScores {
 	}
 
 	public void LoadBeatmap() {
-		Beatmap = BeatmapParser.Parse(FilePath);
+		try {
+			Beatmap = BeatmapParser.Parse(FilePath);
+		} catch (Exception e) {
+			Logger.LogError($"couldn't parse the beatmap ({PrintName}): {e.Message}");
+			Beatmap = null;
+		}
 	}
 }

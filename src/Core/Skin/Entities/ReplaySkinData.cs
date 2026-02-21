@@ -12,10 +12,4 @@ public class ReplaySkinData {
 	}
 
 	public SkinManiaSection ManiaSection => Data.Mania[LaneCount];
-
-	public string GetFilePath(string filePath) {
-		if (Path.HasExtension(filePath)) return Path.Combine(Data.BasePath, filePath);
-
-		return Path.Combine(Data.BasePath, filePath + ".png");
-	}
 }

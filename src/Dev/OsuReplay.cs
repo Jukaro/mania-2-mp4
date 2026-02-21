@@ -1,88 +1,86 @@
-using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using System;
+using Avalonia;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Rythmify.Core;
 using Rythmify.Core.Beatmap;
 using Rythmify.Core.Game;
 using Rythmify.Core.Replay;
-using Rythmify.Dev;
+using Rythmify.UI;
 
-namespace Rythmify.UI;
+public class OsuReplay {
+	private BeatmapPlayer _beatmapPlayer = null;
+	private InputsPlayer _inputsPlayer = null;
+	private AudioPlayer _audioPlayer = null;
 
-public class OsuReplay
-{
-	private BeatmapPlayer _beatmapPlayer;
 	private BeatmapRenderer _beatmapRenderer;
-	private InputsPlayer _inputsPlayer;
 	private InputsRenderer _inputsRenderer;
-	private AudioPlayer _audioPlayer;
-	private Menu _menu;
+	private SkinRenderer _skinRenderer;
 
-	private BeatmapData _beatmap;
-	private SkinData _rawSkin;
-	private ReplaySkinData _replaySkin;
-	private ReplayData _replay;
+	private Rect _bounds;
+	private Bitmap _background;
 
-	private Button _test;
+	private double _backgroundOpacity = 0.5f;
 
-	private double _speedMultiplier = 1.0f;
+	public OsuReplay(Rect bounds, ReplaySkinData skin, BeatmapWithScores beatmap, ReplayData replay) {
+		if (beatmap.Beatmap == null)
+			throw new ArgumentException("BeatmapData is null");
 
-	public void Init(GraphicsDeviceManager graphics, GraphicsDevice graphicsDevice)
-	{
-		// dynamic testCase = Datasets.TestCases.Jukaro.Stronger;
-		dynamic skinPath = Datasets.TestCases.Jukaro.Skins.KizunaAkari;
-		dynamic testCase = Datasets.TestCases.Jukaro.Polyriddim;
-		// testCase = Datasets.TestCases.Jukaro.Polyriddim;
+		_skinRenderer = new(skin);
+		_beatmapRenderer = new(_skinRenderer, bounds);
+		_inputsRenderer = new(_skinRenderer, bounds);
 
-		_beatmap = BeatmapParser.Parse(testCase.BeatmapPath);
+		_bounds = bounds;
+		_background = BeatmapDisplayHelper.GetBackground(beatmap);
+		if (_background == null)
+			_background = BeatmapDisplayHelper.GetSeasonalBackground();
 
-		_rawSkin = SkinParser.Parse(skinPath);
-		_replaySkin = new ReplaySkinData(_rawSkin, _beatmap.DifficultyData.LaneCount);
-
-		_replay = ReplayParser.Parse(testCase.ReplayPath, _beatmap.DifficultyData.LaneCount, false);
-
-		_beatmapPlayer = new(_beatmap, _replaySkin.ManiaSection.HitPosition);
-		_inputsPlayer = new(_replay);
-
-		SkinRenderer skinRenderer = new(_replaySkin, graphicsDevice);
-		_beatmapRenderer = new(graphics, skinRenderer);
-		_inputsRenderer = new(graphics, skinRenderer);
-
-		string songPath = Path.Combine(Path.GetDirectoryName(testCase.BeatmapPath), _beatmap.GeneralData.AudioFilename);
-		_audioPlayer = new(songPath);
-
-		_menu = new(graphicsDevice);
-		_menu.Init();
-
-		Visuals visuals = new(graphicsDevice, 300, 50, Color.Red) {
-			BlinkOnMouseClick = true,
-			BlinkOnMouseOver = true
-		};
-
-		_test = new SliderButton(graphicsDevice, new(700, 950), "Slider", 0, 10, 10, UpdateSpeedMultiplier, visuals);
+		_beatmapPlayer = new(beatmap.Beatmap, _skinRenderer.GetSkin().ManiaSection.HitPosition);
+		_audioPlayer = new(beatmap.AudioPath);
+		_inputsPlayer = new(replay, beatmap.Beatmap.GeneralData.AudioLeadIn);
 	}
 
-	public void Update(GameTime gameTime)
-	{
-		_beatmapPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
-		_inputsPlayer.Update(gameTime.ElapsedGameTime.TotalMilliseconds * _speedMultiplier);
-		_audioPlayer.Update(_beatmapPlayer.AudioStarted);
-
-		_menu.Update(ref _beatmapPlayer, ref _inputsPlayer, ref _audioPlayer, _replay, _replaySkin);
-		_test.Update();
+	public void UpdateSkin(ReplaySkinData skin) {
+		_skinRenderer = new SkinRenderer(skin);
+		_beatmapRenderer.UpdateSkinRenderer(_skinRenderer);
+		_inputsRenderer.UpdateSkinRenderer(_skinRenderer);
 	}
 
-	public void Render(SpriteBatch spriteBatch)
-	{
-		_beatmapRenderer.Render(_beatmapPlayer, spriteBatch);
-		_inputsRenderer.Render(_inputsPlayer, spriteBatch);
-
-		_menu.Render(spriteBatch);
-		_test.Render(spriteBatch);
+	public void ChangeBackgroundOpacity(double opacity) {
+		_backgroundOpacity = opacity;
 	}
 
-	private void UpdateSpeedMultiplier(double value) {
-		_speedMultiplier = value;
+	public void ChangeScrollSpeed(int scrollSpeed) {
+		_beatmapPlayer.SetScrollSpeed(scrollSpeed);
+	}
+
+	public void Dispose() {
+		_audioPlayer.Dispose();
+		_background.Dispose();
+	}
+
+	public void Play() {
+		_beatmapPlayer.Play();
+		_inputsPlayer.Play();
+		_audioPlayer.Play();
+	}
+
+	public void Pause() {
+		_beatmapPlayer.Pause();
+		_inputsPlayer.Pause();
+		_audioPlayer.Pause();
+	}
+
+	public void Update(double deltaTime, double speedMultiplier) {
+		_beatmapPlayer.Update(deltaTime * speedMultiplier);
+		_inputsPlayer.Update(deltaTime * speedMultiplier);
+		_audioPlayer.Update();
+	}
+
+	public void Render(DrawingContext drawingContext) {
+		using (drawingContext.PushOpacity(_backgroundOpacity))
+			drawingContext.DrawImage(_background, new Rect(0, 0, _background.Size.Width * (_bounds.Height / _background.Size.Height), _bounds.Height));
+		_beatmapRenderer.Render(_beatmapPlayer, drawingContext);
+		_inputsRenderer.Render(_inputsPlayer, drawingContext);
 	}
 }

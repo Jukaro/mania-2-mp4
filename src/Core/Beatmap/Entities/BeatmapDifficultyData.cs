@@ -10,5 +10,7 @@ public class BeatmapDifficultyData {
 
 	public int LaneCount => (int)CircleSize;
 
+	public BeatmapDifficultyData DeepClone() => (BeatmapDifficultyData)MemberwiseClone();
+
 	public override string ToString() => $"HPDrainRate: {HPDrainRate}\nCircleSize: {CircleSize}\nOverallDifficulty: {OverallDifficulty}\nApproachRate: {ApproachRate}\nSliderMultiplier: {SliderMultiplier}\nSliderTickRate: {SliderTickRate}";
 }

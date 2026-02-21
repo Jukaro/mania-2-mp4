@@ -1,7 +1,7 @@
 namespace Rythmify.Core.Beatmap;
 
 public class TimingPointEffects {
-	private readonly int Flags;
+	public readonly int Flags;
 
 	public TimingPointEffects(int flags) {
 		Flags = flags;
@@ -9,6 +9,8 @@ public class TimingPointEffects {
 
 	public bool IsKiai => (Flags & (1 << 0)) != 0;
 	public bool IsOmitFirstBarLine => (Flags & (1 << 3)) != 0;
+
+	public TimingPointEffects DeepClone() => (TimingPointEffects)MemberwiseClone();
 
 	public override string ToString() => $"Kiai: {IsKiai}, OmitFirstBarLine: {IsOmitFirstBarLine}";
 }
@@ -28,6 +30,12 @@ public class BeatmapTimingPoint {
 	public double BPM => Uninherited ? 60000 / BeatLength : LastBPM;
 
 	public double SliderVelocityMultiplier => Uninherited ? 1 : -100 / BeatLength;
+
+	public BeatmapTimingPoint DeepClone() {
+		BeatmapTimingPoint res = (BeatmapTimingPoint)MemberwiseClone();
+		res.Effects = Effects.DeepClone();
+		return res;
+	}
 
 	public override string ToString() => $"Time: {Time}, BeatLength: {BeatLength}, Meter: {Meter}, SampleSet: {SampleSet}, SampleIndex: {SampleIndex}, Volume: {Volume}, Uninherited: {Uninherited}, Effects: {{ {Effects} }}";
 }

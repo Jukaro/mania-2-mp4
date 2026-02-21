@@ -33,9 +33,15 @@ public class ReplayData {
 	// Used to store the offset between the beginning of the beatmap and the beginning of the replay
 	public int StartDelay;
 
+	public byte[] CompressedInputs;
+
 	public string FilePath;
 
 	public double PerformancePoints;
+	public float Ratio;
+	public float Accuracy;
+
+	public int ScoreDifference;
 
 	public ReplayData(int laneCount) {
 		Inputs = new List<Input>();
@@ -66,7 +72,9 @@ public class ReplayData {
 		str += $"CompressedReplayLength: {CompressedReplayLength}\n";
 		str += $"LaneCount: {LaneCount}\n";
 		str += $"TotalKeyPresses: {TotalKeyPresses}\n";
-		str += $"ScoreID: {ScoreID}";
+		str += $"ScoreID: {ScoreID}\n";
+		str += $"PerformancePoints: {PerformancePoints}\n";
+		str += $"Ratio: {Ratio}";
 
 		return str;
 	}

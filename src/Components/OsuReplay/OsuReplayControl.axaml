@@ -1,0 +1,40 @@
+<Style xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	x:DataType="vm:OsuReplayViewModel">
+	<Style Selector="controls|OsuReplayControl">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Height="80" Padding="10" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#A0303030">
+
+					<Border.Styles>
+						<Style Selector="controls|SliderWithInput">
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="controls:SliderWithInput">
+										<DataValidationErrors>
+											<StackPanel x:Name="PART_StackPanel" Orientation="Horizontal" Spacing="20">
+												<Border x:Name="PART_HeaderBorder" VerticalAlignment="Center" Padding="5">
+													<TextBlock x:Name="PART_Header" Classes="h3" MinWidth="25" />
+												</Border>
+												<controls:CustomTextBox x:Name="PART_CustomTextBox" VerticalAlignment="Center" Width="30" />
+												<Slider x:Name="PART_Slider" VerticalAlignment="Center" MinWidth="100" />
+											</StackPanel>
+										</DataValidationErrors>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</Border.Styles>
+
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<Button Content="Play" Command="{Binding PlayPauseCommand}" VerticalAlignment="Center" />
+						<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="Background opacity" ToolTip.Tip="Background opacity" Output="{Binding BackgroundOpacity}" Minimum="0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" />
+						<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="Scroll speed" ToolTip.Tip="Scroll speed" Output="{Binding ScrollSpeed}" Minimum="1" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" />
+					</StackPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Style>

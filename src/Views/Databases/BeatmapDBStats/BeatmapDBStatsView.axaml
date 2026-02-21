@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+	x:Class="Mania2mp4.Views.BeatmapDBStatsView"
+	x:DataType="vm:BeatmapDBStatsViewModel">
+
+	<StackPanel Spacing="10">
+		<Panel>
+			<TextBlock Text="Beatmap database" FontSize="16" HorizontalAlignment="Left" />
+			<ComboBox ItemsSource="{Binding GameModes}" SelectedItem="{Binding SelectedGameMode}" Width="200" HorizontalAlignment="Right" />
+		</Panel>
+		<WrapPanel ItemSpacing="10" LineSpacing="10">
+			<Border MinWidth="350" MaxWidth="350" CornerRadius="8" Padding="10" Background="#FF303030">
+				<StackPanel Spacing="10">
+					<TextBlock Text="Game Mode" />
+					<lvc:PieChart Series="{Binding GameModePieChart}"
+						MinHeight="150"
+						LegendTextPaint="{Binding LegendTextPaint}"
+						LegendPosition="Right" />
+				</StackPanel>
+			</Border>
+			<Border MinWidth="350" MaxWidth="350" CornerRadius="8" Padding="10" Background="#FF303030">
+				<StackPanel Spacing="10">
+					<TextBlock Text="Ranked Status" />
+					<lvc:PieChart Series="{Binding RankedStatusPieChart}"
+						MinHeight="150"
+						LegendTextPaint="{Binding LegendTextPaint}"
+						LegendPosition="Right" />
+				</StackPanel>
+			</Border>
+			<Border MinWidth="350" MaxWidth="350" CornerRadius="8" Padding="10" Background="#FF303030">
+				<StackPanel Spacing="10">
+					<TextBlock Text="Grade" />
+					<lvc:PieChart Series="{Binding GradesPieChart}"
+						MinHeight="150"
+						LegendTextPaint="{Binding LegendTextPaint}"
+						LegendPosition="Right" />
+				</StackPanel>
+			</Border>
+			<Border MinWidth="350" MaxWidth="350" CornerRadius="8" Padding="10" Background="#FF303030">
+				<StackPanel Spacing="10">
+					<TextBlock Text="Play Status" />
+					<lvc:PieChart Series="{Binding PlayStatusPieChart}"
+						MinHeight="150"
+						LegendTextPaint="{Binding LegendTextPaint}"
+						LegendPosition="Right" />
+				</StackPanel>
+			</Border>
+		</WrapPanel>
+	</StackPanel>
+
+</UserControl>

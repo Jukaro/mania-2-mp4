@@ -18,7 +18,7 @@ public class ScrollInfo {
 		SetScrollSpeed(scrollSpeed);
 	}
 
-	private void SetScrollSpeed(int scrollSpeed) {
+	public void SetScrollSpeed(int scrollSpeed) {
 		_scrollSpeed = Math.Max(scrollSpeed, 1);
 		double baseScrollSpeedMultiplier = 1 / GetBPMScrollSpeedMultiplier(DominantBpm);
 		BeatmapScrollSpeed = _scrollSpeed * baseScrollSpeedMultiplier;

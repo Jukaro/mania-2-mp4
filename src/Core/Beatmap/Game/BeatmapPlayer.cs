@@ -28,19 +28,23 @@ public class BeatmapPlayer {
 	public BeatmapPlayer(BeatmapData beatmap, int hitPosition) {
 		_beatmap = beatmap;
 		_isPlaying = false;
-		_currentPlayTime = 0;
+		_currentPlayTime = -_beatmap.GeneralData.AudioLeadIn;
 		RenderedNotes = new List<GameNote>();
 		_spawnedNotes = 0;
 		_scrollInfo = new(28, hitPosition, -100, beatmap.DominantBpm);
 	}
 
-	public bool AudioStarted => _currentPlayTime >= _beatmap.GeneralData.AudioLeadIn;
+	public bool AudioStarted => _currentPlayTime >= 0;
 
 	public void Play() => _isPlaying = true;
 	public void Pause() => _isPlaying = false;
 
 	public void ScrollSpeedUp() => _scrollInfo.ScrollSpeedUp();
 	public void ScrollSpeedDown() => _scrollInfo.ScrollSpeedDown();
+
+	public void SetScrollSpeed(int scrollSpeed) {
+		_scrollInfo.SetScrollSpeed(scrollSpeed);
+	}
 
 	public void Update(double deltaTime) {
 		if (!_isPlaying) return;
@@ -54,6 +58,7 @@ public class BeatmapPlayer {
 	public void Reset(ReplayData replayData) {
 		_isPlaying = false;
 		_currentPlayTime = replayData.StartDelay == -1 ? 0 : replayData.StartDelay;
+		// _currentPlayTime = 0;
 		RenderedNotes = new List<GameNote>();
 		_spawnedNotes = 0;
 	}

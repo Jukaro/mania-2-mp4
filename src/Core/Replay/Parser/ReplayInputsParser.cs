@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Microsoft.Xna.Framework.Content;
 
 namespace Rythmify.Core.Replay;
 
@@ -74,6 +73,8 @@ public static partial class ReplayParser {
 	private static string[] parseInputs(byte[] bytes, int length, ref int index, ref ReplayData replay) {
 		byte[] compressedReplayLZMA = new byte[length];
 		Buffer.BlockCopy(bytes, index, compressedReplayLZMA, 0, length);
+
+		replay.CompressedInputs = compressedReplayLZMA;
 
 		if (length == 0)
 			return null;

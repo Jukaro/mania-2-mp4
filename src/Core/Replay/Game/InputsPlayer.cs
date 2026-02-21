@@ -9,15 +9,15 @@ public class InputsPlayer {
 	private ReplayData _replay;
 	public bool IsPlaying { get; private set; }
 
-	public InputsPlayer(ReplayData replay) {
-		Init(replay);
+	public InputsPlayer(ReplayData replay, int audioLeadIn) {
+		Init(replay, audioLeadIn);
 	}
 
-	public void Init(ReplayData replay) {
+	public void Init(ReplayData replay, int audioLeadIn) {
 		_replay = replay;
 		RenderedInputs = new bool[replay.LaneCount];
 		CurrentInputIndex = 0;
-		CurrentPlayTime = replay.StartDelay;
+		CurrentPlayTime = replay.StartDelay - audioLeadIn;
 		IsPlaying = false;
 	}
 
@@ -25,14 +25,14 @@ public class InputsPlayer {
 	public void Pause() => IsPlaying = false;
 
 	public void Update(double deltaTime) {
-		if (!IsPlaying) return;
+		if (!IsPlaying || CurrentInputIndex >= _replay.Inputs.Count) return;
 
 		CurrentPlayTime += deltaTime;
 
 		if (CurrentPlayTime > _replay.Inputs[CurrentInputIndex].Timestamp)
 			CurrentInputIndex++;
 
-		for (int i = 0; i < RenderedInputs.Length; i++)
-			RenderedInputs[i] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << i)) != 0;;
+		for (int i = 0; i < RenderedInputs.Length && CurrentInputIndex < _replay.Inputs.Count; i++)
+			RenderedInputs[i] = (_replay.Inputs[CurrentInputIndex].Keys & (1 << i)) != 0;
 	}
 }

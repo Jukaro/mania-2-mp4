@@ -38,5 +38,7 @@ public class BeatmapGeneralData {
 		SamplesMatchPlaybackRate = false;
 	}
 
+	public BeatmapGeneralData DeepClone() => (BeatmapGeneralData)MemberwiseClone();
+
 	public override string ToString() => $"AudioFilename: {AudioFilename}\nAudioLeadIn: {AudioLeadIn}\nPreviewTime: {PreviewTime}\nCountdown: {Countdown}\nSampleSet: {SampleSet}\nStackLeniency: {StackLeniency}\nGameMode: {GameMode}\nLetterboxInBreaks: {LetterboxInBreaks}\nUseSkinSprites: {UseSkinSprites}\nOverlayPosition: {OverlayPosition}\nSkinPreference: {SkinPreference}\nEpilepsyWarning: {EpilepsyWarning}\nCountdownOffset: {CountdownOffset}\nSpecialStyle: {SpecialStyle}\nWidescreenStoryboard: {WidescreenStoryboard}\nSamplesMatchPlaybackRate: {SamplesMatchPlaybackRate}";
 }

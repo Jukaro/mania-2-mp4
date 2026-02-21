@@ -32,7 +32,7 @@ public static partial class BeatmapParser {
 			if (!IsSectionString(line))
 				continue;
 
-			Logger.LogDebug($"Parsing section {line}");
+			// Logger.LogDebug($"Parsing section {line}");
 
 			var sectionName = line[1..^1];
 			if (!sectionToParser.ContainsKey(sectionName)) {

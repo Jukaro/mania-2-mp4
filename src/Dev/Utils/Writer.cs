@@ -18,11 +18,12 @@ public static class Writer {
 	}
 
 	public static void WriteString(string toWrite, FileStream fs) {
-		if (toWrite == "")
+		if (toWrite == "") {
 			fs.WriteByte(0x00);
-		else
-			fs.WriteByte(0x0b);
+			return;
+		}
 
+		fs.WriteByte(0x0b);
 
 		UTF8Encoding utf8 = new UTF8Encoding();
 		byte[] encodedString = utf8.GetBytes(toWrite);

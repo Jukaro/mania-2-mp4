@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Mania2mp4.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="using:Mania2mp4.Controls"
+        xmlns:views="using:Mania2mp4.Views"
+        xmlns:databases="using:Rythmify.Core.Databases"
+        xmlns:beatmap="using:Rythmify.Core.Beatmap"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        x:Class="Mania2mp4.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Mania2mp4">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <!-- <vm:MainWindowViewModel/> -->
+    </Design.DataContext>
+
+    <Panel>
+        <controls:OsuReplayControl />
+        <Grid ColumnDefinitions="*,Auto,*">
+            <GridSplitter Grid.Column="1" Background="White" ResizeDirection="Columns" />
+            <ScrollViewer Grid.Column="2">
+                <StackPanel Background="#A0141414">
+                    <Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+                        <Expander.Header>Databases</Expander.Header>
+                        <views:DatabasesView />
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Panel>
+</Window>

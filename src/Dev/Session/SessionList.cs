@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rythmify.Core.Beatmap;
 using Rythmify.Core.Databases;
 using Rythmify.Core.Replay;
 
@@ -11,9 +12,10 @@ public class SessionList {
 	public SessionList(ScoreDB scoreDB) {
 		foreach (BeatmapWithScores beatmap in scoreDB.Beatmaps.Values) {
 			foreach (ReplayData replay in beatmap.Replays) {
-				if (!SessionsDict.ContainsKey(replay.TimeStamp.Date))
-					SessionsDict[replay.TimeStamp.Date] = new();
-				SessionsDict[replay.TimeStamp.Date].Replays.Add(replay);
+				DateTime dateTime = replay.TimeStamp.Date;
+				if (!SessionsDict.ContainsKey(dateTime))
+					SessionsDict[dateTime] = new(dateTime);
+				SessionsDict[dateTime].Replays.Add(replay);
 			}
 		}
 

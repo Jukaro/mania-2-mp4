@@ -46,23 +46,20 @@ public static partial class ReplayParser {
 			FullCombo = Parser.ParseBool(bytes, ref currentByteIndex),
 			Mods = Parser.ParseInt(bytes, ref currentByteIndex),
 			LifeBar = Parser.ParseString(bytes, ref currentByteIndex),
-			TimeStamp = new DateTime(Parser.ParseLong(bytes, ref currentByteIndex)),
+			TimeStamp = new DateTime(Parser.ParseLong(bytes, ref currentByteIndex), DateTimeKind.Utc).ToLocalTime()
 		};
 
-		DateTime newTimeStamp = replay.TimeStamp.AddYears(-1600); // je ????
-		replay.ReplayTimeStamp = newTimeStamp.ToBinary();
+		replay.ReplayTimeStamp = replay.TimeStamp.ToFileTimeUtc();
 
 		replay.CompressedReplayLength = Parser.ParseInt(bytes, ref currentByteIndex);
 		if (skipInputsParsing) {
-			if (replay.CompressedReplayLength == -1)
-				currentByteIndex += 4;
-			else
+			if (replay.CompressedReplayLength > -1)
 				currentByteIndex += replay.CompressedReplayLength;
 			replay.Inputs = null;
 		}
 		else
 			parseInputs(bytes, replay.CompressedReplayLength, ref currentByteIndex, ref replay);
-		replay.ScoreID = Parser.ParseInt(bytes, ref currentByteIndex);
+		replay.ScoreID = Parser.ParseLong(bytes, ref currentByteIndex);
 
 		replay.SizeInBytes = currentByteIndex - start;
 

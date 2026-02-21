@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+	xmlns:generic="using:System.Collections.Generic"
+	x:Class="Mania2mp4.Views.FilesStatsView"
+	x:DataType="vm:FilesStatsViewModel">
+
+	<StackPanel Spacing="10">
+		<TextBlock Text="Song folder" FontSize="16" />
+		<WrapPanel ItemSpacing="10" LineSpacing="10">
+			<Border MinWidth="350" MaxWidth="350" CornerRadius="8" Padding="10" Background="#FF303030">
+				<StackPanel Spacing="10">
+					<TextBlock Text="File sizes" Margin="0,0,0,20" />
+					<lvc:CartesianChart Series="{Binding FileSizeByExtensionColumns}"
+						XAxes="{Binding XAxes}"
+						YAxes="{Binding YAxes}"
+						MinHeight="280" />
+				</StackPanel>
+			</Border>
+		</WrapPanel>
+		<Button Command="{Binding UpdateData}" Content="Update data" />
+	</StackPanel>
+
+</UserControl>

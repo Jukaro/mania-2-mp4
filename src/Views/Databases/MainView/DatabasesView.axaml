@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:views="using:Mania2mp4.Views"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+	xmlns:generic="using:System.Collections.Generic"
+	x:Class="Mania2mp4.Views.DatabasesView"
+	x:DataType="vm:DatabasesViewModel">
+
+	<StackPanel>
+		<Expander Header="Paths" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+			<StackPanel Spacing="10">
+				<TextBox Watermark="Osu folder" Text="{Binding SelectedOsuFolder}" />
+				<Button Content="Open FileExplorer"
+					FontSize="12"
+					Command="{Binding ChooseOsuFolder}"
+					CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+				<TextBox Margin="0,10,0,0" Watermark="Osu songs folder" Text="{Binding SelectedOsuSongsFolder}" />
+				<Button Content="Open FileExplorer"
+					FontSize="12"
+					Command="{Binding ChooseOsuSongsFolder}"
+					CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+				<Expander Header="Rewrite replays scores into the score db" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+					<StackPanel Spacing="4">
+						<TextBox Margin="0,10,0,0" Watermark="Replays folder" Text="{Binding SelectedReplaysFolder}" />
+						<Button Content="Open FileExplorer"
+							FontSize="12"
+							Command="{Binding ChooseReplaysFolder}"
+							CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+						<Button Content="Rewrite score DB"
+							FontSize="12"
+							Command="{Binding RewriteScoreDB}" />
+					</StackPanel>
+				</Expander>
+			</StackPanel>
+		</Expander>
+		<Expander Header="BeatmapDB Stats" HorizontalAlignment="Stretch">
+			<Border Background="#FF202020" CornerRadius="8" Padding="10">
+				<views:BeatmapDBStatsView />
+			</Border>
+		</Expander>
+		<Expander Header="Files Stats" HorizontalAlignment="Stretch">
+			<Border Background="#FF202020" CornerRadius="8" Padding="10">
+				<views:FilesStatsView />
+			</Border>
+		</Expander>
+		<Button Content="Refresh databases" Command="{Binding RefreshDatabases}" Margin="0,10,0,0" />
+	</StackPanel>
+
+</UserControl>

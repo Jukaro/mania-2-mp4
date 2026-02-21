@@ -1,34 +1,40 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Numerics;
+using Avalonia;
+using Avalonia.Media;
+using Rythmify.Core;
 using Rythmify.Core.Game;
 
 namespace Rythmify.UI;
 
 public class InputsRenderer {
-	private readonly GraphicsDeviceManager _graphics;
-	private readonly SkinRenderer _skinRenderer;
+	private readonly Rect _bounds;
+	private SkinRenderer _skinRenderer;
 	private readonly ScreenMath _screenMath;
 
-	public InputsRenderer(GraphicsDeviceManager graphics, SkinRenderer skinRenderer) {
-		_graphics = graphics;
+	public InputsRenderer(SkinRenderer skinRenderer, Rect bounds) {
+		_bounds = bounds;
 		_skinRenderer = skinRenderer;
-		_screenMath = new(graphics);
+		_screenMath = new(_bounds);
 	}
 
-	public void Render(InputsPlayer inputsPlayer, SpriteBatch spriteBatch) {
+	public void UpdateSkinRenderer(SkinRenderer skinRenderer) {
+		_skinRenderer = skinRenderer;
+	}
+
+	public void Render(InputsPlayer inputsPlayer, DrawingContext drawingContext) {
 		for (int i = 0; i < inputsPlayer.RenderedInputs.Length; i++) {
 			var inputTexture = _skinRenderer.GetInputTextureAtLane(i, inputsPlayer.RenderedInputs[i]);
 
-			var laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
+			float laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
 
-			Vector2 scale = new(laneSize / inputTexture.Width, laneSize / inputTexture.Width);
+			Vector2 scale = new(laneSize / (float)inputTexture.Size.Width, Playfield.AspectRatio);
 
 			Vector2 screenSpacePos = new(
 				_screenMath.GetLaneX(i, _skinRenderer.GetSkin().ManiaSection),
-				_graphics.PreferredBackBufferHeight - inputTexture.Height * scale.Y
+				(float)_bounds.Height - (float)inputTexture.Size.Height * scale.Y
 			);
 
-			Rendering.DrawScaled(spriteBatch, inputTexture, screenSpacePos, scale);
+			Rendering.DrawScaled(drawingContext, inputTexture, screenSpacePos, scale);
 		}
 	}
 }
