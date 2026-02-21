@@ -10,6 +10,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Mania2mp4.Models;
 using Rythmify.UI;
+using Mania2mp4.ViewModels;
 
 namespace Mania2mp4;
 
@@ -33,6 +34,7 @@ public static class Services {
 		serviceCollection.AddTransient<SessionViewerViewModel>();
 		serviceCollection.AddTransient<FilterSetsViewModel>();
 		serviceCollection.AddTransient<Top100ViewModel>();
+		serviceCollection.AddTransient<BeatmapMarathonViewModel>();
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 	}

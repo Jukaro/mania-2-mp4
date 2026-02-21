@@ -1,0 +1,273 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:display="using:Mania2mp4.Displays"
+	x:Class="Mania2mp4.Views.BeatmapMarathonView"
+	x:DataType="vm:BeatmapMarathonViewModel"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="1080">
+
+	<UserControl.Styles>
+		<Style Selector="TextBox.Form">
+			<Setter Property="MinWidth" Value="300" />
+			<Setter Property="MaxWidth" Value="300" />
+			<Setter Property="CornerRadius" Value="0,2,2,0" />
+			<Setter Property="BorderBrush" Value="#FF303030" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="MinHeight" Value="20" />
+		</Style>
+
+		<Style Selector="TextBlock.FormFieldHeader">
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="MinWidth" Value="125" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="Light" />
+		</Style>
+
+		<Style Selector="Border.Form">
+			<Setter Property="Background" Value="#FF303030" />
+			<Setter Property="BorderBrush" Value="#FF303030" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="2,0,0,2" />
+			<Setter Property="Padding" Value="4" />
+		</Style>
+
+		<Style Selector="StackPanel.Form">
+			<Setter Property="Orientation" Value="Horizontal" />
+		</Style>
+
+		<Style Selector="Border.FormTabItem">
+			<Setter Property="Background" Value="#FF202020" />
+			<Setter Property="CornerRadius" Value="0,4,4,4" />
+			<Setter Property="Padding" Value="16" />
+			<Setter Property="MinHeight" Value="390" />
+		</Style>
+
+		<Style Selector="Panel.FormTabPanel">
+			<Setter Property="MinHeight" Value="390" />
+		</Style>
+
+		<Style Selector="controls|FormField">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<DataValidationErrors>
+						<StackPanel x:Name="PART_StackPanel" Classes="Form">
+							<Border x:Name="PART_HeaderBorder" Classes="Form">
+								<TextBlock x:Name="PART_FieldHeader" Classes="FormFieldHeader" />
+							</Border>
+							<TextBox x:Name="PART_FieldInput" Classes="Form" />
+						</StackPanel>
+					</DataValidationErrors>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+
+		<Style Selector="Slider:horizontal /template/ Grid#HorizontalTemplate">
+			<Setter Property="MinHeight" Value="0" />
+		</Style>
+
+		<Style Selector="TabControl[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+			<Setter Property="Margin" Value="0" />
+		</Style>
+
+		<Style Selector="TabItem">
+			<Setter Property="MinHeight" Value="10" />
+			<Setter Property="CornerRadius" Value="4,4,0,0" />
+			<Setter Property="HeaderTemplate">
+				<DataTemplate>
+					<TextBlock Text="{Binding .}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+				</DataTemplate>
+			</Setter>
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Panel>
+						<Border
+							Name="PART_LayoutRoot"
+							Background="#FF1A1A1A"
+							CornerRadius="{TemplateBinding CornerRadius}"
+							Padding="8,4,8,4">
+							<Panel>
+								<ContentPresenter
+									Name="PART_ContentPresenter"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Content="{TemplateBinding Header}"
+									ContentTemplate="{TemplateBinding HeaderTemplate}"
+									/>
+							</Panel>
+						</Border>
+						<Border x:Name="PART_OverlayLayer"
+							Background="White"
+							Opacity="0"
+							CornerRadius="{TemplateBinding CornerRadius}">
+						</Border>
+					</Panel>
+				</ControlTemplate>
+			</Setter>
+
+			<Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+				<Setter Property="Background" Value="#FF202020" />
+			</Style>
+
+			<Style Selector="^:pointerover /template/ Border#PART_OverlayLayer">
+				<Setter Property="Opacity" Value="0.1" />
+			</Style>
+
+			<Style Selector="^:selected:pointerover /template/ Border#PART_OverlayLayer">
+				<Setter Property="Opacity" Value="0.1" />
+			</Style>
+
+			<Style Selector="^:pressed /template/ Border#PART_OverlayLayer">
+				<Setter Property="Opacity" Value="0.1" />
+			</Style>
+		</Style>
+
+	</UserControl.Styles>
+
+	<UserControl.Resources>
+		<DataTemplate x:Key="BeatmapMarathonSelectionTemplate" DataType="display:BeatmapDisplay">
+			<Panel>
+				<ContentPresenter Grid.ColumnSpan="2" Content="{Binding .}" ContentTemplate="{StaticResource BeatmapTemplate}" />
+
+				<StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal" Margin="10,10,20,10" Spacing="4">
+					<Button Width="20" Height="20" Background="Red" CornerRadius="10"
+						Command="{Binding #Root.((vm:BeatmapMarathonViewModel)DataContext).RemoveBeatmap}" CommandParameter="{Binding .}" Content="" FontSize="20">
+						<Path Stroke="White" StrokeThickness="1" Width="10" Height="10" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+							Data="M 0,0 L 10,10 M 10,0 L 0,10"
+							RenderTransformOrigin="0,0">
+							<Path.RenderTransform>
+								<TranslateTransform X="-0.25" Y="0.5" />
+							</Path.RenderTransform>
+						</Path>
+					</Button>
+					<Button Width="20" Height="20" Background="Gray" CornerRadius="10"
+						Command="{Binding #Root.((vm:BeatmapMarathonViewModel)DataContext).MoveUp}" CommandParameter="{Binding .}">
+						<Path Stroke="White" StrokeThickness="1" Width="10" Height="5" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+							Data="M 0,10 L 10,0 L 20,10" />
+					</Button>
+					<Button Width="20" Height="20" Background="Gray" CornerRadius="10"
+						Command="{Binding #Root.((vm:BeatmapMarathonViewModel)DataContext).MoveDown}" CommandParameter="{Binding .}">
+						<Path Stroke="White" StrokeThickness="1" Width="10" Height="5" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+							Data="M 0,0 L 10,10 L 20,0" />
+					</Button>
+				</StackPanel>
+			</Panel>
+		</DataTemplate>
+	</UserControl.Resources>
+
+	<StackPanel Name="Root" Spacing="20">
+		<Grid ColumnDefinitions="*,*">
+			<controls:BeatmapSearchControl Grid.Column="0"
+				SelectedItem="{Binding #Root.((vm:BeatmapMarathonViewModel)DataContext).SelectedBeatmapDisplay, Mode='OneWayToSource'}" />
+
+			<StackPanel Grid.Column="1" Margin="10,0,0,0">
+				<TextBlock MinHeight="41" Margin="0,5,0,15" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Selected beatmaps" FontSize="20" FontWeight="Light" />
+
+				<ScrollViewer Height="400" VerticalScrollBarVisibility="Visible">
+					<ItemsControl
+						ItemsSource="{Binding SelectedBeatmapsDisplays}"
+						ItemTemplate="{StaticResource BeatmapMarathonSelectionTemplate}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Spacing="10" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</ScrollViewer>
+			</StackPanel>
+		</Grid>
+
+		<TabControl Padding="0">
+			<TabControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel ItemSpacing="4" Margin="0" />
+				</ItemsPanelTemplate>
+			</TabControl.ItemsPanel>
+
+			<TabItem Header="Spacing" FontSize="18">
+				<Border Classes="FormTabItem">
+					<StackPanel Spacing="8">
+						<StackPanel Classes="Form">
+							<RadioButton VerticalAlignment="Top" GroupName="SpacingMode" Content="Time" IsChecked="{Binding IsTimeSpacingChecked}" />
+							<controls:CustomTextBox VerticalAlignment="Top"
+								Margin="20,0,0,0"
+								MinWidth="300"
+								Output="{Binding TimeSpacing}"
+								ValidationFunction="{Binding ValidateInteger}" />
+						</StackPanel>
+
+						<StackPanel Classes="Form">
+							<RadioButton GroupName="SpacingMode" Content="Measure division" IsChecked="{Binding IsMeasureDivisionSpacingChecked}" />
+							<TextBlock Padding="12,0,4,0" Text="1 / " VerticalAlignment="Center" />
+							<controls:CustomTextBox VerticalAlignment="Center"
+								MinWidth="40"
+								Height="30"
+								Output="{Binding SelectedMeasureDivision}"
+								ValidationFunction="{Binding ValidateInteger}" />
+						</StackPanel>
+					</StackPanel>
+				</Border>
+			</TabItem>
+
+			<TabItem Header="Folder and Filename" FontSize="18">
+				<Border Classes="FormTabItem">
+					<StackPanel Spacing="4">
+						<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Beatmap Folder" Output="{Binding Parameters.FolderName}" />
+						<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Beatmap Filename" Output="{Binding Parameters.BeatmapFilename}" ValidationFunction="{Binding ValidateFilename}" />
+					</StackPanel>
+				</Border>
+			</TabItem>
+
+			<TabItem Header="Metadata" FontSize="18">
+				<Border Classes="FormTabItem">
+					<Panel>
+						<StackPanel VerticalAlignment="Top" Spacing="4">
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Title" Output="{Binding Parameters.Metadata.Title}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="TitleUnicode" Output="{Binding Parameters.Metadata.TitleUnicode}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Artist" Output="{Binding Parameters.Metadata.Artist}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="ArtistUnicode" Output="{Binding Parameters.Metadata.ArtistUnicode}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Creator" Output="{Binding Parameters.Metadata.Creator}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Difficulty" Output="{Binding Parameters.Metadata.Version}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Source" Output="{Binding Parameters.Metadata.Source}" />
+							<controls:FormField Theme="{StaticResource FormFieldTheme}" Header="Tags" Output="{Binding Parameters.Metadata.Tags}" />
+						</StackPanel>
+
+						<StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Spacing="8">
+							<Button Content="Fill metadata" Command="{Binding FillParametersMetadataWithFirstBeatmap}" ToolTip.Tip="Fill metadata with the metadata from the first beatmap in the list" />
+							<Button Content="Clear" Command="{Binding Parameters.ClearMetadata}" />
+						</StackPanel>
+					</Panel>
+				</Border>
+			</TabItem>
+
+			<TabItem Header="Difficulty" FontSize="18">
+				<Border Classes="FormTabItem">
+					<Panel>
+						<StackPanel VerticalAlignment="Top" Spacing="4">
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="HP" ToolTip.Tip="HPDrainRate" Output="{Binding Parameters.Difficulty.HPDrainRate}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="CS" ToolTip.Tip="CircleSize" Output="{Binding Parameters.Difficulty.CircleSize}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="OD" ToolTip.Tip="OverallDifficulty" Output="{Binding Parameters.Difficulty.OverallDifficulty}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="AR" ToolTip.Tip="ApproachRate" Output="{Binding Parameters.Difficulty.ApproachRate}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="SM" ToolTip.Tip="SliderMultiplier" Output="{Binding Parameters.Difficulty.SliderMultiplier}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+							<controls:SliderWithInput Theme="{StaticResource SliderWithInputTheme}" Header="ST" ToolTip.Tip="SliderTickRate" Output="{Binding Parameters.Difficulty.SliderTickRate}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1" TickFrequency="0.1" IsSnapToTickEnabled="True" />
+						</StackPanel>
+
+						<StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Spacing="8">
+							<Button Content="Fill difficulty" Command="{Binding FillParametersDifficultyWithFirstBeatmap}" ToolTip.Tip="Fill difficulty with the difficulty from the first beatmap in the list" />
+							<Button Content="Clear" Command="{Binding Parameters.ClearDifficulty}" />
+						</StackPanel>
+					</Panel>
+				</Border>
+			</TabItem>
+		</TabControl>
+
+		<Panel>
+			<Button Content="Concatenate" Command="{Binding ConcatenateBeatmaps}" HorizontalAlignment="Left" />
+			<Button Content="Refresh folder" HorizontalAlignment="Right" Command="{Binding RefreshFolder}" ToolTip.Tip="Refresh current beatmap folder" />
+		</Panel>
+
+	</StackPanel>
+
+</UserControl>

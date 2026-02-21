@@ -45,6 +45,10 @@
                         <Expander.Header>Top 100</Expander.Header>
                         <views:Top100View />
                     </Expander>
+                    <Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#A0141414">
+                        <Expander.Header>Beatmap Marathon</Expander.Header>
+                        <views:BeatmapMarathonView />
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
         </Grid>
