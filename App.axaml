@@ -42,6 +42,13 @@
 
 	<Application.Resources>
 
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/BeatmapDisplay.axaml" />
+				<MergeResourceInclude Source="avares://Mania2mp4/src/DataTemplates/LocalScoreTemplate.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+
 		<!-- NormalButton -->
 		<ControlTheme x:Key="{x:Type Button}" TargetType="Button">
 			<Setter Property="Background" Value="{DynamicResource ButtonBackground}" />

@@ -1,0 +1,60 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:displays="using:Mania2mp4.Displays"
+	xmlns:controls="using:Mania2mp4.Controls">
+
+	<DataTemplate x:Key="LocalScoreTemplate" DataType="displays:ScoreDisplay">
+		<Panel>
+			<Border BorderThickness="0"
+				HorizontalAlignment="Stretch"
+				Background="#FF303030"
+				Padding="8,0,8,0"
+				CornerRadius="8"
+				Height="50"
+				ToolTip.Tip="{Binding DebugToolTip}">
+				<Grid ColumnDefinitions="Auto,*,Auto,*,Auto">
+					<TextBlock Grid.Column="0" FontSize="14" VerticalAlignment="Center">
+						<TextBlock.Inlines>
+							<Run Text="{Binding PlayerName}" FontSize="18" />
+							<LineBreak />
+							<Run Text="{Binding Score} " />
+							<Run Text="{Binding MaxCombo, StringFormat='{}({0}x)'}" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<TextBlock Grid.Column="2" VerticalAlignment="Center" TextAlignment="Center">
+						<TextBlock.Inlines>
+							<Run Text="{Binding Accuracy, StringFormat='{}{0:0.00}%'}" />
+							<LineBreak />
+							<Run Text="{Binding Ratio, StringFormat='{}{0:0.0}:1'}" />
+						</TextBlock.Inlines>
+					</TextBlock>
+					<StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Vertical">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="1">
+							<TextBlock VerticalAlignment="Center"
+								Foreground="#FFFA43A5"
+								Text="{Binding PerformancePoints, StringFormat='{}{0:0}'}" FontSize="16" />
+							<TextBlock VerticalAlignment="Center"
+								Foreground="Pink"
+								FontSize="12"
+								Text="pp" />
+						</StackPanel>
+						<TextBlock Text="{Binding ScoreDifference, StringFormat='+{0}'}" FontSize="12" />
+					</StackPanel>
+				</Grid>
+			</Border>
+			<controls:BorderWithPressedPC Background="White" CornerRadius="8" Margin="0,0,0,2">
+				<controls:BorderWithPressedPC.Styles>
+					<Style Selector="Border">
+						<Setter Property="Opacity" Value="0" />
+					</Style>
+					<Style Selector="Border:pointerover">
+						<Setter Property="Opacity" Value="0.2" />
+					</Style>
+					<Style Selector="Border:pressed">
+						<Setter Property="Opacity" Value="0.4" />
+					</Style>
+				</controls:BorderWithPressedPC.Styles>
+			</controls:BorderWithPressedPC>
+		</Panel>
+	</DataTemplate>
+</ResourceDictionary>

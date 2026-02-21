@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:display="using:Mania2mp4.Displays"
+	x:Class="Mania2mp4.Controls.BeatmapSearchControl"
+	Name="RootControl">
+
+	<StackPanel>
+		<TextBox Name="searchBarTextBox" Watermark="Search a beatmap" Height="20" Margin="0,0,0,0" />
+		<TextBlock Name="searchInfo" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,4,0,12" />
+		<ScrollViewer Height="400">
+			<ListBox Name="listBox" Background="Transparent">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Spacing="10" />
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+				<ListBox.ItemTemplate>
+					<DataTemplate DataType="display:BeatmapDisplay">
+						<Panel ToolTip.Tip="{Binding DebugToolTip}">
+							<ContentPresenter Content="{Binding .}" ContentTemplate="{StaticResource BeatmapTemplate}" />
+							<controls:BorderWithPressedPC Background="White" CornerRadius="8">
+								<controls:BorderWithPressedPC.Styles>
+									<Style Selector="Border">
+										<Setter Property="Opacity" Value="0" />
+									</Style>
+									<Style Selector="Border:pointerover">
+										<Setter Property="Opacity" Value="0.2" />
+									</Style>
+									<Style Selector="Border:pressed">
+										<Setter Property="Opacity" Value="0.4" />
+									</Style>
+								</controls:BorderWithPressedPC.Styles>
+							</controls:BorderWithPressedPC>
+						</Panel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</ScrollViewer>
+		<DockPanel HorizontalSpacing="10" Margin="0 8" HorizontalAlignment="Stretch">
+			<Button DockPanel.Dock="Left" Content="First" Command="{Binding #RootControl.FirstPage}" />
+			<Button DockPanel.Dock="Left" Content="Prev" Command="{Binding #RootControl.PreviousPage}" />
+			<Button DockPanel.Dock="Left" Content="Next" Command="{Binding #RootControl.NextPage}" />
+			<Button DockPanel.Dock="Left" Content="Last" Command="{Binding #RootControl.LastPage}" />
+			<TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Name="pageInfo" />
+		</DockPanel>
+	</StackPanel>
+
+</UserControl>

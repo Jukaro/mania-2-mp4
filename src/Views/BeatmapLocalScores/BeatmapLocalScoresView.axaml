@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:Mania2mp4.Controls"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	xmlns:displays="using:Mania2mp4.Displays"
+	x:Class="Mania2mp4.Views.BeatmapLocalScoresView"
+	x:DataType="vm:BeatmapLocalScoresViewModel">
+
+	<StackPanel>
+		<Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+			<controls:BeatmapSearchControl Grid.Column="0" Height="500" SelectedItem="{Binding SelectedBeatmapDisplay, Mode=OneWayToSource}" />
+			<StackPanel Grid.Column="1">
+				<Border Height="32">
+					<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Local Scores" FontSize="20" FontWeight="Light" />
+				</Border>
+				<TextBlock Text="{Binding LocalScoresCount, StringFormat='{}{0} scores'}" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,4,0,12" />
+				<ScrollViewer VerticalScrollBarVisibility="Visible" Height="400">
+					<ListBox ItemsSource="{Binding ScoreDisplayManager.Displays}"
+						SelectedItem="{Binding SelectedScoreDisplay}"
+						ItemTemplate="{StaticResource LocalScoreTemplate}"
+						Background="Transparent">
+						<ListBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Spacing="2" />
+							</ItemsPanelTemplate>
+						</ListBox.ItemsPanel>
+					</ListBox>
+				</ScrollViewer>
+			</StackPanel>
+		</Grid>
+	</StackPanel>
+
+</UserControl>

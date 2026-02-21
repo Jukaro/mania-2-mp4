@@ -26,6 +26,9 @@ public static class Services {
 		serviceCollection.AddTransient<OsuReplayViewModel>();
 		serviceCollection.AddTransient<DatabasesViewModel>();
 		serviceCollection.AddTransient<BeatmapDBStatsViewModel>();
+		serviceCollection.AddTransient<BeatmapSearchViewModel>();
+		serviceCollection.AddTransient<BeatmapLocalScoresViewModel>();
+		serviceCollection.AddTransient<SkinSelectorViewModel>();
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 	}

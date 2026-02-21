@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vm="using:Mania2mp4.ViewModels"
+	x:Class="Mania2mp4.Controls.SkinSelectorControl"
+	x:DataType="vm:SkinSelectorViewModel">
+
+	<ScrollViewer Name="Root" VerticalScrollBarVisibility="Visible">
+		<StackPanel>
+			<ComboBox Name="comboBox"
+				SelectedItem="{Binding ChosenSkin, Mode=TwoWay}"
+				HorizontalAlignment="Left"
+				Width="300">
+				<ComboBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel MaxWidth="300" />
+					</ItemsPanelTemplate>
+				</ComboBox.ItemsPanel>
+			</ComboBox>
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

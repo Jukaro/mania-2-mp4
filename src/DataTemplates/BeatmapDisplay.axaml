@@ -1,0 +1,40 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:displays="using:Mania2mp4.Displays"
+	xmlns:controls="using:Mania2mp4.Controls">
+
+	<DataTemplate x:Key="BeatmapTemplate" DataType="displays:BeatmapDisplay">
+		<Border Height="100"
+			CornerRadius="8">
+			<Border.Background>
+				<ImageBrush Source="{Binding Background}" Stretch="UniformToFill" />
+			</Border.Background>
+			<Panel>
+				<Border Background="Black"
+					Opacity="0.75"
+					CornerRadius="8">
+					<Border.Background>
+						<LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,60%">
+							<GradientStop Color="#D0000000" Offset="0.0"/>
+							<GradientStop Color="#80000000" Offset="0.8"/>
+							<GradientStop Color="#00000000" Offset="1.0"/>
+						</LinearGradientBrush>
+					</Border.Background>
+				</Border>
+				<StackPanel Margin="8,4,8,4" ClipToBounds="True">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock FontSize="20">
+							<TextBlock.Text>
+								<MultiBinding StringFormat="{}{0} [{1}]">
+									<Binding Path="SongTitle" />
+									<Binding Path="Difficulty" />
+								</MultiBinding>
+							</TextBlock.Text>
+						</TextBlock>
+					</StackPanel>
+					<TextBlock Text="{Binding StarRating}" />
+				</StackPanel>
+			</Panel>
+		</Border>
+	</DataTemplate>
+</ResourceDictionary>
