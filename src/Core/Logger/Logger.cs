@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Rythmify.Core;
@@ -6,27 +7,33 @@ namespace Rythmify.Core;
 public static class Logger {
 
 	public static void LogError(string message) {
-		Console.Error.WriteLine(CreateLog(message, "[ERROR]"));
+		WriteLog(message, "[ERROR]", Console.Out, ConsoleColor.Red);
 	}
 
 	public static void LogWarning(string message) {
-		Console.WriteLine(CreateLog(message, "[WARNING]"));
+		WriteLog(message, "[WARNING]", Console.Out, ConsoleColor.DarkYellow);
 	}
 
 	public static void LogDebug(string message) {
-		Console.WriteLine(CreateLog(message, "[DEBUG]"));
+		WriteLog(message, "[DEBUG]", Console.Out, ConsoleColor.White);
 	}
 
 	public static void LogInfo(string message) {
-		Console.WriteLine(CreateLog(message, "[INFO]"));
+		WriteLog(message, "[INFO]", Console.Out, ConsoleColor.Blue);
 	}
 
 	public static void LogSuccess(string message) {
-		Console.WriteLine(CreateLog(message, "[SUCCESS]"));
+		WriteLog(message, "[SUCCESS]", Console.Out, ConsoleColor.Green);
 	}
 
 	public static void LogFatal(string message) {
-		Console.Error.WriteLine(CreateLog(message, "[FATAL]"));
+		WriteLog(message, "[FATAL]", Console.Error, ConsoleColor.DarkRed);
+	}
+
+	private static void WriteLog(string message, string level, TextWriter textWriter, ConsoleColor consoleColor) {
+		if (consoleColor != ConsoleColor.White) Console.ForegroundColor = consoleColor;
+		textWriter.WriteLine(CreateLog(message, level));
+		Console.ResetColor();
 	}
 
 	private static string CreateLog(string message, string level) {

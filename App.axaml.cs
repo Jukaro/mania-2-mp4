@@ -10,7 +10,6 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Mania2mp4.Models;
 using Rythmify.UI;
-using Mania2mp4.ViewModels;
 
 namespace Mania2mp4;
 
