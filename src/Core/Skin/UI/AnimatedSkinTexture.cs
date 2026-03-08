@@ -42,7 +42,7 @@ public class AnimatedSkinTexture {
 		}
 
 		if (_frames.Count == 0) {
-			Logger.LogError($"No frames found for animated texture at {filePath}");
+			Logger.LogWarning($"No frames found for animated texture at {filePath}");
 			return;
 		}
 

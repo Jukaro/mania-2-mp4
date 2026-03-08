@@ -51,7 +51,7 @@ public partial class DatabasesService : ObservableObject {
 
 			Paths.Save();
 		} catch (Exception e) {
-			Logger.LogError($"[DatabasesService] Error: {e.Message}\nStacktrace: {e.StackTrace}");
+			Logger.LogError($"[DatabasesService] Error: {e.Message}", e.StackTrace);
 		}
 	}
 

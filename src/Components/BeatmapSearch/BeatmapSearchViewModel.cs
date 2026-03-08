@@ -119,7 +119,7 @@ public partial class BeatmapSearchViewModel : ViewModelBase {
 			try {
 				await UpdateSearchResultsTask(query);
 			} catch (Exception e) {
-				Logger.LogError($"[BeatmapSearch] Error while updating search results: {e.Message}\nStacktrace: {e.StackTrace}");
+				Logger.LogError($"[BeatmapSearch] Error while updating search results: {e.Message}", e.StackTrace);
 			}
 		});
 	}

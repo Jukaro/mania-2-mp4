@@ -94,7 +94,7 @@ public partial class BeatmapMarathonViewModel : ObservableValidator {
 				BeatmapConcatenation.Concatenate(_selectedBeatmaps, Parameters);
 				Logger.LogInfo("[BeatmapMarathon] Done !");
 			} catch (Exception e) {
-				Logger.LogError($"[BeatmapMarathon] Couldn't create the beatmap marathon: {e.Message}\nStackTrace:\n{e.StackTrace}");
+				Logger.LogError($"[BeatmapMarathon] Couldn't create the beatmap marathon: {e.Message}", e.StackTrace);
 				return;
 			}
 		});
