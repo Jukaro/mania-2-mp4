@@ -31,7 +31,6 @@ public class OsuReplayControl : TemplatedControl {
 		get { return _osuReplay; }
 		set {
 			SetAndRaise(OsuReplayProperty, ref _osuReplay, value);
-			Logger.LogDebug($"OsuReplay set");
 		}
 	}
 
@@ -48,7 +47,6 @@ public class OsuReplayControl : TemplatedControl {
 	private void Init() {
 		while (Bounds.Width == 0 && Bounds.Height == 0);
 		// _osuReplayController = new(Bounds);
-		Logger.LogDebug($"Bounds: {Bounds}");
 
 		_myTimer.Start();
 	}

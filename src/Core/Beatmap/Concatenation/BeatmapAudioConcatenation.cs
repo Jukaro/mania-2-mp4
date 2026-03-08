@@ -13,18 +13,18 @@ public partial class BeatmapConcatenation {
 		for (int i = 0; i < beatmaps.Count; i++)
 			audioStreams.Add(new MemoryStream());
 
-		Logger.LogDebug($"\nAdjusting beatmap audio 1/{beatmaps.Count}");
+		Logger.LogInfo($"\n[BeatmapConcatenation] Adjusting beatmap audio 1/{beatmaps.Count}");
 		AdjustBeatmapAudio(beatmaps[0], audioStreams[0], TrimType.End, 0, delays[0]);
 
 		for (int i = 1; i < beatmaps.Count - 1; i++) {
-			Logger.LogDebug($"\nAdjusting beatmap audio {i + 1}/{beatmaps.Count}");
+			Logger.LogInfo($"\n[BeatmapConcatenation] Adjusting beatmap audio {i + 1}/{beatmaps.Count}");
 			AdjustBeatmapAudio(beatmaps[i], audioStreams[i], TrimType.Both, delays[i - 1], delays[i]);
 		}
 
-		Logger.LogDebug($"\nAdjusting beatmap audio {beatmaps.Count}/{beatmaps.Count}");
+		Logger.LogInfo($"\n[BeatmapConcatenation] Adjusting beatmap audio {beatmaps.Count}/{beatmaps.Count}");
 		AdjustBeatmapAudio(beatmaps.Last(), audioStreams.Last(), TrimType.Start, delays.Last(), 0);
 
-		Logger.LogDebug($"\nCombining audio");
+		Logger.LogInfo($"\n[BeatmapConcatenation] Combining audio");
 		FFMpegAudioManipulation.Concatenate(audioStreams, outputStream);
 		outputStream.Position = 0;
 	}
@@ -45,8 +45,8 @@ public partial class BeatmapConcatenation {
 			endChange = endTime + endDelay / 2 - audioLength;
 		}
 
-		Logger.LogDebug($"startDelay: {startDelay}, endDelay: {endDelay}");
-		Logger.LogDebug($"startChange: {startChange}, endChange: {endChange}, duration: {startChange + audioLength + endChange}");
+		Logger.LogInfo($"[BeatmapConcatenation] startDelay: {startDelay}, endDelay: {endDelay}");
+		Logger.LogInfo($"[BeatmapConcatenation] startChange: {startChange}, endChange: {endChange}, duration: {startChange + audioLength + endChange}");
 
 		var watch = new Stopwatch();
 		watch.Start();

@@ -24,7 +24,7 @@ public static partial class ThumbnailsDBParser {
 		}
 
 		watch.Stop();
-		Logger.LogDebug($"ThumbnailsDB: Successfully parsed {thumbnailsDB.ThumbnailsCount} thumbnail entries in {watch.ElapsedMilliseconds}ms");
+		Logger.LogInfo($"[ThumbnailsDBParser] Successfully parsed {thumbnailsDB.ThumbnailsCount} thumbnail entries in {watch.ElapsedMilliseconds}ms");
 
 		return thumbnailsDB;
 	}

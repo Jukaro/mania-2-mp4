@@ -23,7 +23,7 @@ public partial class BeatmapParser {
 			if (objectTypeToParser.TryGetValue(type.Type, out Func<string[], BeatmapHitObject> parser))
 				hitObjects.Add(parser(parameters));
 			else
-				Logger.LogWarning($"Could not find parser for hit object type {type.Type}");
+				Logger.LogWarning($"[BeatmapParser] Could not find parser for hit object type {type.Type}");
 		}
 
 		return hitObjects.ToArray();

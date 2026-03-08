@@ -11,7 +11,7 @@ public class ScrollInfo {
 	private int _scrollSpeed;
 
 	public ScrollInfo(int scrollSpeed, int hitPosition, float spawnPoint, double dominantBpm) {
-		Logger.LogDebug($"Creating ScrollInfo with ScrollSpeed: {scrollSpeed}, HitPosition: {hitPosition}, SpawnPoint: {spawnPoint}, DominantBpm: {dominantBpm}");
+		Logger.LogInfo($"[ScrollInfo] Creating ScrollInfo with ScrollSpeed: {scrollSpeed}, HitPosition: {hitPosition}, SpawnPoint: {spawnPoint}, DominantBpm: {dominantBpm}");
 		HitPosition = hitPosition;
 		SpawnPoint = spawnPoint;
 		DominantBpm = dominantBpm;

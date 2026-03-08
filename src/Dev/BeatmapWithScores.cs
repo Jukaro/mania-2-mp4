@@ -81,7 +81,7 @@ public class BeatmapWithScores {
 		try {
 			Beatmap = BeatmapParser.Parse(FilePath);
 		} catch (Exception e) {
-			Logger.LogError($"couldn't parse the beatmap ({PrintName}): {e.Message}");
+			Logger.LogError($"[BeatmapWithScores] Couldn't parse the beatmap ({PrintName}): {e.Message}");
 			Beatmap = null;
 		}
 	}

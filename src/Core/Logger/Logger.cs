@@ -15,11 +15,11 @@ public static class Logger {
 	}
 
 	public static void LogDebug(string message) {
-		WriteLog(message, "[DEBUG]", Console.Out, ConsoleColor.White);
+		WriteLog(message, "[DEBUG]", Console.Out, ConsoleColor.Blue);
 	}
 
 	public static void LogInfo(string message) {
-		WriteLog(message, "[INFO]", Console.Out, ConsoleColor.Blue);
+		WriteLog(message, "[INFO]", Console.Out, ConsoleColor.White);
 	}
 
 	public static void LogSuccess(string message) {

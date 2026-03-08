@@ -54,7 +54,6 @@ public partial class DatabasesViewModel : ViewModelBase {
 
 		if (selectedFolders == null || selectedFolders.Count == 0) return null;
 
-		Logger.LogDebug($"path: {selectedFolders[0].Path}, name: {selectedFolders[0].Name}");
 		return selectedFolders[0].Path.LocalPath;
 	}
 

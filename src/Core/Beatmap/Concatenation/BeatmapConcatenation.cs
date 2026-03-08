@@ -88,7 +88,7 @@ public static partial class BeatmapConcatenation {
 		List<BeatmapData> beatmaps = beatmapList.Select(b => b.Beatmap).ToList();
 		int[] delays = delay.GetDelays(beatmaps);
 
-		Logger.LogDebug("\nCombining timing points and hit objects");
+		Logger.LogInfo("\n[BeatmapConcatenation] Combining timing points and hit objects");
 		BeatmapData beatmapData = ConcatenateBeatmapData(beatmaps, delays);
 		Bitmap background = ConcatenateBeatmapBackground(beatmapList);
 

@@ -80,7 +80,7 @@ public partial class OsuReplayViewModel : ViewModelBase {
 			try {
 				_osuReplayModel.Score = ReplayParser.Parse(score.FilePath, 4, false);
 			} catch (Exception e) {
-				Logger.LogDebug($"No replay for this score: {e.Message}. Stacktrace:\n{e.StackTrace}");
+				Logger.LogError($"[OsuReplay] No replay for this score: {e.Message}\nStacktrace:{e.StackTrace}");
 				_osuReplayModel.Score = null;
 				return;
 			}
@@ -100,12 +100,12 @@ public partial class OsuReplayViewModel : ViewModelBase {
 				OsuReplay.ChangeBackgroundOpacity(BackgroundOpacity);
 				OsuReplay.ChangeScrollSpeed(ScrollSpeed);
 			} catch (Exception e) {
-				Logger.LogDebug($"Couldn't create replay: {e.Message}\nStacktrace: {e.StackTrace}");
+				Logger.LogError($"[OsuReplay] Couldn't create replay: {e.Message}\nStacktrace: {e.StackTrace}");
 				return;
 			}
 		}
 
-		Logger.LogDebug($"canBeInstanciated: {canBeInstanciated}");
+		Logger.LogInfo($"[OsuReplay] canBeInstanciated: {canBeInstanciated}");
 
 		if (_isPlaying)
 			OsuReplay?.Play();

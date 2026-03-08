@@ -36,7 +36,7 @@ public static partial class ScoreDBParser {
 			if (beatmapDB.Beatmaps.ContainsKey(beatmapMD5)) {
 				beatmap = new(beatmapDB.Beatmaps[beatmapMD5]);
 			} else {
-				Logger.LogWarning($"Beatmap {beatmapMD5} has scores but hasn't been found in the beatmap database");
+				Logger.LogWarning($"[ScoreDBParser] Beatmap {beatmapMD5} has scores but hasn't been found in the beatmap database");
 				beatmap = new(beatmapDB.Beatmaps.ElementAt(0).Value);
 				skip = true;
 			}
@@ -66,11 +66,8 @@ public static partial class ScoreDBParser {
 			scoreDB.AllGameModesBeatmaps.Add(beatmapMD5, beatmap);
 		}
 
-		Logger.LogDebug($"allgamemodes beatmap count: {scoreDB.AllGameModesBeatmaps.Count}");
-		Logger.LogDebug($"mania beatmap count: {maniaBeatmapCount}");
-
 		watch.Stop();
-		Logger.LogDebug($"ScoreDB: Successfully parsed {totalScoresCount} scores from {scoreDB.BeatmapCount} beatmaps in {watch.ElapsedMilliseconds}ms");
+		Logger.LogInfo($"[ScoreDBParser] Successfully parsed {totalScoresCount} scores from {scoreDB.BeatmapCount} beatmaps in {watch.ElapsedMilliseconds}ms");
 
 		return scoreDB;
 	}

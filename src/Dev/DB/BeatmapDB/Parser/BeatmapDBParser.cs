@@ -103,13 +103,13 @@ public static partial class BeatmapDBParser {
 			beatmap.ManiaScrollSpeed = Parser.ParseByte(bytes, ref currentByteIndex);
 
 			if (beatmapDB.Beatmaps.ContainsKey(beatmap.BeatmapMD5))
-				Logger.LogWarning($"Beatmap hash already present in the database: [{beatmap.CircleSize}] {beatmap.SongTitle} [{beatmap.Difficulty}]");
+				Logger.LogWarning($"[BeatmapDBParser] Beatmap hash already present in the database: [{beatmap.CircleSize}] {beatmap.SongTitle} [{beatmap.Difficulty}]");
 			if (beatmap.TotalTime > 0 && !beatmapDB.Beatmaps.ContainsKey(beatmap.BeatmapMD5))
 				beatmapDB.Beatmaps.Add(beatmap.BeatmapMD5, beatmap);
 		}
 
 		watch.Stop();
-		Logger.LogDebug($"BeatmapDB: Successfully parsed {beatmapDB.BeatmapCount} beatmaps in {watch.ElapsedMilliseconds}ms");
+		Logger.LogInfo($"[BeatmapDBParser] Successfully parsed {beatmapDB.BeatmapCount} beatmaps in {watch.ElapsedMilliseconds}ms");
 
 		return beatmapDB;
 	}

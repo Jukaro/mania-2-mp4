@@ -101,7 +101,7 @@ public static partial class BeatmapWriter {
 			else if (ev is BreakEvent breakEvent)
 				values = new object[] { breakEvent.Type, breakEvent.StartTime, breakEvent.EndTime };
 			else
-				Logger.LogWarning($"Unknown event type: {ev.Type}");
+				Logger.LogWarning($"[BeatmapWriter] Unknown event type: {ev.Type}");
 			str += GetObjectString(values, ",") + "\n";
 		}
 

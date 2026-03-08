@@ -71,7 +71,7 @@ public partial class BeatmapMarathonViewModel : ObservableValidator {
 			Directory.Move(dirPath, refreshPath);
 			Directory.Move(refreshPath, dirPath);
 		} catch (Exception e) {
-			Logger.LogError($"Couldn't refresh folder: {e.Message}");
+			Logger.LogError($"[BeatmapMarathon] Couldn't refresh folder: {e.Message}");
 		}
 	}
 
@@ -86,15 +86,15 @@ public partial class BeatmapMarathonViewModel : ObservableValidator {
 			: new MeasureDivisionDelay(SelectedMeasureDivision);
 
 		string marathonStr = string.Join(", ", _selectedBeatmaps.Select(b => $"{b.BeatmapDBInfo.SongTitle} [{b.BeatmapDBInfo.Difficulty}]"));
-		Logger.LogDebug($"\nCreating marathon from beatmaps [{marathonStr}]");
+		Logger.LogInfo($"\n[BeatmapMarathon] Creating marathon from beatmaps [{marathonStr}]");
 
 		Task.Run(() => {
 			try {
 				_selectedBeatmaps.ForEach(b => b.LoadBeatmap());
 				BeatmapConcatenation.Concatenate(_selectedBeatmaps, Parameters);
-				Logger.LogDebug("Done !");
+				Logger.LogInfo("[BeatmapMarathon] Done !");
 			} catch (Exception e) {
-				Logger.LogError($"Couldn't create the beatmap marathon: {e.Message}\nStackTrace:\n{e.StackTrace}");
+				Logger.LogError($"[BeatmapMarathon] Couldn't create the beatmap marathon: {e.Message}\nStackTrace:\n{e.StackTrace}");
 				return;
 			}
 		});
