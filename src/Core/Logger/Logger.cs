@@ -68,7 +68,7 @@ public static class Logger {
 	}
 
 	private static void Log(string message, string level, TextWriter textWriter, ConsoleColor consoleColor) {
-		string toLog = CreateLog(message, level);
+		string toLog = $"[{DateTime.Now.ToString("HH:mm:ss")}] " + CreateLog(message, level);
 
 		if (consoleColor != ConsoleColor.White)
 			Console.ForegroundColor = consoleColor;
