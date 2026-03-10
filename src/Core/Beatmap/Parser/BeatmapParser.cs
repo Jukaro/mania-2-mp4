@@ -36,7 +36,7 @@ public static partial class BeatmapParser {
 
 			var sectionName = line[1..^1];
 			if (!sectionToParser.ContainsKey(sectionName)) {
-				Logger.LogWarning($"Unknown section {sectionName}");
+				Logger.LogWarning($"[BeatmapParser] Unknown section {sectionName}");
 				continue;
 			}
 

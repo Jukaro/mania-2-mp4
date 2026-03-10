@@ -18,14 +18,14 @@ public partial class BeatmapParser {
 			var eventType = BeatmapEvent.TryGetEventType(parameters[0]);
 
 			if (!eventType.HasValue) {
-				Logger.LogWarning($"Unknown event type {parameters[0]}");
+				Logger.LogWarning($"[BeatmapParser] Unknown event type {parameters[0]}");
 				continue;
 			}
 
 			if (eventToParser.TryGetValue(eventType.Value, out Action<List<BeatmapEvent>, string[]> parser))
 				parser(events, parameters);
 			else
-				Logger.LogWarning($"Could not find parser for event type {eventType}");
+				Logger.LogWarning($"[BeatmapParser] Could not find parser for event type {eventType}");
 		}
 
 		return events.ToArray();

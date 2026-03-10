@@ -30,7 +30,7 @@ public partial class DatabasesService : ObservableObject {
 
 	public void TryInit() {
 		if (Paths.OsuDirectoryPath == null || Paths.OsuSongsDirectoryPath == null) {
-			Logger.LogDebug($"One or more of the paths are not set");
+			Logger.LogInfo($"[DatabasesService] One or more of the paths are not set");
 			return;
 		}
 
@@ -51,7 +51,7 @@ public partial class DatabasesService : ObservableObject {
 
 			Paths.Save();
 		} catch (Exception e) {
-			Logger.LogDebug($"error: {e.Message}\nstacktrace: {e.StackTrace}");
+			Logger.LogError($"[DatabasesService] Error: {e.Message}", e.StackTrace);
 		}
 	}
 

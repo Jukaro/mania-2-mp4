@@ -72,7 +72,7 @@ public partial class FilesStatsViewModel : ViewModelBase {
 		}
 
 		ExtensionsAndSizes = temp;
-		Logger.LogDebug($"{string.Join(", ", ExtensionsAndSizes.Select(kv => $"{kv.Key}: {kv.Value}"))}");
+		Logger.LogInfo($"[FileStats] {string.Join(", ", ExtensionsAndSizes.Select(kv => $"{kv.Key}: {kv.Value}"))}");
 	}
 
 	public void UpdateData() {

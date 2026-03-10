@@ -60,6 +60,6 @@ public static partial class ScoreDBWriter {
 		fs.Close();
 
 		watch.Stop();
-		Logger.LogDebug($"ScoreDB: Successfully wrote {totalScoresCount} scores in {watch.ElapsedMilliseconds}ms");
+		Logger.LogInfo($"[ScoreDBWriter] Successfully wrote {totalScoresCount} scores in {watch.ElapsedMilliseconds}ms");
 	}
 }

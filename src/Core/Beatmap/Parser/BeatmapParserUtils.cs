@@ -29,7 +29,7 @@ public partial class BeatmapParser {
 			if (sectionDataProperties.TryGetValue(key, out Action<T, string> propertySetter))
 				propertySetter(sectionData, value);
 			else
-				Logger.LogWarning($"Unknown section property {key}");
+				Logger.LogWarning($"[BeatmapParser] Unknown section property {key}");
 		}
 
 		return sectionData;

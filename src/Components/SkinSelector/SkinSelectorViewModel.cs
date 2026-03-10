@@ -30,7 +30,7 @@ public partial class SkinSelectorViewModel : ViewModelBase {
 		get => _chosenSkin;
 		set {
 			_chosenSkin = value;
-			Logger.LogDebug($"chosen skin: {Path.Combine(_skinFolderPath, _chosenSkin)}");
+			Logger.LogInfo($"[SkinSelector] chosen skin: {Path.Combine(_skinFolderPath, _chosenSkin)}");
 			Task.Run(() => {
 				_osuReplayModel.Skin = SkinParser.Parse(Path.Combine(_skinFolderPath, _chosenSkin));
 			});

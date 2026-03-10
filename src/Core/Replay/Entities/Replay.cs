@@ -85,7 +85,7 @@ public class ReplayData {
 		int backwardsCounter = TotalKeyPresses;
 		string str;
 
-		Logger.LogDebug($"TotalKeyPresses: {TotalKeyPresses}");
+		Logger.LogInfo($"[ReplayData] TotalKeyPresses: {TotalKeyPresses}");
 		for (int i = Inputs.Count - 1; i >= 0; i--) {
 			currentLaneCount = Inputs[i].GetNbKeys();
 			if (i > 0)
@@ -97,7 +97,7 @@ public class ReplayData {
 				backwardsCounter -= currentLaneCount;
 			else
 				str = "";
-			Logger.LogDebug($"[{i}]:\t{Inputs[i].ToString(LaneCount)}{str}");
+			Logger.LogInfo($"[ReplayData] [{i}]:\t{Inputs[i].ToString(LaneCount)}{str}");
 		}
 	}
 }

@@ -10,7 +10,8 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Mania2mp4.Models;
 using Rythmify.UI;
-using Mania2mp4.ViewModels;
+using Rythmify.Core;
+using System.Threading.Tasks;
 
 namespace Mania2mp4;
 
@@ -61,6 +62,8 @@ public partial class App : Application
 			// More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
 			DisableAvaloniaDataAnnotationValidation();
 			desktop.Exit += OnExit;
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
 			Services.Init();
 
@@ -87,6 +90,22 @@ public partial class App : Application
 	}
 
 	private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e) {
+		ToDoBeforeExit();
+		Logger.FlushLogs();
+	}
+
+	private void OnUnhandledException(object? sender, UnhandledExceptionEventArgs e) {
+		ToDoBeforeExit();
+		Exception ex = (Exception)e.ExceptionObject;
+		Logger.LogFatal($"{ex.Message}", ex.StackTrace);
+		Logger.FlushLogs();
+	}
+
+	private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e) {
+		Logger.LogError($"UnobservedTaskExeception: {e.Exception.Message}", e.Exception.StackTrace);
+	}
+
+	private void ToDoBeforeExit() {
 		var databases = Services.ServiceProvider.GetRequiredService<DatabasesService>();
 		databases.SaveThumbnailDatabase();
 	}

@@ -99,8 +99,6 @@ public class FormField : TemplatedControl {
 		if (_errorMessage == errorMessage)
 			return ;
 
-		Logger.LogDebug($"errorMessage: {errorMessage}");
-
 		_errorMessage = errorMessage;
 		Exception? error = errorMessage == null ? null : new ToStringeableException(errorMessage);
 		DataValidationErrors.SetError(this, error);

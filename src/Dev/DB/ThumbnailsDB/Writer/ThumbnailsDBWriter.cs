@@ -30,6 +30,6 @@ public static partial class ThumbnailsDBWriter {
 		fs.Close();
 
 		watch.Stop();
-		Logger.LogDebug($"ThumbnailsDB: Successfully wrote {dbFormatThumbnailsDict.Count} thumbnail entries in {watch.ElapsedMilliseconds}ms");
+		Logger.LogInfo($"[ThumbnailsDBWriter] Successfully wrote {dbFormatThumbnailsDict.Count} thumbnail entries in {watch.ElapsedMilliseconds}ms");
 	}
 }

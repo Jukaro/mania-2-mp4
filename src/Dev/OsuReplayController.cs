@@ -42,7 +42,7 @@ public class OsuReplayController {
 			_osuReplay = new(_bounds, _skin, _beatmap, _score);
 		}
 
-		Logger.LogDebug($"canBeInstanciated: {canBeInstanciated}");
+		Logger.LogInfo($"[OsuReplayController] canBeInstanciated: {canBeInstanciated}");
 
 		if (_isPlaying)
 			Play();
@@ -54,7 +54,6 @@ public class OsuReplayController {
 
 		_osuReplay?.Play();
 		_isPlaying = true;
-		Logger.LogDebug("is playing");
 	}
 
 	public void Pause() {

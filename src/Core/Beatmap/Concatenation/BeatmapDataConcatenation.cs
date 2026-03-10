@@ -8,7 +8,7 @@ public partial class BeatmapConcatenation {
 	public static BeatmapData ConcatenateBeatmapData(List<BeatmapData> beatmaps, int[] delays) {
 		BeatmapData beatmap = beatmaps[0].DeepClone();
 
-		Logger.LogDebug($"delays: {string.Join(",", delays.Select(d => $"{d}ms"))}");
+		Logger.LogInfo($"[BeatmapConcatenation] delays: {string.Join(",", delays.Select(d => $"{d}ms"))}");
 
 		TrimExcessTimingPoints(ref beatmap.TimingPoints, beatmap, delays[0], TrimType.End);
 
