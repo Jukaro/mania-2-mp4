@@ -12,7 +12,7 @@ public class LaneTextures {
 	public AnimatedSkinTexture HoldNoteBodyTexture;
 	public AnimatedSkinTexture HoldNoteTailTexture;
 	public AnimatedSkinTexture HoldNoteHeadTexture;
-	public AnimatedSkinTexture InputTexture;
+	public AnimatedSkinTexture? InputTexture;
 	public AnimatedSkinTexture InputTextureHeld;
 }
 
@@ -42,13 +42,21 @@ public class SkinRenderer {
 		if (headAnimatedTexture.FrameCount == 0)
 			headAnimatedTexture = new(_skin.Data, _skin.ManiaSection.GetNoteImageLane(lane));
 
+		AnimatedSkinTexture inputAnimatedTexture = new(_skin.Data, inputTexturePath);
+		if (inputAnimatedTexture.FrameCount == 0)
+			inputAnimatedTexture = null;
+
+		AnimatedSkinTexture inputHeldAnimatedTexture = new(_skin.Data, inputTextureHeldPath);
+		if (inputHeldAnimatedTexture.FrameCount == 0)
+			inputHeldAnimatedTexture = new(_skin.Data, _skin.ManiaSection.GetNoteImageLane(lane));
+
 		LaneTextures laneTextures = new() {
 			NoteTexture = new(_skin.Data, noteTexturePath),
 			HoldNoteBodyTexture = new(_skin.Data, holdNoteBodyTexturePath),
 			HoldNoteTailTexture = tailAnimatedTexture,
 			HoldNoteHeadTexture = headAnimatedTexture,
-			InputTexture = new(_skin.Data, inputTexturePath),
-			InputTextureHeld = new(_skin.Data, inputTextureHeldPath)
+			InputTexture = inputAnimatedTexture,
+			InputTextureHeld = inputHeldAnimatedTexture
 		};
 
 		_laneTextures.Add(laneTextures);
@@ -88,6 +96,12 @@ public class SkinRenderer {
 	public Bitmap GetHoldNoteTextureAtLane(int lane) => _laneTextures[lane].HoldNoteBodyTexture.GetCurrentFrame();
 	public Bitmap GetHoldNoteHeadTextureAtLane(int lane) => _laneTextures[lane].HoldNoteHeadTexture.GetCurrentFrame();
 	public Bitmap GetHoldNoteTailTextureAtLane(int lane) => _laneTextures[lane].HoldNoteTailTexture.GetCurrentFrame();
-	public Bitmap GetInputTextureAtLane(int lane, bool held) => held ? _laneTextures[lane].InputTextureHeld.GetCurrentFrame() : _laneTextures[lane].InputTexture.GetCurrentFrame();
+
+	public Bitmap GetInputTextureAtLane(int lane, bool held) {
+		if (held) return _laneTextures[lane].InputTextureHeld.GetCurrentFrame();
+		else if (_laneTextures[lane].InputTexture != null) return _laneTextures[lane].InputTexture.GetCurrentFrame();
+		return null;
+	}
+
 	public ReplaySkinData GetSkin() => _skin;
 }

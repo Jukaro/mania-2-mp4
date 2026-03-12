@@ -24,6 +24,7 @@ public class InputsRenderer {
 	public void Render(InputsPlayer inputsPlayer, DrawingContext drawingContext) {
 		for (int i = 0; i < inputsPlayer.RenderedInputs.Length; i++) {
 			var inputTexture = _skinRenderer.GetInputTextureAtLane(i, inputsPlayer.RenderedInputs[i]);
+			if (inputTexture == null) continue;
 
 			float laneSize = _screenMath.GetLaneSize(i, _skinRenderer.GetSkin().ManiaSection);
 
