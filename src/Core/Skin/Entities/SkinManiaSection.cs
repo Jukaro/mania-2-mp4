@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -34,22 +35,22 @@ public class SkinManiaSection {
 	public double ColumnStart = 136;
 	public double ColumnRight = 19;
 
-	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnSpacing = new();
+	[IniHandler("CommaSeparatedFloatListParser")]
+	public List<float> ColumnSpacing = new();
 
-	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnWidth = new();
+	[IniHandler("CommaSeparatedFloatListParser")]
+	public List<float> ColumnWidth = new();
 
-	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> ColumnLineWidth = new();
+	[IniHandler("CommaSeparatedFloatListParser")]
+	public List<float> ColumnLineWidth = new();
 
 	public double BarlineHeight = 1.2;
 
-	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> LightingNWidth = new();
+	[IniHandler("CommaSeparatedFloatListParser")]
+	public List<float> LightingNWidth = new();
 
-	[IniHandler("CommaSeparatedIntListParser")]
-	public List<int> LightingLWidth = new();
+	[IniHandler("CommaSeparatedFloatListParser")]
+	public List<float> LightingLWidth = new();
 
 	public double WidthForNoteHeightScale;
 	public int HitPosition = 402;
@@ -231,8 +232,8 @@ public class SkinManiaSection {
 	public void IntNoteBodyStyleModeDictionaryParser(FieldInfo destination, string key, string value, Regex pattern) =>
 		IntEnumDictionaryParser<NodeBodyStyleMode>(destination, key, value, pattern);
 
-	public void CommaSeparatedIntListParser(FieldInfo destination, string key, string value, Regex pattern) {
-		var values = value.Split(',').Select(int.Parse).ToList();
+	public void CommaSeparatedFloatListParser(FieldInfo destination, string key, string value, Regex pattern) {
+		var values = value.Split(',').Select(v => float.Parse(v, CultureInfo.InvariantCulture)).ToList();
 		destination.SetValue(this, values);
 	}
 

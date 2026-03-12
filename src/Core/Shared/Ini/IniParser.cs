@@ -52,7 +52,7 @@ public class IniParser {
 		IniSection currentSection = null;
 
 		string[] lines = content.Split('\n')
-			.Select(line => line.Trim())
+			.Select(line => CleanLine(line))
 			.Where(line => !string.IsNullOrWhiteSpace(line))
 			.ToArray();
 
@@ -64,6 +64,13 @@ public class IniParser {
 			else if (lineType == IniLineType.Assignment && currentSection != null)
 				HandleAssignment(currentSection, line);
 		}
+	}
+
+	private string CleanLine(string line) {
+		line = line.Trim();
+		int commentIndex = line.IndexOf("//");
+		if (commentIndex != -1) line = line[..commentIndex];
+		return line;
 	}
 
 	private IniSection AddSection(string name) {

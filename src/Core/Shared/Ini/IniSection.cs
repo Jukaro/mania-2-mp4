@@ -60,6 +60,8 @@ public class IniSection {
 			field.SetValue(instance, float.Parse(value, CultureInfo.InvariantCulture));
 		else if (field.FieldType == typeof(double))
 			field.SetValue(instance, double.Parse(value, CultureInfo.InvariantCulture));
+		else if (field.FieldType == typeof(RGB))
+			field.SetValue(instance, new RGB(value));
 		else if (stringConstructor != null)
 			field.SetValue(instance, stringConstructor.Invoke(new object[]{ value }));
 		else
