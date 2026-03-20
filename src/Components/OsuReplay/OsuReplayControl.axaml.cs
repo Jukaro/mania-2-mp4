@@ -31,6 +31,7 @@ public class OsuReplayControl : TemplatedControl {
 		get { return _osuReplay; }
 		set {
 			SetAndRaise(OsuReplayProperty, ref _osuReplay, value);
+			_stopwatch.Restart();
 		}
 	}
 
