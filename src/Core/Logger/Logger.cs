@@ -6,27 +6,27 @@ using System.Text;
 
 namespace Rythmify.Core;
 
-class ErrorInfo {
-	private string _error;
-	private string? _stacktrace;
-
-	public ErrorInfo(string error, string? stacktrace) {
-		_error = error;
-		_stacktrace = stacktrace;
-	}
-
-	public override string ToString() {
-		string str = "";
-
-		str += $"Error: {_error}\n\n";
-		if (_stacktrace != null)
-			str += $"Stacktrace:\n{_stacktrace}";
-
-		return str;
-	}
-}
-
 public static class Logger {
+	private class ErrorInfo {
+		private string _error;
+		private string? _stacktrace;
+
+		public ErrorInfo(string error, string? stacktrace) {
+			_error = error;
+			_stacktrace = stacktrace;
+		}
+
+		public override string ToString() {
+			string str = "";
+
+			str += $"Error: {_error}\n\n";
+			if (_stacktrace != null)
+				str += $"Stacktrace:\n{_stacktrace}";
+
+			return str;
+		}
+	}
+
 	static readonly string currentDate;
 	static readonly string logfileName;
 	static readonly string errorLogsFileName;
@@ -68,7 +68,7 @@ public static class Logger {
 	}
 
 	private static void Log(string message, string level, TextWriter textWriter, ConsoleColor consoleColor) {
-		string toLog = $"[{DateTime.Now.ToString("HH:mm:ss")}] " + CreateLog(message, level);
+		string toLog = CreateLog(message, level);
 
 		if (consoleColor != ConsoleColor.White)
 			Console.ForegroundColor = consoleColor;
@@ -79,7 +79,8 @@ public static class Logger {
 	}
 
 	private static string CreateLog(string message, string level) {
-		return string.Join("\n", message.Split("\n").Select(s => $"{level} {s}"));
+		string timestamp = $"{DateTime.Now.ToString("HH:mm:ss")}";
+		return string.Join("\n", message.Split("\n").Select(s => $"[{timestamp}] {level} {s}"));
 	}
 
 	public static void FlushLogs() {

@@ -102,7 +102,8 @@ public partial class App : Application
 	}
 
 	private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e) {
-		Logger.LogError($"UnobservedTaskExeception: {e.Exception.Message}", e.Exception.StackTrace);
+		foreach (Exception ie in e.Exception.InnerExceptions)
+			Logger.LogError($"[UnobservedTaskExeception] {ie.Message}", ie.StackTrace);
 	}
 
 	private void ToDoBeforeExit() {
