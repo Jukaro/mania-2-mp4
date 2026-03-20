@@ -116,7 +116,6 @@ public class AudioPlayer {
 	public void Update() {
 		if (_needToPlayAudio && _player.State != PlaybackState.Playing) {
 			_player.Play();
-			Logger.LogDebug("is playing");
 		}
 	}
 
